@@ -62,7 +62,7 @@ core unix btconly device test:
 core unix monero test:
   stage: test
   <<: *only_changes_core
-  retry: 2  # see #405
+  retry: 2  # see https://github.com/trezor/trezor-firmware/issues/405
   dependencies:
     - core unix frozen regular build
   script:
@@ -72,13 +72,31 @@ core unix monero test:
 core unix u2f test:
   stage: test
   <<: *only_changes_core
-  retry: 2  # see #596
+  retry: 2  # see https://github.com/trezor/trezor-firmware/issues/596
   dependencies:
     - core unix frozen regular build
   script:
     - make -C tests/fido_tests/u2f-tests-hid
     - cd core
     - pipenv run make test_emu_u2f
+
+core unix fido2 test:
+  stage: test
+  <<: *only_changes_core
+  dependencies:
+    - core unix frozen regular build
+  script:
+    - cd core
+    - pipenv run make test_emu_fido2
+
+core unix click test:
+  stage: test
+  <<: *only_changes_core
+  dependencies:
+    - core unix frozen debug build
+  script:
+    - cd core
+    - pipenv run make test_emu_click
 
 core unix upgrade test:
   stage: test
@@ -90,6 +108,24 @@ core unix upgrade test:
   script:
     - tests/download_emulators.sh
     - pipenv run pytest tests/upgrade_tests
+
+core unix persistence test:
+  stage: test
+  <<: *only_changes_core
+  dependencies:
+    - core unix frozen debug build
+  script:
+    - pipenv run pytest tests/persistence_tests
+
+core mypy test:
+  stage: test
+  <<: *only_changes_core
+  dependencies: []  # no artifacts needed
+  script:
+    - cd core
+    - pipenv run mypy --version
+    - pipenv run make res  # needed for clean mypy
+    - pipenv run make mypy
 
 
 # Crypto

@@ -21,6 +21,8 @@ def _boot_recovery() -> None:
 
     # boot applications
     apps.homescreen.boot(features_only=True)
+    if __debug__:
+        apps.debug.boot()
 
     from apps.management.recovery_device.homescreen import recovery_homescreen
 
@@ -44,12 +46,10 @@ def _boot_default() -> None:
         import apps.tezos
         import apps.eos
         import apps.binance
+        import apps.webauthn
 
     if __debug__:
         import apps.debug
-    if not utils.BITCOIN_ONLY:
-        if not __debug__ or utils.EMULATOR:
-            import apps.webauthn
 
     # boot applications
     apps.homescreen.boot()
@@ -66,11 +66,9 @@ def _boot_default() -> None:
         apps.tezos.boot()
         apps.eos.boot()
         apps.binance.boot()
+        apps.webauthn.boot()
     if __debug__:
         apps.debug.boot()
-    if not utils.BITCOIN_ONLY:
-        if not __debug__ or utils.EMULATOR:
-            apps.webauthn.boot(usb.iface_webauthn)
 
     # run main event loop and specify which screen is the default
     from apps.homescreen.homescreen import homescreen
