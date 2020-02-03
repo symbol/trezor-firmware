@@ -87,3 +87,33 @@ gen:  mocks templates protobuf icons ## regeneate auto-generated files from sour
 
 gen_check: mocks_check templates_check protobuf_check icons_check ## check validity of auto-generated files
 	make -C python coins_json_check
+
+
+## build commands:
+
+build_core_fw: ## build core firmware
+	make -C core build_cross
+	make -C core build_boardloader
+	make -C core build_bootloader
+	make -C core build_prodtest
+	make -C core build_firmware
+	make -C core sizecheck
+
+build_core_unix: ## build core emulator
+	make -C core build_unix
+
+build_core_unix_frozen: ## build core frozen emulator
+	make -C core build_unix_frozen
+
+build_crypto:  ## build trezor-crypto library
+	make -C crypto
+
+build_legacy:  ## build legacy firmware or emulator
+	cd legacy; \
+		./script/setup && \
+		./script/cibuild \
+
+
+include Makefile.ci
+
+.PHONY: core
