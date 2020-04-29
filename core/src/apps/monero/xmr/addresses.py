@@ -61,7 +61,7 @@ def public_addr_encode(
 def classify_subaddresses(
     tx_dests: List[MoneroTransactionDestinationEntry],
     change_addr: MoneroAccountPublicAddress,
-) -> Tuple[int, int, MoneroAccountPublicAddress]:
+) -> Tuple[int, int, Optional[MoneroAccountPublicAddress]]:
     """
     Classify destination subaddresses
     """
@@ -82,7 +82,6 @@ def classify_subaddresses(
             single_dest_subaddress = tx.addr
         else:
             num_stdaddresses += 1
-    assert single_dest_subaddress is not None
     return num_stdaddresses, num_subaddresses, single_dest_subaddress
 
 

@@ -46,7 +46,6 @@ def export_key_image(
             td.additional_tx_pub_keys[td.internal_output_index]
         )
 
-    assert additional_tx_pub_key is not None
     ki, sig = _export_key_image(
         creds,
         subaddresses,

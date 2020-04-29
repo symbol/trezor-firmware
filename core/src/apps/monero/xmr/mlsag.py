@@ -215,7 +215,7 @@ def generate_mlsag(
     # Preallocation of the chunked buffer, len + cols + cc
     mg_buff = []
     mg_buff.append(bytearray())
-    for _ in range(1 + cols + 1):
+    for _ in range(cols):
         mg_buff.append(bytearray(rows_b_size + 32 * rows))
     mg_buff.append(bytearray(32))
 
