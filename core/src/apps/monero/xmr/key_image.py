@@ -3,7 +3,7 @@ from apps.monero.xmr.serialize.int_serialize import dump_uvarint_b
 
 if False:
     from typing import List, Tuple, Optional, Dict
-    from apps.monero.xmr.types import Ge25519, Sc25519
+    from apps.monero.xmr.crypto import Ge25519, Sc25519
     from apps.monero.xmr.credentials import AccountCreds
     from trezor.messages.MoneroTransferDetails import MoneroTransferDetails
 
@@ -12,6 +12,10 @@ if False:
 
 
 def compute_hash(rr: MoneroTransferDetails) -> bytes:
+    assert rr.out_key is not None
+    assert rr.tx_pub_key is not None
+    assert rr.internal_output_index is not None
+
     kck = crypto.get_keccak()
     kck.update(rr.out_key)
     kck.update(rr.tx_pub_key)
@@ -25,10 +29,14 @@ def compute_hash(rr: MoneroTransferDetails) -> bytes:
 def export_key_image(
     creds: AccountCreds, subaddresses: Subaddresses, td: MoneroTransferDetails
 ) -> Tuple[Ge25519, Sig]:
+    assert td.out_key is not None
+    assert td.tx_pub_key is not None
+    assert td.internal_output_index is not None
+
     out_key = crypto.decodepoint(td.out_key)
     tx_pub_key = crypto.decodepoint(td.tx_pub_key)
 
-    additional_tx_pub_key = None
+    additional_tx_pub_key = None  # type: Optional[Ge25519]
     if len(td.additional_tx_pub_keys) == 1:  # compression
         additional_tx_pub_key = crypto.decodepoint(td.additional_tx_pub_keys[0])
     elif td.additional_tx_pub_keys:
@@ -38,6 +46,7 @@ def export_key_image(
             td.additional_tx_pub_keys[td.internal_output_index]
         )
 
+    assert additional_tx_pub_key is not None
     ki, sig = _export_key_image(
         creds,
         subaddresses,
@@ -57,7 +66,7 @@ def _export_key_image(
     subaddresses: Subaddresses,
     pkey: Ge25519,
     tx_pub_key: Ge25519,
-    additional_tx_pub_key: Optional[Ge25519],
+    additional_tx_pub_key: Ge25519,
     out_idx: int,
     test: bool = True,
     sub_addr_major: int = None,
@@ -106,8 +115,8 @@ def generate_ring_signature(
         k_i = monero.generate_key_image(crypto.encodepoint(pubs[sec_idx]), sec)
         if not crypto.point_eq(k_i, image):
             raise ValueError("Key image invalid")
-        for k in pubs:
-            crypto.check_ed25519point(k)
+        for key in pubs:
+            crypto.check_ed25519point(key)
 
     buff_off = len(prefix_hash)
     buff = bytearray(buff_off + 2 * 32 * len(pubs))

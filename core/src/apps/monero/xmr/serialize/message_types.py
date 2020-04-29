@@ -8,6 +8,10 @@ from apps.monero.xmr.serialize.int_serialize import (
     load_uvarint,
 )
 
+if False:
+    from typing import List, Tuple, Any, Type
+    from apps.monero.xmr.serialize.readwriter import Reader, Writer
+
 
 class UnicodeType(XmrType):
     """
@@ -15,12 +19,12 @@ class UnicodeType(XmrType):
     """
 
     @staticmethod
-    def dump(writer, s):
+    def dump(writer: Writer, s: str) -> None:
         dump_uvarint(writer, len(s))
-        writer.write(bytes(s))
+        writer.write(bytes(s, encoding="utf8"))
 
     @staticmethod
-    def load(reader):
+    def load(reader: Reader) -> str:
         ivalue = load_uvarint(reader)
         fvalue = bytearray(ivalue)
         reader.readinto(fvalue)
@@ -37,7 +41,7 @@ class BlobType(XmrType):
     SIZE = 0
 
     @classmethod
-    def dump(cls, writer, elem: bytes):
+    def dump(cls, writer: Writer, elem: bytes) -> None:
         if cls.FIX_SIZE:
             if cls.SIZE != len(elem):
                 raise ValueError("Size mismatch")
@@ -46,7 +50,7 @@ class BlobType(XmrType):
         writer.write(elem)
 
     @classmethod
-    def load(cls, reader) -> bytearray:
+    def load(cls, reader: Reader) -> bytearray:
         if cls.FIX_SIZE:
             size = cls.SIZE
         else:
@@ -64,31 +68,29 @@ class ContainerType(XmrType):
 
     FIX_SIZE = 0
     SIZE = 0
-    ELEM_TYPE = None
+    ELEM_TYPE = None  # type: Type[XmrType]
 
     @classmethod
-    def dump(cls, writer, elems, elem_type=None):
-        if elem_type is None:
-            elem_type = cls.ELEM_TYPE
+    def dump(cls, writer: Writer, elems: List[XmrType]) -> None:
+        assert cls.ELEM_TYPE is not None
         if cls.FIX_SIZE:
             if cls.SIZE != len(elems):
                 raise ValueError("Size mismatch")
         else:
             dump_uvarint(writer, len(elems))
         for elem in elems:
-            elem_type.dump(writer, elem)
+            cls.ELEM_TYPE.dump(writer, elem)
 
     @classmethod
-    def load(cls, reader, elem_type=None):
-        if elem_type is None:
-            elem_type = cls.ELEM_TYPE
+    def load(cls, reader: Reader) -> List[XmrType]:
+        assert cls.ELEM_TYPE is not None
         if cls.FIX_SIZE:
             size = cls.SIZE
         else:
             size = load_uvarint(reader)
         elems = []
         for _ in range(size):
-            elem = elem_type.load(reader)
+            elem = cls.ELEM_TYPE.load(reader)
             elems.append(elem)
         return elems
 
@@ -100,23 +102,22 @@ class VariantType(XmrType):
     """
 
     @classmethod
-    def dump(cls, writer, elem):
+    def dump(cls, writer: Writer, elem: "VariantType") -> None:
         for field in cls.f_specs():
-            ftype = field[1]
+            fcode, ftype = field
             if isinstance(elem, ftype):
+                dump_uint(writer, fcode, 1)
+                ftype.dump(writer, elem)
                 break
         else:
             raise ValueError("Unrecognized variant: %s" % elem)
 
-        dump_uint(writer, ftype.VARIANT_CODE, 1)
-        ftype.dump(writer, elem)
-
     @classmethod
-    def load(cls, reader):
+    def load(cls, reader: Reader) -> Any:
         tag = load_uint(reader, 1)
         for field in cls.f_specs():
-            ftype = field[1]
-            if ftype.VARIANT_CODE == tag:
+            fcode, ftype = field
+            if fcode == tag:
                 fvalue = ftype.load(reader)
                 break
         else:
@@ -124,7 +125,7 @@ class VariantType(XmrType):
         return fvalue
 
     @classmethod
-    def f_specs(cls):
+    def f_specs(cls) -> Tuple[Tuple[int, Type[XmrType]], ...]:
         return ()
 
 
@@ -133,7 +134,7 @@ class MessageType(XmrType):
     Message composed of fields with specific types.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         for kw in kwargs:
             setattr(self, kw, kwargs[kw])
 
@@ -141,23 +142,23 @@ class MessageType(XmrType):
     __repr__ = obj_repr
 
     @classmethod
-    def dump(cls, writer, msg):
+    def dump(cls, writer: Writer, msg: "MessageType") -> None:
         defs = cls.f_specs()
         for field in defs:
-            fname, ftype, *fparams = field
+            fname, ftype = field
             fvalue = getattr(msg, fname, None)
-            ftype.dump(writer, fvalue, *fparams)
+            ftype.dump(writer, fvalue)
 
     @classmethod
-    def load(cls, reader):
+    def load(cls, reader: Reader) -> "MessageType":
         msg = cls()
         defs = cls.f_specs()
         for field in defs:
-            fname, ftype, *fparams = field
-            fvalue = ftype.load(reader, *fparams)
+            fname, ftype = field
+            fvalue = ftype.load(reader)
             setattr(msg, fname, fvalue)
         return msg
 
     @classmethod
-    def f_specs(cls):
+    def f_specs(cls) -> Tuple[Tuple[str, Type[XmrType]], ...]:
         return ()

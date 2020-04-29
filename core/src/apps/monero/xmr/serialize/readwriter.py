@@ -1,106 +1,77 @@
-import gc
+if False:
+    from typing import Union, Protocol, Optional
+
+    class Reader(Protocol):
+        def readinto(self, buffer: bytearray) -> Optional[int]:
+            pass
+
+    class Writer(Protocol):
+        def write(self, buffer: bytes) -> Optional[int]:
+            pass
 
 
-class MemoryReaderWriter:
-    def __init__(
-        self,
-        buffer=None,
-        read_empty=False,
-        threshold=None,
-        do_gc=False,
-        preallocate=None,
-        **kwargs
-    ):
+class ByteReader:
+    def __init__(self, buffer: Union[bytearray, memoryview]) -> None:
+        self.offset = 0
         self.buffer = buffer
-        self.nread = 0
-        self.nwritten = 0
+        self.buffer_length = len(buffer)
 
-        self.ndata = 0
-        self.offset = 0
-        self.woffset = 0
-
-        self.read_empty = read_empty
-        self.threshold = threshold
-        self.do_gc = do_gc
-
-        if preallocate is not None:
-            self.preallocate(preallocate)
-        elif self.buffer is None:
-            self.buffer = bytearray(0)
-        else:
-            self.woffset = len(buffer)
-
-    def is_empty(self):
-        return self.offset == len(self.buffer) or self.offset == self.woffset
-
-    def preallocate(self, size):
-        self.buffer = bytearray(size)
-        self.offset = 0
-        self.woffset = 0
-
-    def readinto(self, buf):
-        ln = len(buf)
-        if not self.read_empty and ln > 0 and self.offset == len(self.buffer):
+    def readinto(self, buffer: bytearray) -> int:
+        buffer_length = len(buffer)
+        if buffer_length > 0 and self.offset == self.buffer_length:
             raise EOFError
 
-        nread = min(ln, len(self.buffer) - self.offset)
-        for idx in range(nread):
-            buf[idx] = self.buffer[self.offset + idx]
+        read_bytes = min(buffer_length, self.buffer_length - self.offset)
 
-        self.offset += nread
-        self.nread += nread
-        self.ndata -= nread
+        for i in range(read_bytes):
+            buffer[i] = self.buffer[self.offset + i]
+        self.offset += read_bytes
 
-        # Deallocation threshold triggered
-        if self.threshold is not None and self.offset >= self.threshold:
-            self.buffer = self.buffer[self.offset :]
-            self.woffset -= self.offset
-            self.offset = 0
+        return read_bytes
 
-            if self.do_gc:
-                gc.collect()
+    async def areadinto(self, buffer: bytearray) -> int:
+        return self.readinto(buffer)
 
-        return nread
 
-    async def areadinto(self, buf):
-        return self.readinto(buf)
+def write_to_buffer(
+    destination: bytearray, destination_offset: int, source: bytes, source_offset: int
+) -> int:
+    write_bytes = min(
+        len(source) - source_offset, len(destination) - destination_offset
+    )
+    for i in range(write_bytes):
+        destination[destination_offset + i] = source[source_offset + i]
+    return write_bytes
 
-    def write(self, buf):
-        nwritten = len(buf)
-        nall = len(self.buffer)
-        towrite = nwritten
-        bufoff = 0
 
-        # Fill existing place in the buffer
-        while towrite > 0 and nall - self.woffset > 0:
-            self.buffer[self.woffset] = buf[bufoff]
-            self.woffset += 1
-            bufoff += 1
-            towrite -= 1
+class ByteWriter:
+    def __init__(self, preallocate: int = 0, allocation_step: int = 32) -> None:
+        self.buffer = bytearray(preallocate)
+        self.allocation_step = allocation_step
+        self.offset = 0
 
-        # Allocate next chunk if needed
-        while towrite > 0:
-            _towrite = min(32, towrite)
-            chunk = bytearray(32)  # chunk size typical for EC point
+    def write(self, buffer: bytes) -> int:
+        buffer_length = len(buffer)
 
-            for i in range(_towrite):
-                chunk[i] = buf[bufoff]
-                self.woffset += 1
-                bufoff += 1
-                towrite -= 1
+        offset = 0
+
+        written_bytes = write_to_buffer(self.buffer, self.offset, buffer, offset)
+        self.offset += written_bytes
+        offset += written_bytes
+
+        while offset < buffer_length:
+            chunk = bytearray(self.allocation_step)
+
+            written_bytes = write_to_buffer(chunk, 0, buffer, offset)
+            self.offset += written_bytes
+            offset += written_bytes
 
             self.buffer.extend(chunk)
-            if self.do_gc:
-                chunk = None  # dereference
-                gc.collect()
+        assert offset == buffer_length
+        return offset
 
-        self.nwritten += nwritten
-        self.ndata += nwritten
-        return nwritten
+    async def awrite(self, buffer: bytes) -> int:
+        return self.write(buffer)
 
-    async def awrite(self, buf):
-        return self.write(buf)
-
-    def get_buffer(self):
-        mv = memoryview(self.buffer)
-        return mv[self.offset : self.woffset]
+    def get_buffer(self) -> memoryview:
+        return memoryview(self.buffer)[: self.offset]

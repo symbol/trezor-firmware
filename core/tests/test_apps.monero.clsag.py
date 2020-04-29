@@ -40,8 +40,10 @@ class TestMoneroClsag(unittest.TestCase):
         for x in pubs:
             hsh_PC(x.commitment)
 
-        hsh_PC(crypto.encodepoint_into(tmp_bf, sI))
-        hsh_PC(crypto.encodepoint_into(tmp_bf, sD))
+        crypto.encodepoint_into(tmp_bf, sI)
+        hsh_PC(tmp_bf)
+        crypto.encodepoint_into(tmp_bf, sD)
+        hsh_PC(tmp_bf)
         hsh_PC(C_offset_bf)
         mu_P = crypto.decodeint(hsh_P.digest())
         mu_C = crypto.decodeint(hsh_C.digest())
@@ -65,21 +67,23 @@ class TestMoneroClsag(unittest.TestCase):
             crypto.sc_mul_into(c_p, mu_P, c)
             crypto.sc_mul_into(c_c, mu_C, c)
 
-            C_P = crypto.point_sub(
-                crypto.decodepoint_into(tmp_pt, pubs[i].commitment), C_offset
-            )
-            crypto.add_keys2_into(
-                L, ss[i], c_p, crypto.decodepoint_into(tmp_pt, pubs[i].dest)
-            )
-            crypto.point_add_into(L, L, crypto.scalarmult_into(tmp_pt, C_P, c_c))
+            crypto.decodepoint_into(tmp_pt, pubs[i].commitment)
+            C_P = crypto.point_sub(tmp_pt, C_offset)
+            crypto.decodepoint_into(tmp_pt, pubs[i].dest)
+            crypto.add_keys2_into(L, ss[i], c_p, tmp_pt)
+            crypto.scalarmult_into(tmp_pt, C_P, c_c)
+            crypto.point_add_into(L, L, tmp_pt)
 
             HP = crypto.hash_to_point(pubs[i].dest)
             crypto.add_keys3_into(R, ss[i], HP, c_p, sI)
-            crypto.point_add_into(R, R, crypto.scalarmult_into(tmp_pt, D_8, c_c))
+            crypto.scalarmult_into(tmp_pt, D_8, c_c)
+            crypto.point_add_into(R, R, tmp_pt)
 
             chasher = c_to_hash.copy()
-            chasher.update(crypto.encodepoint_into(tmp_bf, L))
-            chasher.update(crypto.encodepoint_into(tmp_bf, R))
+            crypto.encodepoint_into(tmp_bf, L)
+            chasher.update(tmp_bf)
+            crypto.encodepoint_into(tmp_bf, R)
+            chasher.update(tmp_bf)
             crypto.decodeint_into(c, chasher.digest())
             i += 1
         res = crypto.sc_sub(c, sc1)
@@ -126,8 +130,8 @@ class TestMoneroClsag(unittest.TestCase):
             )
         )
 
-        mlsag.generate_clsag_simple(
-            msg, ring, CtKey(priv, msk), alpha, Cp, index, mg_buffer,
+        mg_buffer = mlsag.generate_clsag_simple(
+            msg, ring, CtKey(priv, msk), alpha, Cp, index
         )
 
         sD = crypto.decodepoint(mg_buffer[-1])

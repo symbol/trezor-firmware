@@ -3,6 +3,10 @@ from micropython import const
 from apps.monero.xmr.serialize.message_types import ContainerType, MessageType
 from apps.monero.xmr.serialize_messages.base import ECKey
 
+if False:
+    from typing import Tuple, Type
+    from apps.monero.xmr.serialize.base_types import XmrType
+
 
 class _KeyV(ContainerType):
     FIX_SIZE = const(0)
@@ -13,7 +17,7 @@ class Bulletproof(MessageType):
     __slots__ = ("A", "S", "T1", "T2", "taux", "mu", "L", "R", "a", "b", "t")
 
     @classmethod
-    def f_specs(cls):
+    def f_specs(cls) -> Tuple[Tuple[str, Type[XmrType]], ...]:
         return (
             ("A", ECKey),
             ("S", ECKey),

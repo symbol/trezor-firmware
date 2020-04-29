@@ -7,8 +7,13 @@ from apps.monero.xmr import crypto
 
 if False:
     from typing import Dict, List, Optional, Tuple
-    from apps.monero.xmr.types import Ge25519, Sc25519
     from apps.monero.xmr.credentials import AccountCreds
+    from apps.monero.xmr.crypto import Sc25519, Ge25519
+    from trezor.messages.MoneroTransactionDestinationEntry import (
+        MoneroTransactionDestinationEntry,
+    )
+    from trezor.messages.MoneroAccountPublicAddress import MoneroAccountPublicAddress
+    from trezor.wire import Context
 
     Subaddresses = Dict[bytes, Tuple[int, int]]
 
@@ -24,7 +29,7 @@ class State:
     STEP_ALL_OUT = const(500)
     STEP_SIGN = const(600)
 
-    def __init__(self, ctx):
+    def __init__(self, ctx: Context) -> None:
         from apps.monero.xmr.keccak_hasher import KeccakXmrArchive
         from apps.monero.xmr.mlsag_hasher import PreMlsagHasher
 
@@ -51,8 +56,8 @@ class State:
         - for subaddresses the `r` is commonly denoted as `s`, however it is still just a random number
         - the keys are used to derive the one time address and its keys (P = H(A*r)*G + B)
         """
-        self.tx_priv = None  # type: Sc25519
-        self.tx_pub = None  # type: Ge25519
+        self.tx_priv = None  # type: Optional[Sc25519]
+        self.tx_pub = None  # type: Optional[Ge25519]
 
         """
         In some cases when subaddresses are used we need more tx_keys
@@ -69,7 +74,7 @@ class State:
         self.progress_total = 0
         self.progress_cur = 0
 
-        self.output_change = None
+        self.output_change = None  # type: Optional[MoneroTransactionDestinationEntry]
         self.fee = 0
 
         # wallet sub-address major index
@@ -141,7 +146,7 @@ class State:
         self.full_message_hasher = PreMlsagHasher()
         self.full_message = None  # type: Optional[bytes]
 
-    def mem_trace(self, x=None, collect=False):
+    def mem_trace(self, x: int = None, collect: bool = False) -> None:
         if __debug__:
             log.debug(
                 __name__,
@@ -153,5 +158,5 @@ class State:
         if collect:
             gc.collect()
 
-    def change_address(self):
+    def change_address(self) -> Optional[MoneroAccountPublicAddress]:
         return self.output_change.addr if self.output_change else None

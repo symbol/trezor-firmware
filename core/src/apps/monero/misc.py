@@ -1,16 +1,23 @@
+from trezor.crypto import bip32
+
 from apps.common import HARDENED
 from apps.monero import CURVE
 
 if False:
-    from typing import Tuple
-    from apps.monero.xmr.types import Sc25519
+    from typing import Tuple, List
+    from apps.common.seed import Keychain
+    from apps.monero.xmr.crypto import Sc25519
+    from apps.monero.xmr.credentials import AccountCreds
 
 
-def get_creds(keychain, address_n=None, network_type=None):
+def get_creds(
+    keychain: Keychain, address_n: List[int], network_type: int
+) -> AccountCreds:
     from apps.monero.xmr import monero
     from apps.monero.xmr.credentials import AccountCreds
 
     node = keychain.derive(address_n, CURVE)
+    assert isinstance(node, bip32.HDNode)
 
     key_seed = node.private_key()
     spend_sec, _, view_sec, _ = monero.generate_monero_keys(key_seed)

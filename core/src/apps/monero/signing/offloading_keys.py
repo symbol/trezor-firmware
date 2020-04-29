@@ -20,9 +20,7 @@ _INDEX_LENGTH = const(4)
 _BUILD_KEY_BUFFER = bytearray(_SECRET_LENGTH + _DISCRIMINATOR_LENGTH + _INDEX_LENGTH)
 
 
-def _build_key(
-    secret, discriminator=None, index: int = None, out: bytes = None
-) -> bytes:
+def _build_key(secret, discriminator=None, index: int = None) -> bytes:
     """
     Creates an unique-purpose key
     """
@@ -49,7 +47,7 @@ def _build_key(
             offset += 1
             index = shifted
 
-    return crypto.keccak_2hash(key_buff, out)
+    return crypto.keccak_2hash(key_buff)
 
 
 def hmac_key_txin(key_hmac, idx: int) -> bytes:

@@ -5,31 +5,41 @@ from apps.monero.xmr.serialize.int_serialize import (
     load_uvarint,
 )
 
+if False:
+    from apps.monero.xmr.serialize.readwriter import Reader, Writer
+    from typing import Any
+
 
 class XmrType:
-    pass
+    @staticmethod
+    def load(reader: Reader) -> Any:
+        pass
+
+    @staticmethod
+    def dump(writer: Writer, element: Any) -> None:
+        pass
 
 
 class UVarintType(XmrType):
     @staticmethod
-    def load(reader) -> int:
+    def load(reader: Reader) -> int:
         return load_uvarint(reader)
 
     @staticmethod
-    def dump(writer, n: int):
-        return dump_uvarint(writer, n)
+    def dump(writer: Writer, n: int) -> None:
+        dump_uvarint(writer, n)
 
 
 class IntType(XmrType):
     WIDTH = 0
 
     @classmethod
-    def load(cls, reader) -> int:
+    def load(cls, reader: Reader) -> int:
         return load_uint(reader, cls.WIDTH)
 
     @classmethod
-    def dump(cls, writer, n: int):
-        return dump_uint(writer, n, cls.WIDTH)
+    def dump(cls, writer: Writer, n: int) -> None:
+        dump_uint(writer, n, cls.WIDTH)
 
 
 class UInt8(IntType):

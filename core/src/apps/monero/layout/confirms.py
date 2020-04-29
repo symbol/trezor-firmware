@@ -13,33 +13,34 @@ DUMMY_PAYMENT_ID = b"\x00\x00\x00\x00\x00\x00\x00\x00"
 
 
 if False:
-    from typing import Optional
+    from typing import Optional, List
     from apps.monero.signing.state import State
     from trezor.messages.MoneroTransactionData import MoneroTransactionData
     from trezor.messages.MoneroTransactionDestinationEntry import (
         MoneroTransactionDestinationEntry,
     )
+    from trezor.wire import Context
 
 
-async def require_confirm_watchkey(ctx):
+async def require_confirm_watchkey(ctx: Context) -> None:
     content = Text("Confirm export", ui.ICON_SEND, ui.GREEN)
     content.normal("Do you really want to", "export watch-only", "credentials?")
     await require_confirm(ctx, content, ButtonRequestType.SignTx)
 
 
-async def require_confirm_keyimage_sync(ctx):
+async def require_confirm_keyimage_sync(ctx: Context) -> None:
     content = Text("Confirm ki sync", ui.ICON_SEND, ui.GREEN)
     content.normal("Do you really want to", "sync key images?")
     await require_confirm(ctx, content, ButtonRequestType.SignTx)
 
 
-async def require_confirm_live_refresh(ctx):
+async def require_confirm_live_refresh(ctx: Context) -> None:
     content = Text("Confirm refresh", ui.ICON_SEND, ui.GREEN)
     content.normal("Do you really want to", "start refresh?")
     await require_confirm(ctx, content, ButtonRequestType.SignTx)
 
 
-async def require_confirm_tx_key(ctx, export_key=False):
+async def require_confirm_tx_key(ctx: Context, export_key: bool = False) -> None:
     content = Text("Confirm export", ui.ICON_SEND, ui.GREEN)
     txt = ["Do you really want to"]
     if export_key:
@@ -53,12 +54,17 @@ async def require_confirm_tx_key(ctx, export_key=False):
 
 
 async def require_confirm_transaction(
-    ctx, state: State, tsx_data: MoneroTransactionData, network_type: int
-):
+    ctx: Context, state: State, tsx_data: MoneroTransactionData, network_type: int
+) -> None:
     """
     Ask for confirmation from user.
     """
     from apps.monero.xmr.addresses import get_change_addr_idx
+
+    assert tsx_data.change_dts is not None
+    assert tsx_data.unlock_time is not None
+    assert tsx_data.payment_id is not None
+    assert tsx_data.fee is not None
 
     outputs = tsx_data.outputs
     change_idx = get_change_addr_idx(outputs, tsx_data.change_dts)
@@ -76,12 +82,18 @@ async def require_confirm_transaction(
         if is_dummy:
             continue  # Dummy output does not need confirmation
         if has_integrated and idx in tsx_data.integrated_indices:
-            cur_payment = tsx_data.payment_id
+            cur_payment = tsx_data.payment_id  # type: Optional[bytes]
         else:
             cur_payment = None
         await _require_confirm_output(ctx, dst, network_type, cur_payment)
 
-    if has_payment and not has_integrated and tsx_data.payment_id != DUMMY_PAYMENT_ID:
+    # TODO
+    if (
+        has_payment
+        and has_integrated
+        and tsx_data.payment_id != DUMMY_PAYMENT_ID
+        and tsx_data.payment_id is not None
+    ):
         await _require_confirm_payment_id(ctx, tsx_data.payment_id)
 
     await _require_confirm_fee(ctx, tsx_data.fee)
@@ -89,25 +101,34 @@ async def require_confirm_transaction(
 
 
 async def _require_confirm_output(
-    ctx, dst: MoneroTransactionDestinationEntry, network_type: int, payment_id: bytes
-):
+    ctx: Context,
+    dst: MoneroTransactionDestinationEntry,
+    network_type: int,
+    payment_id: Optional[bytes],
+) -> None:
     """
     Single transaction destination confirmation
     """
     from apps.monero.xmr.addresses import encode_addr
     from apps.monero.xmr.networks import net_version
 
+    assert dst.addr is not None
+    assert dst.amount is not None
+    assert dst.is_subaddress is not None
+    assert dst.addr.spend_public_key is not None
+    assert dst.addr.view_public_key is not None
+
     version = net_version(network_type, dst.is_subaddress, payment_id is not None)
     addr = encode_addr(
         version, dst.addr.spend_public_key, dst.addr.view_public_key, payment_id
     )
 
-    text_addr = common.split_address(addr.decode())
+    text_addr = list(common.split_address(addr.decode()))
     text_amount = common.format_amount(dst.amount)
 
     if not await common.naive_pagination(
         ctx,
-        [ui.BOLD, text_amount, ui.MONO] + list(text_addr),
+        [ui.BOLD, text_amount, ui.MONO] + text_addr,
         "Confirm send",
         ui.ICON_SEND,
         ui.GREEN,
@@ -116,7 +137,7 @@ async def _require_confirm_output(
         raise wire.ActionCancelled("Cancelled")
 
 
-async def _require_confirm_payment_id(ctx, payment_id: bytes):
+async def _require_confirm_payment_id(ctx: Context, payment_id: bytes) -> None:
     if not await common.naive_pagination(
         ctx,
         [ui.MONO] + list(chunks(hexlify(payment_id), 16)),
@@ -127,13 +148,13 @@ async def _require_confirm_payment_id(ctx, payment_id: bytes):
         raise wire.ActionCancelled("Cancelled")
 
 
-async def _require_confirm_fee(ctx, fee):
+async def _require_confirm_fee(ctx: Context, fee: int) -> None:
     content = Text("Confirm fee", ui.ICON_SEND, ui.GREEN)
     content.bold(common.format_amount(fee))
     await require_hold_to_confirm(ctx, content, ButtonRequestType.ConfirmOutput)
 
 
-async def _require_confirm_unlock_time(ctx, unlock_time):
+async def _require_confirm_unlock_time(ctx: Context, unlock_time: int) -> None:
     content = Text("Confirm unlock time", ui.ICON_SEND, ui.GREEN)
     content.normal("Unlock time for this transaction is set to")
     content.bold(str(unlock_time))
@@ -142,11 +163,11 @@ async def _require_confirm_unlock_time(ctx, unlock_time):
 
 
 class TransactionStep(ui.Component):
-    def __init__(self, state, info):
+    def __init__(self, state: State, info: List[str]) -> None:
         self.state = state
         self.info = info
 
-    def on_render(self):
+    def on_render(self) -> None:
         state = self.state
         info = self.info
         ui.header("Signing transaction", ui.ICON_SEND, ui.TITLE_GREY, ui.BG, ui.BLUE)
@@ -158,11 +179,11 @@ class TransactionStep(ui.Component):
 
 
 class KeyImageSyncStep(ui.Component):
-    def __init__(self, current, total_num):
+    def __init__(self, current: int, total_num: int) -> None:
         self.current = current
         self.total_num = total_num
 
-    def on_render(self):
+    def on_render(self) -> None:
         current = self.current
         total_num = self.total_num
         ui.header("Syncing", ui.ICON_SEND, ui.TITLE_GREY, ui.BG, ui.BLUE)
@@ -171,10 +192,10 @@ class KeyImageSyncStep(ui.Component):
 
 
 class LiveRefreshStep(ui.Component):
-    def __init__(self, current):
+    def __init__(self, current: int) -> None:
         self.current = current
 
-    def on_render(self):
+    def on_render(self) -> None:
         current = self.current
         ui.header("Refreshing", ui.ICON_SEND, ui.TITLE_GREY, ui.BG, ui.BLUE)
         p = (1000 * current // 8) % 1000
@@ -184,7 +205,7 @@ class LiveRefreshStep(ui.Component):
         )
 
 
-async def transaction_step(state: State, step: int, sub_step: Optional[int] = None):
+async def transaction_step(state: State, step: int, sub_step: int = 0) -> None:
     if step == 0:
         info = ["Signing..."]
     elif step == state.STEP_INP:
@@ -208,28 +229,28 @@ async def transaction_step(state: State, step: int, sub_step: Optional[int] = No
     await Popup(TransactionStep(state, info))
 
 
-async def keyimage_sync_step(ctx, current, total_num):
+async def keyimage_sync_step(ctx: Context, current: int, total_num: int) -> None:
     if current is None:
         return
     await Popup(KeyImageSyncStep(current, total_num))
 
 
-async def live_refresh_step(ctx, current):
+async def live_refresh_step(ctx: Context, current: int) -> None:
     if current is None:
         return
     await Popup(LiveRefreshStep(current))
 
 
 async def show_address(
-    ctx, address: str, desc: str = "Confirm address", network: str = None
-):
+    ctx: Context, address: str, desc: str = "Confirm address", network: str = None
+) -> bool:
     from apps.common.confirm import confirm
     from trezor.messages import ButtonRequestType
     from trezor.ui.button import ButtonDefault
     from trezor.ui.scroll import Paginated
 
-    pages = []
-    for lines in common.paginate_lines(common.split_address(address), 5):
+    pages = []  # type: List[ui.Component]
+    for lines in common.paginate_lines(list(common.split_address(address)), 5):
         text = Text(desc, ui.ICON_RECEIVE, ui.GREEN)
         if network is not None:
             text.normal("%s network" % network)

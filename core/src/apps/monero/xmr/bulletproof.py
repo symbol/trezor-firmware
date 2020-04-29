@@ -7,6 +7,10 @@ from trezor.utils import memcpy as tmemcpy
 from apps.monero.xmr import crypto
 from apps.monero.xmr.serialize.int_serialize import dump_uvarint_b_into, uvarint_size
 
+if False:
+    from typing import Tuple, List
+    from apps.monero.xmr.monero import Ge25519, Sc25519
+
 # Constants
 
 _BP_LOG_N = const(6)
@@ -51,57 +55,65 @@ _tmp_sc_3 = crypto.new_scalar()
 _tmp_sc_4 = crypto.new_scalar()
 
 
-def _ensure_dst_key(dst=None):
+def _ensure_dst_key(dst: bytearray = None) -> bytearray:
     if dst is None:
         dst = bytearray(32)
     return dst
 
 
-def memcpy(dst, dst_off, src, src_off, len):
+def memcpy(
+    dst: bytearray, dst_off: int, src: bytes, src_off: int, len: int
+) -> bytearray:
     if dst is not None:
         tmemcpy(dst, dst_off, src, src_off, len)
     return dst
 
 
-def _alloc_scalars(num=1):
-    return (crypto.new_scalar() for _ in range(num))
+def _alloc_scalars(num: int = 1) -> Tuple[Sc25519, ...]:
+    return tuple(crypto.new_scalar() for _ in range(num))
 
 
-def _copy_key(dst, src):
+def _copy_key(dst: bytearray, src: bytes) -> bytearray:
     for i in range(32):
         dst[i] = src[i]
     return dst
 
 
-def _init_key(val, dst=None):
+def _init_key(val: bytes, dst: bytearray = None) -> bytearray:
     dst = _ensure_dst_key(dst)
     return _copy_key(dst, val)
 
 
-def _gc_iter(i):
+def _gc_iter(i: int) -> None:
     if i & 127 == 0:
         gc.collect()
 
 
-def _invert(dst, x):
+def _invert(dst: bytearray, x: bytes) -> bytearray:
     dst = _ensure_dst_key(dst)
-    crypto.decodeint_into_noreduce(_tmp_sc_1, x)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, x)
     crypto.sc_inv_into(_tmp_sc_2, _tmp_sc_1)
     crypto.encodeint_into(dst, _tmp_sc_2)
     return dst
 
 
-def _scalarmult_key(dst, P, s, s_raw=None, tmp_pt=_tmp_pt_1):
+def _scalarmult_key(
+    dst: bytearray,
+    P: bytes,
+    s: bytes,
+    s_raw: Sc25519 = None,
+    tmp_pt: Ge25519 = _tmp_pt_1,
+) -> bytearray:
     dst = _ensure_dst_key(dst)
     crypto.decodepoint_into(tmp_pt, P)
     if s:
-        crypto.decodeint_into_noreduce(_tmp_sc_1, s)
+        crypto.decodeint_noreduce_into(_tmp_sc_1, s)
     crypto.scalarmult_into(tmp_pt, tmp_pt, _tmp_sc_1 if s else s_raw)
     crypto.encodepoint_into(dst, tmp_pt)
     return dst
 
 
-def _scalarmultH(dst, x):
+def _scalarmultH(dst: bytearray, x: bytes) -> bytearray:
     dst = _ensure_dst_key(dst)
     crypto.decodeint_into(_tmp_sc_1, x)
     crypto.scalarmult_into(_tmp_pt_1, _XMR_HP, _tmp_sc_1)
@@ -109,25 +121,25 @@ def _scalarmultH(dst, x):
     return dst
 
 
-def _scalarmult_base(dst, x):
+def _scalarmult_base(dst: bytearray, x: bytes) -> bytearray:
     dst = _ensure_dst_key(dst)
-    crypto.decodeint_into_noreduce(_tmp_sc_1, x)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, x)
     crypto.scalarmult_base_into(_tmp_pt_1, _tmp_sc_1)
     crypto.encodepoint_into(dst, _tmp_pt_1)
     return dst
 
 
-def _sc_gen(dst=None):
+def _sc_gen(dst: bytearray = None) -> bytearray:
     dst = _ensure_dst_key(dst)
-    crypto.random_scalar(_tmp_sc_1)
+    crypto.random_scalar_into(_tmp_sc_1)
     crypto.encodeint_into(dst, _tmp_sc_1)
     return dst
 
 
-def _sc_add(dst, a, b):
+def _sc_add(dst: bytearray, a: bytes, b: bytes) -> bytearray:
     dst = _ensure_dst_key(dst)
-    crypto.decodeint_into_noreduce(_tmp_sc_1, a)
-    crypto.decodeint_into_noreduce(_tmp_sc_2, b)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, a)
+    crypto.decodeint_noreduce_into(_tmp_sc_2, b)
     crypto.sc_add_into(_tmp_sc_3, _tmp_sc_1, _tmp_sc_2)
     crypto.encodeint_into(dst, _tmp_sc_3)
     return dst
@@ -136,9 +148,9 @@ def _sc_add(dst, a, b):
 def _sc_sub(dst, a, b, a_raw=None, b_raw=None):
     dst = _ensure_dst_key(dst)
     if a:
-        crypto.decodeint_into_noreduce(_tmp_sc_1, a)
+        crypto.decodeint_noreduce_into(_tmp_sc_1, a)
     if b:
-        crypto.decodeint_into_noreduce(_tmp_sc_2, b)
+        crypto.decodeint_noreduce_into(_tmp_sc_2, b)
     crypto.sc_sub_into(_tmp_sc_3, _tmp_sc_1 if a else a_raw, _tmp_sc_2 if b else b_raw)
     crypto.encodeint_into(dst, _tmp_sc_3)
     return dst
@@ -146,9 +158,9 @@ def _sc_sub(dst, a, b, a_raw=None, b_raw=None):
 
 def _sc_mul(dst, a, b=None, b_raw=None):
     dst = _ensure_dst_key(dst)
-    crypto.decodeint_into_noreduce(_tmp_sc_1, a)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, a)
     if b:
-        crypto.decodeint_into_noreduce(_tmp_sc_2, b)
+        crypto.decodeint_noreduce_into(_tmp_sc_2, b)
     crypto.sc_mul_into(_tmp_sc_3, _tmp_sc_1, _tmp_sc_2 if b else b_raw)
     crypto.encodeint_into(dst, _tmp_sc_3)
     return dst
@@ -157,11 +169,11 @@ def _sc_mul(dst, a, b=None, b_raw=None):
 def _sc_muladd(dst, a, b, c, a_raw=None, b_raw=None, c_raw=None, raw=False):
     dst = _ensure_dst_key(dst) if not raw else (dst if dst else crypto.new_scalar())
     if a:
-        crypto.decodeint_into_noreduce(_tmp_sc_1, a)
+        crypto.decodeint_noreduce_into(_tmp_sc_1, a)
     if b:
-        crypto.decodeint_into_noreduce(_tmp_sc_2, b)
+        crypto.decodeint_noreduce_into(_tmp_sc_2, b)
     if c:
-        crypto.decodeint_into_noreduce(_tmp_sc_3, c)
+        crypto.decodeint_noreduce_into(_tmp_sc_3, c)
     crypto.sc_muladd_into(
         _tmp_sc_4 if not raw else dst,
         _tmp_sc_1 if a else a_raw,
@@ -173,17 +185,17 @@ def _sc_muladd(dst, a, b, c, a_raw=None, b_raw=None, c_raw=None, raw=False):
     return dst
 
 
-def _sc_mulsub(dst, a, b, c):
+def _sc_mulsub(dst: bytearray, a: bytes, b: bytes, c: bytes) -> bytearray:
     dst = _ensure_dst_key(dst)
-    crypto.decodeint_into_noreduce(_tmp_sc_1, a)
-    crypto.decodeint_into_noreduce(_tmp_sc_2, b)
-    crypto.decodeint_into_noreduce(_tmp_sc_3, c)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, a)
+    crypto.decodeint_noreduce_into(_tmp_sc_2, b)
+    crypto.decodeint_noreduce_into(_tmp_sc_3, c)
     crypto.sc_mulsub_into(_tmp_sc_4, _tmp_sc_1, _tmp_sc_2, _tmp_sc_3)
     crypto.encodeint_into(dst, _tmp_sc_4)
     return dst
 
 
-def _add_keys(dst, A, B):
+def _add_keys(dst: bytearray, A: bytes, B: bytes) -> bytearray:
     dst = _ensure_dst_key(dst)
     crypto.decodepoint_into(_tmp_pt_1, A)
     crypto.decodepoint_into(_tmp_pt_2, B)
@@ -192,7 +204,7 @@ def _add_keys(dst, A, B):
     return dst
 
 
-def _sub_keys(dst, A, B):
+def _sub_keys(dst: bytearray, A: bytes, B: bytes) -> bytearray:
     dst = _ensure_dst_key(dst)
     crypto.decodepoint_into(_tmp_pt_1, A)
     crypto.decodepoint_into(_tmp_pt_2, B)
@@ -201,20 +213,20 @@ def _sub_keys(dst, A, B):
     return dst
 
 
-def _add_keys2(dst, a, b, B):
+def _add_keys2(dst: bytearray, a: bytes, b: bytes, B: bytes) -> bytearray:
     dst = _ensure_dst_key(dst)
-    crypto.decodeint_into_noreduce(_tmp_sc_1, a)
-    crypto.decodeint_into_noreduce(_tmp_sc_2, b)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, a)
+    crypto.decodeint_noreduce_into(_tmp_sc_2, b)
     crypto.decodepoint_into(_tmp_pt_1, B)
     crypto.add_keys2_into(_tmp_pt_2, _tmp_sc_1, _tmp_sc_2, _tmp_pt_1)
     crypto.encodepoint_into(dst, _tmp_pt_2)
     return dst
 
 
-def _add_keys3(dst, a, A, b, B):
+def _add_keys3(dst: bytearray, a: bytes, A: bytes, b: bytes, B: bytes) -> bytearray:
     dst = _ensure_dst_key(dst)
-    crypto.decodeint_into_noreduce(_tmp_sc_1, a)
-    crypto.decodeint_into_noreduce(_tmp_sc_2, b)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, a)
+    crypto.decodeint_noreduce_into(_tmp_sc_2, b)
     crypto.decodepoint_into(_tmp_pt_1, A)
     crypto.decodepoint_into(_tmp_pt_2, B)
     crypto.add_keys3_into(_tmp_pt_3, _tmp_sc_1, _tmp_pt_1, _tmp_sc_2, _tmp_pt_2)
@@ -222,14 +234,14 @@ def _add_keys3(dst, a, A, b, B):
     return dst
 
 
-def _hash_to_scalar(dst, data):
+def _hash_to_scalar(dst: bytearray, data: bytes) -> bytearray:
     dst = _ensure_dst_key(dst)
     crypto.hash_to_scalar_into(_tmp_sc_1, data)
     crypto.encodeint_into(dst, _tmp_sc_1)
     return dst
 
 
-def _hash_vct_to_scalar(dst, data):
+def _hash_vct_to_scalar(dst: bytearray, data: List[bytes]) -> bytearray:
     dst = _ensure_dst_key(dst)
     ctx = crypto.get_keccak()
     for x in data:
@@ -241,7 +253,7 @@ def _hash_vct_to_scalar(dst, data):
     return dst
 
 
-def _get_exponent(dst, base, idx):
+def _get_exponent(dst: bytearray, base: bytes, idx: int) -> bytearray:
     dst = _ensure_dst_key(dst)
     salt = b"bulletproof"
     lsalt = const(11)  # len(salt)
@@ -267,42 +279,42 @@ class KeyVBase:
 
     __slots__ = ("current_idx", "size")
 
-    def __init__(self, elems=64):
+    def __init__(self, elems: int = 64) -> None:
         self.current_idx = 0
         self.size = elems
 
-    def idxize(self, idx):
+    def idxize(self, idx: int) -> int:
         if idx < 0:
             idx = self.size + idx
         if idx >= self.size:
             raise IndexError("Index out of bounds")
         return idx
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> "KeyVBase":
         raise ValueError("Not supported")
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: int, value: "KeyVBase") -> None:
         raise ValueError("Not supported")
 
-    def __iter__(self):
+    def __iter__(self) -> "KeyVBase":
         self.current_idx = 0
         return self
 
-    def __next__(self):
+    def __next__(self) -> "KeyVBase":
         if self.current_idx >= self.size:
             raise StopIteration
         else:
             self.current_idx += 1
             return self[self.current_idx - 1]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.size
 
-    def to(self, idx, buff=None, offset=0):
+    def to(self, idx: int, buff: bytearray = None, offset: int = 0) -> bytearray:
         buff = _ensure_dst_key(buff)
         return memcpy(buff, offset, self.to(self.idxize(idx)), 0, 32)
 
-    def read(self, idx, buff, offset=0):
+    def read(self, idx: int, buff: bytearray, offset: int = 0) -> None:
         raise ValueError
 
     def slice(self, res, start, stop):
@@ -310,7 +322,7 @@ class KeyVBase:
             res[i - start] = self[i]
         return res
 
-    def slice_view(self, start, stop):
+    def slice_view(self, start: int, stop: int) -> "KeyVSliced":
         return KeyVSliced(self, start, stop)
 
 
@@ -334,7 +346,13 @@ class KeyV(KeyVBase):
 
     __slots__ = ("current_idx", "size", "d", "mv", "const", "cur", "chunked")
 
-    def __init__(self, elems=64, buffer=None, const=False, no_init=False):
+    def __init__(
+        self,
+        elems: int = 64,
+        buffer: bytearray = None,
+        const: bool = False,
+        no_init: bool = False,
+    ) -> None:
         super().__init__(elems)
         self.d = None
         self.mv = None
@@ -352,7 +370,7 @@ class KeyV(KeyVBase):
         if not no_init:
             self._set_mv()
 
-    def _set_d(self, elems):
+    def _set_d(self, elems: int) -> None:
         if elems > _CHSIZE and elems % _CHSIZE == 0:
             self.chunked = True
             gc.collect()
@@ -363,11 +381,11 @@ class KeyV(KeyVBase):
             gc.collect()
             self.d = bytearray(32 * elems)
 
-    def _set_mv(self):
+    def _set_mv(self) -> None:
         if not self.chunked:
             self.mv = memoryview(self.d)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> bytearray:
         """
         Returns corresponding 32 byte array.
         Creates new memoryview on access.
@@ -377,7 +395,7 @@ class KeyV(KeyVBase):
         item = self.idxize(item)
         return self.mv[item * 32 : (item + 1) * 32]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: int, value: KeyVBase) -> None:
         if self.chunked:
             raise ValueError("Not supported")  # not needed
         if self.const:
@@ -386,7 +404,7 @@ class KeyV(KeyVBase):
         for i in range(32):
             ck[i] = value[i]
 
-    def to(self, idx, buff=None, offset=0):
+    def to(self, idx: int, buff: bytearray = None, offset: int = 0) -> bytearray:
         idx = self.idxize(idx)
         if self.chunked:
             memcpy(
@@ -400,14 +418,14 @@ class KeyV(KeyVBase):
             memcpy(buff if buff else self.cur, offset, self.d, idx << 5, 32)
         return buff if buff else self.cur
 
-    def read(self, idx, buff, offset=0):
+    def read(self, idx: int, buff: bytearray, offset: int = 0) -> None:
         idx = self.idxize(idx)
         if self.chunked:
             memcpy(self.d[idx >> _CHBITS], (idx & (_CHSIZE - 1)) << 5, buff, offset, 32)
         else:
             memcpy(self.d, idx << 5, buff, offset, 32)
 
-    def resize(self, nsize, chop=False, realloc=False):
+    def resize(self, nsize: int, chop: bool = False, realloc: bool = False) -> "KeyV":
         if self.size == nsize:
             return self
 
@@ -452,7 +470,7 @@ class KeyV(KeyVBase):
         self.size = nsize
         self._set_mv()
 
-    def realloc(self, nsize, collect=False):
+    def realloc(self, nsize: int, collect: bool = False) -> None:
         self.d = None
         self.mv = None
         if collect:
@@ -462,7 +480,9 @@ class KeyV(KeyVBase):
         self.size = nsize
         self._set_mv()
 
-    def realloc_init_from(self, nsize, src, offset=0, collect=False):
+    def realloc_init_from(
+        self, nsize: int, src, offset: int = 0, collect: bool = False
+    ) -> None:
         if not isinstance(src, KeyV):
             raise ValueError("KeyV supported only")
         self.realloc(nsize, collect)
@@ -492,7 +512,7 @@ class KeyVEval(KeyVBase):
 
     __slots__ = ("current_idx", "size", "fnc", "raw", "scalar", "buff")
 
-    def __init__(self, elems=64, src=None, raw=False, scalar=True):
+    def __init__(self, elems: int = 64, src=None, raw=False, scalar=True) -> None:
         super().__init__(elems)
         self.fnc = src
         self.raw = raw
@@ -503,16 +523,17 @@ class KeyVEval(KeyVBase):
             else (crypto.new_scalar() if scalar else crypto.new_point())
         )
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> KeyVBase:
         return self.fnc(self.idxize(item), self.buff)
 
-    def to(self, idx, buff=None, offset=0):
+    def to(self, idx: int, buff: bytearray = None, offset: int = 0) -> bytearray:
         self.fnc(self.idxize(idx), self.buff)
         if self.raw:
             if offset != 0:
                 raise ValueError("Not supported")
             if self.scalar and buff:
-                return crypto.sc_copy(buff, self.buff)
+                crypto.sc_copy(buff, self.buff)
+                return self.buff
             elif self.scalar:
                 return self.buff
             else:
@@ -530,28 +551,28 @@ class KeyVSized(KeyVBase):
 
     __slots__ = ("current_idx", "size", "wrapped")
 
-    def __init__(self, wrapped, new_size):
+    def __init__(self, wrapped, new_size) -> None:
         super().__init__(new_size)
         self.wrapped = wrapped
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> KeyVBase:
         return self.wrapped[self.idxize(item)]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: int, value: KeyVBase) -> None:
         self.wrapped[self.idxize(key)] = value
 
 
 class KeyVConst(KeyVBase):
     __slots__ = ("current_idx", "size", "elem")
 
-    def __init__(self, size, elem, copy=True):
+    def __init__(self, size, elem, copy: bool = True) -> None:
         super().__init__(size)
         self.elem = _init_key(elem) if copy else elem
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> KeyVBase:
         return self.elem
 
-    def to(self, idx, buff=None, offset=0):
+    def to(self, idx: int, buff: bytearray = None, offset: int = 0) -> bytearray:
         memcpy(buff, offset, self.elem, 0, 32)
         return buff if buff else self.elem
 
@@ -565,19 +586,19 @@ class KeyVPrecomp(KeyVBase):
 
     __slots__ = ("current_idx", "size", "precomp_prefix", "aux_comp_fnc", "buff")
 
-    def __init__(self, size, precomp_prefix, aux_comp_fnc):
+    def __init__(self, size, precomp_prefix, aux_comp_fnc) -> None:
         super().__init__(size)
         self.precomp_prefix = precomp_prefix
         self.aux_comp_fnc = aux_comp_fnc
         self.buff = _ensure_dst_key()
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> KeyVBase:
         item = self.idxize(item)
         if item < len(self.precomp_prefix):
             return self.precomp_prefix[item]
         return self.aux_comp_fnc(item, self.buff)
 
-    def to(self, idx, buff=None, offset=0):
+    def to(self, idx: int, buff: bytearray = None, offset: int = 0) -> bytearray:
         item = self.idxize(idx)
         if item < len(self.precomp_prefix):
             return self.precomp_prefix.to(item, buff if buff else self.buff, offset)
@@ -593,24 +614,24 @@ class KeyVSliced(KeyVBase):
 
     __slots__ = ("current_idx", "size", "wrapped", "offset")
 
-    def __init__(self, src, start, stop):
+    def __init__(self, src, start: int, stop: int) -> None:
         super().__init__(stop - start)
         self.wrapped = src
         self.offset = start
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> KeyVBase:
         return self.wrapped[self.offset + self.idxize(item)]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: int, value: KeyVBase) -> None:
         self.wrapped[self.offset + self.idxize(key)] = value
 
-    def resize(self, nsize, chop=False):
+    def resize(self, nsize: int, chop: bool = False):
         raise ValueError("Not supported")
 
-    def to(self, idx, buff=None, offset=0):
+    def to(self, idx: int, buff: bytearray = None, offset: int = 0) -> bytearray:
         return self.wrapped.to(self.offset + self.idxize(idx), buff, offset)
 
-    def read(self, idx, buff, offset=0):
+    def read(self, idx: int, buff: bytearray, offset: int = 0):
         return self.wrapped.read(self.offset + self.idxize(idx), buff, offset)
 
 
@@ -621,14 +642,14 @@ class KeyVPowers(KeyVBase):
 
     __slots__ = ("current_idx", "size", "x", "raw", "cur", "last_idx")
 
-    def __init__(self, size, x, raw=False, **kwargs):
+    def __init__(self, size, x, raw=False, **kwargs) -> None:
         super().__init__(size)
-        self.x = x if not raw else crypto.decodeint_into_noreduce(None, x)
+        self.x = x if not raw else crypto.decodeint_noreduce(x)
         self.raw = raw
         self.cur = bytearray(32) if not raw else crypto.new_scalar()
         self.last_idx = 0
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> KeyVBase:
         prev = self.last_idx
         item = self.idxize(item)
         self.last_idx = item
@@ -637,29 +658,30 @@ class KeyVPowers(KeyVBase):
             return (
                 _copy_key(self.cur, _ONE)
                 if not self.raw
-                else crypto.decodeint_into_noreduce(None, _ONE)
+                else crypto.decodeint_noreduce(_ONE)
             )
         elif item == 1:
-            return (
+            if not self.raw:
                 _copy_key(self.cur, self.x)
-                if not self.raw
-                else crypto.sc_copy(self.cur, self.x)
-            )
+            else:
+                crypto.sc_copy(self.cur, self.x)
+            return self.cur
         elif item == prev:
             return self.cur
         elif item == prev + 1:
-            return (
+            if not self.raw:
                 _sc_mul(self.cur, self.cur, self.x)
-                if not self.raw
-                else crypto.sc_mul_into(self.cur, self.cur, self.x)
-            )
+            else:
+                crypto.sc_mul_into(self.cur, self.cur, self.x)
+            return self.cur
         else:
             raise IndexError("Only linear scan allowed: %s, %s" % (prev, item))
 
-    def set_state(self, idx, val):
+    def set_state(self, idx: int, val):
         self.last_idx = idx
         if self.raw:
-            return crypto.sc_copy(self.cur, val)
+            crypto.sc_copy(self.cur, val)
+            return self.cur
         else:
             return _copy_key(self.cur, val)
 
@@ -689,14 +711,14 @@ class KeyR0(KeyVBase):
         "last_idx",
     )
 
-    def __init__(self, size, N, aR, y, z, raw=False, **kwargs):
+    def __init__(self, size, N, aR, y, z, raw=False, **kwargs) -> None:
         super().__init__(size)
         self.N = N
         self.aR = aR
         self.raw = raw
-        self.y = crypto.decodeint_into_noreduce(None, y)
+        self.y = crypto.decodeint_noreduce(y)
         self.yp = crypto.new_scalar()  # y^{i}
-        self.z = crypto.decodeint_into_noreduce(None, z)
+        self.z = crypto.decodeint_noreduce(z)
         self.zt = crypto.new_scalar()  # z^{2 + \floor{i/N}}
         self.p2 = crypto.new_scalar()  # 2^{i \% N}
         self.res = crypto.new_scalar()  # tmp_sc_1
@@ -706,11 +728,11 @@ class KeyR0(KeyVBase):
         self.reset()
 
     def reset(self):
-        crypto.decodeint_into_noreduce(self.yp, _ONE)
-        crypto.decodeint_into_noreduce(self.p2, _ONE)
+        crypto.decodeint_noreduce_into(self.yp, _ONE)
+        crypto.decodeint_noreduce_into(self.p2, _ONE)
         crypto.sc_mul_into(self.zt, self.z, self.z)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> KeyVBase:
         prev = self.last_idx
         item = self.idxize(item)
         self.last_idx = item
@@ -723,9 +745,9 @@ class KeyR0(KeyVBase):
             crypto.sc_mul_into(self.yp, self.yp, self.y)  # ypow
             if item % self.N == 0:
                 crypto.sc_mul_into(self.zt, self.zt, self.z)  # zt
-                crypto.decodeint_into_noreduce(self.p2, _ONE)  # p2 reset
+                crypto.decodeint_noreduce_into(self.p2, _ONE)  # p2 reset
             else:
-                crypto.decodeint_into_noreduce(self.res, _TWO)  # p2
+                crypto.decodeint_noreduce_into(self.res, _TWO)  # p2
                 crypto.sc_mul_into(self.p2, self.p2, self.res)  # p2
 
         elif item == prev:  # No advancing
@@ -738,7 +760,7 @@ class KeyR0(KeyVBase):
         if (
             item == 0 or item != prev
         ):  # if True not present, fails with cross dot product
-            crypto.decodeint_into_noreduce(self.res, self.aR.to(item))  # aR[i]
+            crypto.decodeint_noreduce_into(self.res, self.aR.to(item))  # aR[i]
             crypto.sc_add_into(self.res, self.res, self.z)  # aR[i] + z
             crypto.sc_mul_into(self.res, self.res, self.yp)  # (aR[i] + z) * y^i
             crypto.sc_muladd_into(
@@ -751,14 +773,14 @@ class KeyR0(KeyVBase):
         crypto.encodeint_into(self.cur, self.res)
         return self.cur
 
-    def to(self, idx, buff=None, offset=0):
+    def to(self, idx: int, buff: bytearray = None, offset: int = 0) -> bytearray:
         r = self[idx]
         if buff is None:
             return r
         return memcpy(buff, offset, r, 0, 32)
 
 
-def _ensure_dst_keyvect(dst=None, size=None):
+def _ensure_dst_keyvect(dst: bytearray = None, size=None) -> bytearray:
     if dst is None:
         dst = KeyV(elems=size)
         return dst
@@ -767,11 +789,19 @@ def _ensure_dst_keyvect(dst=None, size=None):
     return dst
 
 
-def _const_vector(val, elems=_BP_N, copy=True):
+def _const_vector(val, elems: int = _BP_N, copy: bool = True):
     return KeyVConst(elems, val, copy)
 
 
-def _vector_exponent_custom(A, B, a, b, dst=None, a_raw=None, b_raw=None):
+def _vector_exponent_custom(
+    A: bytes,
+    B: bytes,
+    a: bytes,
+    b: bytes,
+    dst: bytearray = None,
+    a_raw: Sc25519 = None,
+    b_raw: Sc25519 = None,
+) -> bytearray:
     """
     \\sum_{i=0}^{|A|}  a_i A_i + b_i B_i
     """
@@ -780,10 +810,10 @@ def _vector_exponent_custom(A, B, a, b, dst=None, a_raw=None, b_raw=None):
 
     for i in range(len(a or a_raw)):
         if a:
-            crypto.decodeint_into_noreduce(_tmp_sc_1, a.to(i))
+            crypto.decodeint_noreduce_into(_tmp_sc_1, a.to(i))
         crypto.decodepoint_into(_tmp_pt_3, A.to(i))
         if b:
-            crypto.decodeint_into_noreduce(_tmp_sc_2, b.to(i))
+            crypto.decodeint_noreduce_into(_tmp_sc_2, b.to(i))
         crypto.decodepoint_into(_tmp_pt_4, B.to(i))
         crypto.add_keys3_into(
             _tmp_pt_1,
@@ -798,7 +828,9 @@ def _vector_exponent_custom(A, B, a, b, dst=None, a_raw=None, b_raw=None):
     return dst
 
 
-def _vector_powers(x, n, dst=None, dynamic=False, **kwargs):
+def _vector_powers(
+    x, n, dst: bytearray = None, dynamic: bool = False, **kwargs
+) -> bytearray:
     """
     r_i = x^i
     """
@@ -812,8 +844,8 @@ def _vector_powers(x, n, dst=None, dynamic=False, **kwargs):
         return dst
     dst.read(1, x)
 
-    crypto.decodeint_into_noreduce(_tmp_sc_1, x)
-    crypto.decodeint_into_noreduce(_tmp_sc_2, x)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, x)
+    crypto.decodeint_noreduce_into(_tmp_sc_2, x)
     for i in range(2, n):
         crypto.sc_mul_into(_tmp_sc_1, _tmp_sc_1, _tmp_sc_2)
         crypto.encodeint_into(_tmp_bf_0, _tmp_sc_1)
@@ -822,7 +854,7 @@ def _vector_powers(x, n, dst=None, dynamic=False, **kwargs):
     return dst
 
 
-def _vector_power_sum(x, n, dst=None):
+def _vector_power_sum(x, n, dst: bytearray = None) -> bytearray:
     """
     \\sum_{i=0}^{n-1} x^i
     """
@@ -832,8 +864,8 @@ def _vector_power_sum(x, n, dst=None):
     if n == 1:
         _copy_key(dst, _ONE)
 
-    crypto.decodeint_into_noreduce(_tmp_sc_1, x)
-    crypto.decodeint_into_noreduce(_tmp_sc_3, _ONE)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, x)
+    crypto.decodeint_noreduce_into(_tmp_sc_3, _ONE)
     crypto.sc_add_into(_tmp_sc_3, _tmp_sc_3, _tmp_sc_1)
     crypto.sc_copy(_tmp_sc_2, _tmp_sc_1)
 
@@ -842,10 +874,11 @@ def _vector_power_sum(x, n, dst=None):
         crypto.sc_add_into(_tmp_sc_3, _tmp_sc_3, _tmp_sc_2)
         _gc_iter(i)
 
-    return crypto.encodeint_into(dst, _tmp_sc_3)
+    crypto.encodeint_into(dst, _tmp_sc_3)
+    return dst
 
 
-def _inner_product(a, b, dst=None):
+def _inner_product(a: bytes, b: bytes, dst: bytearray = None) -> bytearray:
     """
     \\sum_{i=0}^{|a|} a_i b_i
     """
@@ -855,8 +888,8 @@ def _inner_product(a, b, dst=None):
     crypto.sc_init_into(_tmp_sc_1, 0)
 
     for i in range(len(a)):
-        crypto.decodeint_into_noreduce(_tmp_sc_2, a.to(i))
-        crypto.decodeint_into_noreduce(_tmp_sc_3, b.to(i))
+        crypto.decodeint_noreduce_into(_tmp_sc_2, a.to(i))
+        crypto.decodeint_noreduce_into(_tmp_sc_3, b.to(i))
         crypto.sc_muladd_into(_tmp_sc_1, _tmp_sc_2, _tmp_sc_3, _tmp_sc_1)
         _gc_iter(i)
 
@@ -864,7 +897,15 @@ def _inner_product(a, b, dst=None):
     return dst
 
 
-def _hadamard_fold(v, a, b, into=None, into_offset=0, vR=None, vRoff=0):
+def _hadamard_fold(
+    v: KeyVBase,
+    a: bytes,
+    b: bytes,
+    into=None,
+    into_offset: int = 0,
+    vR: KeyVBase = None,
+    vRoff: int = 0,
+):
     """
     Folds a curvepoint array using a two way scaled Hadamard product
 
@@ -872,8 +913,8 @@ def _hadamard_fold(v, a, b, into=None, into_offset=0, vR=None, vRoff=0):
     v_i = a v_i + b v_{h + i}
     """
     h = len(v) // 2
-    crypto.decodeint_into_noreduce(_tmp_sc_1, a)
-    crypto.decodeint_into_noreduce(_tmp_sc_2, b)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, a)
+    crypto.decodeint_noreduce_into(_tmp_sc_2, b)
     into = into if into else v
 
     for i in range(h):
@@ -887,7 +928,9 @@ def _hadamard_fold(v, a, b, into=None, into_offset=0, vR=None, vRoff=0):
     return into
 
 
-def _hadamard_fold_linear(v, a, b, into=None, into_offset=0):
+def _hadamard_fold_linear(
+    v: KeyVBase, a: bytes, b: bytes, into=None, into_offset: int = 0
+):
     """
     Folds a curvepoint array using a two way scaled Hadamard product.
     Iterates v linearly to support linear-scan evaluated vectors (on the fly)
@@ -898,7 +941,7 @@ def _hadamard_fold_linear(v, a, b, into=None, into_offset=0):
     h = len(v) // 2
     into = into if into else v
 
-    crypto.decodeint_into_noreduce(_tmp_sc_1, a)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, a)
     for i in range(h):
         crypto.decodepoint_into(_tmp_pt_1, v.to(i))
         crypto.scalarmult_into(_tmp_pt_1, _tmp_pt_1, _tmp_sc_1)
@@ -906,7 +949,7 @@ def _hadamard_fold_linear(v, a, b, into=None, into_offset=0):
         into.read(i + into_offset, _tmp_bf_0)
         _gc_iter(i)
 
-    crypto.decodeint_into_noreduce(_tmp_sc_1, b)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, b)
     for i in range(h):
         crypto.decodepoint_into(_tmp_pt_1, v.to(i + h))
         crypto.scalarmult_into(_tmp_pt_1, _tmp_pt_1, _tmp_sc_1)
@@ -919,19 +962,19 @@ def _hadamard_fold_linear(v, a, b, into=None, into_offset=0):
     return into
 
 
-def _scalar_fold(v, a, b, into=None, into_offset=0):
+def _scalar_fold(v: KeyVBase, a: bytes, b: bytes, into=None, into_offset: int = 0):
     """
     ln = len(v); h = ln // 2
     v_i = a v_i + b v_{h + i}
     """
     h = len(v) // 2
-    crypto.decodeint_into_noreduce(_tmp_sc_1, a)
-    crypto.decodeint_into_noreduce(_tmp_sc_2, b)
+    crypto.decodeint_noreduce_into(_tmp_sc_1, a)
+    crypto.decodeint_noreduce_into(_tmp_sc_2, b)
     into = into if into else v
 
     for i in range(h):
-        crypto.decodeint_into_noreduce(_tmp_sc_3, v.to(i))
-        crypto.decodeint_into_noreduce(_tmp_sc_4, v.to(h + i))
+        crypto.decodeint_noreduce_into(_tmp_sc_3, v.to(i))
+        crypto.decodeint_noreduce_into(_tmp_sc_4, v.to(h + i))
         crypto.sc_mul_into(_tmp_sc_3, _tmp_sc_3, _tmp_sc_1)
         crypto.sc_mul_into(_tmp_sc_4, _tmp_sc_4, _tmp_sc_2)
         crypto.sc_add_into(_tmp_sc_3, _tmp_sc_3, _tmp_sc_4)
@@ -953,14 +996,14 @@ def _cross_inner_product(l0, r0, l1, r1):
     tr = crypto.new_scalar()
 
     for i in range(len(l0)):
-        crypto.decodeint_into_noreduce(tl, l0.to(i))
-        crypto.decodeint_into_noreduce(tr, r1.to(i))
+        crypto.decodeint_noreduce_into(tl, l0.to(i))
+        crypto.decodeint_noreduce_into(tr, r1.to(i))
         crypto.sc_muladd_into(sc_t1, tl, tr, sc_t1)
 
-        crypto.decodeint_into_noreduce(tl, l1.to(i))
+        crypto.decodeint_noreduce_into(tl, l1.to(i))
         crypto.sc_muladd_into(sc_t2, tl, tr, sc_t2)
 
-        crypto.decodeint_into_noreduce(tr, r0.to(i))
+        crypto.decodeint_noreduce_into(tr, r0.to(i))
         crypto.sc_muladd_into(sc_t1, tl, tr, sc_t1)
 
         _gc_iter(i)
@@ -968,7 +1011,7 @@ def _cross_inner_product(l0, r0, l1, r1):
     return crypto.encodeint(sc_t1), crypto.encodeint(sc_t2)
 
 
-def _vector_gen(dst, size, op):
+def _vector_gen(dst: bytearray, size, op) -> bytearray:
     dst = _ensure_dst_keyvect(dst, size)
     for i in range(size):
         dst.to(i, _tmp_bf_0)
@@ -978,7 +1021,7 @@ def _vector_gen(dst, size, op):
     return dst
 
 
-def _vector_dup(x, n, dst=None):
+def _vector_dup(x, n, dst: bytearray = None) -> bytearray:
     dst = _ensure_dst_keyvect(dst, n)
     for i in range(n):
         dst[i] = x
@@ -986,7 +1029,7 @@ def _vector_dup(x, n, dst=None):
     return dst
 
 
-def _hash_cache_mash(dst, hash_cache, *args):
+def _hash_cache_mash(dst: bytearray, hash_cache, *args) -> bytearray:
     dst = _ensure_dst_key(dst)
     ctx = crypto.get_keccak()
     ctx.update(hash_cache)
@@ -1004,7 +1047,9 @@ def _hash_cache_mash(dst, hash_cache, *args):
 
 
 def _is_reduced(sc):
-    return crypto.encodeint_into(_tmp_bf_0, crypto.decodeint_into(_tmp_sc_1, sc)) == sc
+    crypto.decodeint_into(_tmp_sc_1, sc)
+    crypto.encodeint_into(_tmp_bf_0, _tmp_sc_1)
+    return _tmp_bf_0 == sc
 
 
 class MultiExpSequential:
@@ -1020,7 +1065,7 @@ class MultiExpSequential:
     MultiExp holder with sequential evaluation
     """
 
-    def __init__(self, size=None, points=None, point_fnc=None):
+    def __init__(self, size=None, points=None, point_fnc=None) -> None:
         self.current_idx = 0
         self.size = size if size else None
         self.points = points if points else []
@@ -1033,7 +1078,7 @@ class MultiExpSequential:
         self.acc = crypto.identity()
         self.tmp = _ensure_dst_key()
 
-    def get_point(self, idx):
+    def get_point(self, idx: int):
         return (
             self.point_fnc(idx, None) if idx >= len(self.points) else self.points[idx]
         )
@@ -1045,24 +1090,25 @@ class MultiExpSequential:
         self._acc(scalar, self.get_point(self.current_idx))
 
     def _acc(self, scalar, point):
-        crypto.decodeint_into_noreduce(_tmp_sc_1, scalar)
+        crypto.decodeint_noreduce_into(_tmp_sc_1, scalar)
         crypto.decodepoint_into(_tmp_pt_2, point)
         crypto.scalarmult_into(_tmp_pt_3, _tmp_pt_2, _tmp_sc_1)
         crypto.point_add_into(self.acc, self.acc, _tmp_pt_3)
         self.current_idx += 1
         self.size += 1
 
-    def eval(self, dst, GiHi=False):
+    def eval(self, dst: bytearray, GiHi=False) -> bytearray:
         dst = _ensure_dst_key(dst)
-        return crypto.encodepoint_into(dst, self.acc)
+        crypto.encodepoint_into(dst, self.acc)
+        return dst
 
 
-def _multiexp(dst=None, data=None, GiHi=False):
+def _multiexp(dst: bytearray = None, data=None, GiHi=False) -> bytearray:
     return data.eval(dst, GiHi)
 
 
 class BulletProofBuilder:
-    def __init__(self):
+    def __init__(self) -> None:
         self.use_det_masks = True
         self.proof_sec = None
 
@@ -1089,7 +1135,7 @@ class BulletProofBuilder:
     def aX_vcts(self, sv, MN):
         num_inp = len(sv)
 
-        def e_xL(idx, d=None, is_a=True):
+        def e_xL(idx: int, d=None, is_a=True):
             j, i = idx // _BP_N, idx % _BP_N
             r = None
             if j >= num_inp:
@@ -1109,7 +1155,7 @@ class BulletProofBuilder:
     def _det_mask_init(self):
         memcpy(self.tmp_det_buff, 0, self.proof_sec, 0, len(self.proof_sec))
 
-    def _det_mask(self, i, is_sL=True, dst=None):
+    def _det_mask(self, i, is_sL=True, dst: bytearray = None) -> bytearray:
         dst = _ensure_dst_key(dst)
         if self.fnc_det_mask:
             return self.fnc_det_mask(i, is_sL, dst)
@@ -1167,12 +1213,19 @@ class BulletProofBuilder:
         buff_mv = memoryview(buff)
         sc = crypto.new_scalar()
         for i in range(ln):
-            crypto.random_scalar(sc)
+            crypto.random_scalar_into(sc)
             crypto.encodeint_into(buff_mv[i * 32 : (i + 1) * 32], sc)
             _gc_iter(i)
         return KeyV(buffer=buff)
 
-    def vector_exponent(self, a, b, dst=None, a_raw=None, b_raw=None):
+    def vector_exponent(
+        self,
+        a: bytes,
+        b: bytes,
+        dst: bytearray = None,
+        a_raw: Sc25519 = None,
+        b_raw: Sc25519 = None,
+    ) -> bytearray:
         return _vector_exponent_custom(self.Gprec, self.Hprec, a, b, dst, a_raw, b_raw)
 
     def prove(self, sv, gamma):
@@ -1273,7 +1326,7 @@ class BulletProofBuilder:
         z = _ensure_dst_key()
         _hash_to_scalar(hash_cache, y)
         _copy_key(z, hash_cache)
-        zc = crypto.decodeint_into_noreduce(None, z)
+        zc = crypto.decodeint_noreduce(z)
         if z == _ZERO:
             return (0,)
 
@@ -1352,7 +1405,7 @@ class BulletProofBuilder:
         _sc_muladd(taux, tau2, _tmp_bf_0, taux)
         del (tau1, tau2)
 
-        zpow = crypto.sc_mul_into(None, zc, zc)
+        zpow = crypto.sc_mul(zc, zc)
         for j in range(1, len(V) + 1):
             _sc_muladd(taux, None, gamma[j - 1], taux, a_raw=zpow)
             crypto.sc_mul_into(zpow, zpow, zc)

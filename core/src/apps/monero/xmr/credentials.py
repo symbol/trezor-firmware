@@ -4,7 +4,7 @@ from apps.monero.xmr.networks import NetworkTypes, net_version
 
 if False:
     from typing import Optional
-    from apps.monero.xmr.types import Sc25519, Ge25519
+    from monero import Sc25519, Ge25519
 
 
 class AccountCreds:
@@ -18,8 +18,8 @@ class AccountCreds:
         spend_key_private: Optional[Sc25519] = None,
         view_key_public: Optional[Ge25519] = None,
         spend_key_public: Optional[Ge25519] = None,
-        address: Optional[str] = None,
-        network_type=NetworkTypes.MAINNET,
+        address: Optional[bytes] = None,
+        network_type: int = NetworkTypes.MAINNET,
     ):
         self.view_key_private = view_key_private
         self.view_key_public = view_key_public
@@ -33,8 +33,8 @@ class AccountCreds:
         cls,
         priv_view_key: Sc25519,
         priv_spend_key: Sc25519,
-        network_type=NetworkTypes.MAINNET,
-    ):
+        network_type: int = NetworkTypes.MAINNET,
+    ) -> "AccountCreds":
         pub_view_key = crypto.scalarmult_base(priv_view_key)
         pub_spend_key = crypto.scalarmult_base(priv_spend_key)
         addr = encode_addr(

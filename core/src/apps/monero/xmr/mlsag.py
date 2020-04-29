@@ -48,10 +48,11 @@ from apps.monero.xmr import crypto
 from apps.monero.xmr.serialize import int_serialize
 
 if False:
-    from typing import List, Tuple
-    from apps.monero.xmr.types import Ge25519, Sc25519
+    from typing import List, Tuple, Optional, Any
+    from apps.monero.xmr.crypto import Ge25519, Sc25519
     from apps.monero.xmr.serialize_messages.tx_ct_key import CtKey
     from trezor.messages.MoneroRctKeyPublic import MoneroRctKeyPublic
+    from trezor.utils import HashContext
 
     KeyM = List[List[bytes]]
 
@@ -63,13 +64,12 @@ _HASH_KEY_CLSAG_AGG_1 = b"CLSAG_agg_1\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0
 
 def generate_mlsag_simple(
     message: bytes,
-    pubs: List[MoneroRctKeyPublic],
+    pubs: List[Optional[MoneroRctKeyPublic]],
     in_sk: CtKey,
     a: Sc25519,
     cout: Ge25519,
     index: int,
-    mg_buff: List[bytes],
-) -> List[bytes]:
+) -> List[bytearray]:
     """
     MLSAG for RctType.Simple
     :param message: the full message to be signed (actually its hash)
@@ -78,7 +78,6 @@ def generate_mlsag_simple(
     :param a: mask from the pseudo output commitment; better name: pseudo_out_alpha
     :param cout: pseudo output commitment; point, decoded; better name: pseudo_out_c
     :param index: specifies corresponding public key to the `in_sk` in the pubs array
-    :param mg_buff: buffer to store the signature to
     """
     # Monero signs inputs separately, so `rows` always equals 2 (pubkey, commitment)
     # and `dsRows` is always 1 (denotes where the pubkeys "end")
@@ -96,21 +95,26 @@ def generate_mlsag_simple(
     tmp_pt = crypto.new_point()
 
     for i in range(cols):
-        crypto.point_sub_into(
-            tmp_pt, crypto.decodepoint_into(tmp_pt, pubs[i].commitment), cout
-        )
+        pub = pubs[i]
+        assert pub is not None
+        assert pub.commitment is not None
 
-        M[i][0] = pubs[i].dest
+        crypto.decodepoint_into(tmp_pt, pub.commitment)
+        crypto.point_sub_into(tmp_pt, tmp_pt, cout)
+
+        M[i][0] = pub.dest
         M[i][1] = crypto.encodepoint(tmp_pt)
         pubs[i] = None
 
     del pubs
     gc.collect()
 
-    return generate_mlsag(message, M, sk, index, dsRows, mg_buff)
+    return generate_mlsag(message, M, sk, index, dsRows)
 
 
-def gen_mlsag_assert(pk: KeyM, xx: List[Sc25519], index: int, dsRows: int):
+def gen_mlsag_assert(
+    pk: KeyM, xx: List[Sc25519], index: int, dsRows: int
+) -> Tuple[int, int]:
     """
     Conditions check
     """
@@ -142,7 +146,7 @@ def generate_first_c_and_key_images(
     dsRows: int,
     rows: int,
     cols: int,
-) -> Tuple[Sc25519, List[Ge25519], List[Ge25519]]:
+) -> Tuple[Sc25519, List[Ge25519], List[Sc25519]]:
     """
     MLSAG computation - the part with secret keys
     :param message: the full message to be signed (actually its hash)
@@ -189,19 +193,13 @@ def generate_first_c_and_key_images(
         _hash_point(hasher, aGi, tmp_buff)
 
     # the first c
-    c_old = hasher.digest()
-    c_old = crypto.decodeint(c_old)
+    c_old = crypto.decodeint(hasher.digest())
     return c_old, II, alpha
 
 
 def generate_mlsag(
-    message: bytes,
-    pk: KeyM,
-    xx: List[Sc25519],
-    index: int,
-    dsRows: int,
-    mg_buff: List[bytes],
-) -> List[bytes]:
+    message: bytes, pk: KeyM, xx: List[Sc25519], index: int, dsRows: int
+) -> List[bytearray]:
     """
     Multilayered Spontaneous Anonymous Group Signatures (MLSAG signatures)
 
@@ -210,14 +208,16 @@ def generate_mlsag(
     :param xx: input secret array composed of a private key and commitment mask
     :param index: specifies corresponding public key to the `xx`'s private key in the `pk` array
     :param dsRows: separates pubkeys from commitment
-    :param mg_buff: mg signature buffer
     """
     rows, cols = gen_mlsag_assert(pk, xx, index, dsRows)
     rows_b_size = int_serialize.uvarint_size(rows)
 
     # Preallocation of the chunked buffer, len + cols + cc
+    mg_buff = []
+    mg_buff.append(bytearray())
     for _ in range(1 + cols + 1):
-        mg_buff.append(None)
+        mg_buff.append(bytearray(rows_b_size + 32 * rows))
+    mg_buff.append(bytearray(32))
 
     mg_buff[0] = int_serialize.dump_uvarint_b(cols)
     cc = crypto.new_scalar()  # rv.cc
@@ -242,17 +242,15 @@ def generate_mlsag(
         hasher = _hasher_message(message)
 
         # Serialize size of the row
-        mg_buff[i + 1] = bytearray(rows_b_size + 32 * rows)
         int_serialize.dump_uvarint_b_into(rows, mg_buff[i + 1])
 
         for x in ss:
-            crypto.random_scalar(x)
+            crypto.random_scalar_into(x)
 
         for j in range(dsRows):
             # L = rv.ss[i][j] * G + c_old * pk[i][j]
-            crypto.add_keys2_into(
-                L, ss[j], c_old, crypto.decodepoint_into(Hi, pk[i][j])
-            )
+            crypto.decodepoint_into(Hi, pk[i][j])
+            crypto.add_keys2_into(L, ss[j], c_old, Hi)
             crypto.hash_to_point_into(Hi, pk[i][j])
 
             # R = rv.ss[i][j] * H(pk[i][j]) + c_old * Ip[j]
@@ -264,9 +262,8 @@ def generate_mlsag(
 
         for j in range(dsRows, rows):
             # again, omitting R here as discussed above
-            crypto.add_keys2_into(
-                L, ss[j], c_old, crypto.decodepoint_into(Hi, pk[i][j])
-            )
+            crypto.decodepoint_into(Hi, pk[i][j])
+            crypto.add_keys2_into(L, ss[j], c_old, Hi)
             hasher.update(pk[i][j])
             _hash_point(hasher, L, tmp_buff)
 
@@ -292,7 +289,7 @@ def generate_mlsag(
         crypto.encodeint_into(mg_buff[index + 1], ss[j], rows_b_size + 32 * j)
 
     # rv.cc
-    mg_buff[-1] = crypto.encodeint(cc)
+    crypto.encodeint_into(mg_buff[-1], cc)
     return mg_buff
 
 
@@ -303,8 +300,7 @@ def generate_clsag_simple(
     a: Sc25519,
     cout: Ge25519,
     index: int,
-    mg_buff: List[bytes],
-) -> List[bytes]:
+) -> List[bytearray]:
     """
     CLSAG for RctType.Simple
     https://eprint.iacr.org/2019/654.pdf
@@ -317,7 +313,6 @@ def generate_clsag_simple(
     :param a: mask from the pseudo output commitment; better name: pseudo_out_alpha
     :param cout: pseudo output commitment; point, decoded; better name: pseudo_out_c
     :param index: specifies corresponding public key to the `in_sk` in the pubs array
-    :param mg_buff: buffer to store the signature to
     """
     cols = len(pubs)
     if cols == 0:
@@ -336,7 +331,7 @@ def generate_clsag_simple(
     del pubs
     gc.collect()
 
-    return _generate_clsag(message, P, p, C_nonzero, z, cout, index, mg_buff)
+    return _generate_clsag(message, P, p, C_nonzero, z, cout, index)
 
 
 def _generate_clsag(
@@ -347,8 +342,9 @@ def _generate_clsag(
     z: Sc25519,
     Cout: Ge25519,
     index: int,
-    mg_buff: List[bytes],
-) -> List[bytes]:
+) -> List[bytearray]:
+    mg_buff = []
+
     sI = crypto.new_point()  # sig.I
     sD = crypto.new_point()  # sig.D
     sc1 = crypto.new_scalar()  # sig.c1
@@ -366,14 +362,14 @@ def _generate_clsag(
     crypto.scalarmult_into(D, H, z)  # D = z*H
     crypto.sc_mul_into(tmp_sc, z, crypto.sc_inv_eight())  # 1/8*z
     crypto.scalarmult_into(sD, H, tmp_sc)  # sig.D = 1/8*z*H
-    sD = crypto.encodepoint(sD)
+    sD_bytes = crypto.encodepoint(sD)
 
     hsh_P = crypto.get_keccak()  # domain, I, D, P, C, C_offset
     hsh_C = crypto.get_keccak()  # domain, I, D, P, C, C_offset
     hsh_P.update(_HASH_KEY_CLSAG_AGG_0)
     hsh_C.update(_HASH_KEY_CLSAG_AGG_1)
 
-    def hsh_PC(x):
+    def hsh_PC(x: bytes) -> None:
         nonlocal hsh_P, hsh_C
         hsh_P.update(x)
         hsh_C.update(x)
@@ -384,8 +380,9 @@ def _generate_clsag(
     for x in C_nonzero:
         hsh_PC(x)
 
-    hsh_PC(crypto.encodepoint_into(tmp_bf, sI))
-    hsh_PC(sD)
+    crypto.encodepoint_into(tmp_bf, sI)
+    hsh_PC(tmp_bf)
+    hsh_PC(sD_bytes)
     hsh_PC(Cout_bf)
     mu_P = crypto.decodeint(hsh_P.digest())
     mu_C = crypto.decodeint(hsh_C.digest())
@@ -402,9 +399,11 @@ def _generate_clsag(
 
     chasher = c_to_hash.copy()
     crypto.scalarmult_base_into(tmp, a)
-    chasher.update(crypto.encodepoint_into(tmp_bf, tmp))  # aG
+    crypto.encodepoint_into(tmp_bf, tmp)
+    chasher.update(tmp_bf)  # aG
     crypto.scalarmult_into(tmp, H, a)
-    chasher.update(crypto.encodepoint_into(tmp_bf, tmp))  # aH
+    crypto.encodepoint_into(tmp_bf, tmp)
+    chasher.update(tmp_bf)  # aH
     c = crypto.decodeint(chasher.digest())
     del (chasher, H)
 
@@ -421,14 +420,15 @@ def _generate_clsag(
         mg_buff.append(bytearray(32))
 
     while i != index:
-        crypto.random_scalar(tmp_sc)
+        crypto.random_scalar_into(tmp_sc)
         crypto.encodeint_into(mg_buff[i + 1], tmp_sc)
 
         crypto.sc_mul_into(c_p, mu_P, c)
         crypto.sc_mul_into(c_c, mu_C, c)
 
         # L = tmp_sc * G + c_P * P[i] + c_c * C[i]
-        crypto.add_keys2_into(L, tmp_sc, c_p, crypto.decodepoint_into(tmp, P[i]))
+        crypto.decodepoint_into(tmp, P[i])
+        crypto.add_keys2_into(L, tmp_sc, c_p, tmp)
         crypto.decodepoint_into(tmp, C_nonzero[i])  # C = C_nonzero - Cout
         crypto.point_sub_into(tmp, tmp, Cout)
         crypto.scalarmult_into(tmp, tmp, c_c)
@@ -437,11 +437,14 @@ def _generate_clsag(
         # R = tmp_sc * HP + c_p * I + c_c * D
         crypto.hash_to_point_into(tmp, P[i])
         crypto.add_keys3_into(R, tmp_sc, tmp, c_p, sI)
-        crypto.point_add_into(R, R, crypto.scalarmult_into(tmp, D, c_c))
+        crypto.scalarmult_into(tmp, D, c_c)
+        crypto.point_add_into(R, R, tmp)
 
         chasher = c_to_hash.copy()
-        chasher.update(crypto.encodepoint_into(tmp_bf, L))
-        chasher.update(crypto.encodepoint_into(tmp_bf, R))
+        crypto.encodepoint_into(tmp_bf, L)
+        chasher.update(tmp_bf)
+        crypto.encodepoint_into(tmp_bf, R)
+        chasher.update(tmp_bf)
         crypto.decodeint_into(c, chasher.digest())
 
         P[i] = None
@@ -460,26 +463,26 @@ def _generate_clsag(
     crypto.sc_mulsub_into(tmp_sc, c, tmp_sc, a)
     crypto.encodeint_into(mg_buff[index + 1], tmp_sc)
 
-    mg_buff.append(crypto.encodeint(sc1))
-    mg_buff.append(sD)
+    mg_buff.append(bytearray(crypto.encodeint(sc1)))
+    mg_buff.append(bytearray(sD_bytes))
     return mg_buff
 
 
-def _key_vector(rows):
+def _key_vector(rows: int) -> List[Any]:
     return [None] * rows
 
 
-def _key_matrix(rows, cols):
+def _key_matrix(rows: int, cols: int) -> List[Any]:
     """
     first index is columns (so slightly backward from math)
     """
-    rv = [None] * cols
+    rv = [None] * cols  # type: List[Any]
     for i in range(0, cols):
         rv[i] = _key_vector(rows)
     return rv
 
 
-def _hasher_message(message):
+def _hasher_message(message: bytes) -> HashContext:
     """
     Returns incremental hasher for MLSAG
     """
@@ -488,6 +491,6 @@ def _hasher_message(message):
     return ctx
 
 
-def _hash_point(hasher, point, tmp_buff):
+def _hash_point(hasher: HashContext, point: Ge25519, tmp_buff: bytearray) -> None:
     crypto.encodepoint_into(tmp_buff, point)
     hasher.update(tmp_buff)

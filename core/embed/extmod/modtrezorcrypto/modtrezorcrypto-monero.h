@@ -908,7 +908,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(
 // XMR defs
 //
 
-/// def base58_addr_encode_check(tag: int, buff: bytes) -> bytes:
+/// def xmr_base58_addr_encode_check(tag: int, buff: bytes) -> bytes:
 ///     """
 ///     Monero block base 58 encoding
 ///     """
@@ -930,7 +930,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(
     mod_trezorcrypto_monero_xmr_base58_addr_encode_check_obj, 2, 2,
     mod_trezorcrypto_monero_xmr_base58_addr_encode_check);
 
-/// def base58_addr_decode_check(buff: bytes) -> Tuple[bytes, int]:
+/// def xmr_base58_addr_decode_check(buff: bytes) -> Tuple[bytes, int]:
 ///     """
 ///     Monero block base 58 decoding, returning (decoded, tag) or raising on
 ///     error.
@@ -973,7 +973,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(
     mod_trezorcrypto_monero_xmr_random_scalar);
 
 // clang-format off
-/// def xmr_fast_hash(r: Optional[bytes], buff: bytes, length: int, offset: int) -> bytes:
+/// def xmr_fast_hash(r: Optional[bytes], buff: bytes, length: int = None, offset: int = 0) -> bytes:
 // clang-format on
 ///     """
 ///     XMR fast hash
@@ -2609,7 +2609,7 @@ STATIC const mp_rom_map_elem_t mod_trezorcrypto_monero_globals_table[] = {
      MP_ROM_PTR(&mod_trezorcrypto_monero_unpack256_modm_noreduce_obj)},
     {MP_ROM_QSTR(MP_QSTR_ge25519_set_neutral),
      MP_ROM_PTR(&mod_trezorcrypto_monero_ge25519_set_neutral_obj)},
-    {MP_ROM_QSTR(MP_QSTR_ge25519_set_h),
+    {MP_ROM_QSTR(MP_QSTR_ge25519_set_xmr_h),
      MP_ROM_PTR(&mod_trezorcrypto_monero_ge25519_set_xmr_h_obj)},
     {MP_ROM_QSTR(MP_QSTR_ge25519_pack),
      MP_ROM_PTR(&mod_trezorcrypto_monero_ge25519_pack_obj)},

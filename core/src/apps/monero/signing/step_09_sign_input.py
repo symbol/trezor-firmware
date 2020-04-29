@@ -175,7 +175,6 @@ async def sign_input(
 
     from apps.monero.xmr import mlsag
 
-    mg_buffer = []
     ring_pubkeys = [x.key for x in src_entr.outputs if x]
     utils.ensure(len(ring_pubkeys) == len(src_entr.outputs), "Invalid ring")
     del src_entr
@@ -184,24 +183,22 @@ async def sign_input(
 
     if state.hard_fork and state.hard_fork >= 13:
         state.mem_trace("CLSAG")
-        mlsag.generate_clsag_simple(
+        mg_buffer = mlsag.generate_clsag_simple(
             state.full_message,
             ring_pubkeys,
             input_secret_key,
             pseudo_out_alpha,
             pseudo_out_c,
             index,
-            mg_buffer,
         )
     else:
-        mlsag.generate_mlsag_simple(
+        mg_buffer = mlsag.generate_mlsag_simple(
             state.full_message,
             ring_pubkeys,
             input_secret_key,
             pseudo_out_alpha,
             pseudo_out_c,
             index,
-            mg_buffer,
         )
 
     del (CtKey, input_secret_key, pseudo_out_alpha, mlsag, ring_pubkeys)

@@ -1,3 +1,7 @@
+if False:
+    from typing import Optional, Type
+
+
 class NetworkTypes:
     MAINNET = 0
     TESTNET = 1
@@ -5,34 +9,42 @@ class NetworkTypes:
     FAKECHAIN = 3
 
 
-class MainNet:
+class Net:
+    PUBLIC_ADDRESS_BASE58_PREFIX = -1
+    PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = -1
+    PUBLIC_SUBADDRESS_BASE58_PREFIX = -1
+
+
+class MainNet(Net):
     PUBLIC_ADDRESS_BASE58_PREFIX = 18
     PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 19
     PUBLIC_SUBADDRESS_BASE58_PREFIX = 42
 
 
-class TestNet:
+class TestNet(Net):
     PUBLIC_ADDRESS_BASE58_PREFIX = 53
     PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 54
     PUBLIC_SUBADDRESS_BASE58_PREFIX = 63
 
 
-class StageNet:
+class StageNet(Net):
     PUBLIC_ADDRESS_BASE58_PREFIX = 24
     PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 25
     PUBLIC_SUBADDRESS_BASE58_PREFIX = 36
 
 
 def net_version(
-    network_type=NetworkTypes.MAINNET, is_subaddr=False, is_integrated=False
-):
+    network_type: int = NetworkTypes.MAINNET,
+    is_subaddr: bool = False,
+    is_integrated: bool = False,
+) -> bytes:
     """
     Network version bytes used for address construction
     """
     if is_integrated and is_subaddr:
         raise ValueError("Subaddress cannot be integrated")
 
-    c_net = None
+    c_net = None  # type: Optional[Type[Net]]
     if network_type is None or network_type == NetworkTypes.MAINNET:
         c_net = MainNet
     elif network_type == NetworkTypes.TESTNET:

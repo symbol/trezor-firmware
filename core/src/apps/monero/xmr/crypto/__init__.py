@@ -11,9 +11,8 @@ from trezor.crypto import hmac, monero as tcry, random
 from trezor.crypto.hashlib import sha3_256
 
 if False:
-    from typing import Tuple, Optional, Union
-    from apps.monero.xmr.types import Sc25519, Ge25519
-
+    from typing import Tuple, Union
+    from apps.monero.xmr.monero import Ge25519, Sc25519
 
 NULL_KEY_ENC = b"\x00" * 32
 
@@ -21,24 +20,29 @@ random_bytes = random.bytes
 ct_equals = tcry.ct_equals
 
 
-def keccak_factory(data=None):
+def get_keccak(data: bytes = None) -> sha3_256:
     return sha3_256(data=data, keccak=True)
 
 
-get_keccak = keccak_factory
-keccak_hash = tcry.xmr_fast_hash
-keccak_hash_into = tcry.xmr_fast_hash
+def keccak_hash(data: bytes) -> bytes:
+    return tcry.xmr_fast_hash(data)
 
 
-def keccak_2hash(inp, buff=None):
-    buff = buff if buff else bytearray(32)
-    keccak_hash_into(buff, inp)
-    keccak_hash_into(buff, buff)
-    return buff
+def keccak_hash_into(output: bytes, data: bytes, length: int = None) -> None:
+    if length is None:
+        length = len(data)
+    tcry.xmr_fast_hash(output, data, length)
 
 
-def compute_hmac(key, msg=None):
-    h = hmac.new(key, msg=msg, digestmod=keccak_factory)
+def keccak_2hash(data: bytes) -> bytes:
+    output = bytearray(32)
+    keccak_hash_into(output, data)
+    keccak_hash_into(output, output)
+    return output
+
+
+def compute_hmac(key: bytes, msg: bytes) -> bytes:
+    h = hmac.new(key, msg=msg, digestmod=get_keccak)
     return h.digest()
 
 
@@ -47,43 +51,114 @@ def compute_hmac(key, msg=None):
 #
 
 
-new_point = tcry.ge25519_set_neutral
+def new_point() -> Ge25519:
+    return tcry.ge25519_set_neutral()
 
 
-def new_scalar() -> Sc25519:
-    return tcry.init256_modm(0)
+def decodepoint(buff: bytes) -> Ge25519:
+    return tcry.ge25519_unpack_vartime(buff)
 
 
-decodepoint = tcry.ge25519_unpack_vartime
-decodepoint_into = tcry.ge25519_unpack_vartime
-encodepoint = tcry.ge25519_pack
-encodepoint_into = tcry.ge25519_pack
+def decodepoint_into(output: Ge25519, buff: bytes, offset: int = 0) -> None:
+    tcry.ge25519_unpack_vartime(output, buff, offset)
 
-decodeint = tcry.unpack256_modm
-decodeint_into_noreduce = tcry.unpack256_modm_noreduce
-decodeint_into = tcry.unpack256_modm
-encodeint = tcry.pack256_modm
-encodeint_into = tcry.pack256_modm
 
-check_ed25519point = tcry.ge25519_check
+def encodepoint(p: Ge25519) -> bytes:
+    return tcry.ge25519_pack(p)
 
-scalarmult_base = tcry.ge25519_scalarmult_base
-scalarmult_base_into = tcry.ge25519_scalarmult_base
-scalarmult = tcry.ge25519_scalarmult
-scalarmult_into = tcry.ge25519_scalarmult
 
-point_add = tcry.ge25519_add
-point_add_into = tcry.ge25519_add
-point_sub = tcry.ge25519_sub
-point_sub_into = tcry.ge25519_sub
-point_eq = tcry.ge25519_eq
-point_double = tcry.ge25519_double
-point_double_into = tcry.ge25519_double
-point_mul8 = tcry.ge25519_mul8
-point_mul8_into = tcry.ge25519_mul8
+def encodepoint_into(
+    r: Union[bytearray, memoryview], p: Ge25519, offset: int = 0
+) -> None:
+    tcry.ge25519_pack(r, p, offset)
+
+
+def check_ed25519point(r: Ge25519) -> None:
+    return tcry.ge25519_check
+
+
+def decodeint(a: bytes) -> Sc25519:
+    return tcry.unpack256_modm(a)
+
+
+def decodeint_into(r: Sc25519, a: bytes, offset: int = 0) -> None:
+    tcry.unpack256_modm(r, a, offset)
+
+
+def decodeint_noreduce(a: bytes) -> Sc25519:
+    return tcry.unpack256_modm_noreduce(a)
+
+
+def decodeint_noreduce_into(r: Sc25519, a: bytes) -> None:
+    tcry.unpack256_modm_noreduce(r, a)
+
+
+def encodeint(a: Sc25519) -> bytes:
+    return tcry.pack256_modm(a)
+
+
+def encodeint_into(r: bytearray, a: Sc25519, offset: int = 0) -> None:
+    tcry.pack256_modm(r, a, offset)
+
+
+def scalarmult_base(s: Union[Sc25519, int]) -> Ge25519:
+    return tcry.ge25519_scalarmult_base(s)
+
+
+def scalarmult_base_into(r: Ge25519, s: Union[Sc25519, int]) -> None:
+    tcry.ge25519_scalarmult_base(r, s)
+
+
+def scalarmult(p: Ge25519, s: Union[Sc25519, int]) -> Ge25519:
+    return tcry.ge25519_scalarmult(p, s)
+
+
+def scalarmult_into(r: Ge25519, p: Ge25519, s: Union[Sc25519, int]) -> None:
+    tcry.ge25519_scalarmult(r, p, s)
+
+
+def point_add(a: Ge25519, b: Ge25519) -> Ge25519:
+    return tcry.ge25519_add(a, b)
+
+
+def point_add_into(r: Ge25519, a: Ge25519, b: Ge25519) -> None:
+    tcry.ge25519_add(r, a, b)
+
+
+def point_sub(a: Ge25519, b: Ge25519) -> Ge25519:
+    return tcry.ge25519_sub(a, b)
+
+
+def point_sub_into(r: Ge25519, a: Ge25519, b: Ge25519) -> None:
+    tcry.ge25519_sub(r, a, b)
+
+
+def point_eq(a: Ge25519, b: Ge25519) -> bool:
+    return tcry.ge25519_eq(a, b)
+
+
+def point_double(p: Ge25519) -> Ge25519:
+    return tcry.ge25519_double(p)
+
+
+def point_double_into(r: Ge25519, p: Ge25519) -> None:
+    tcry.ge25519_double(r, p)
+
+
+def point_mul8(p: Ge25519) -> Ge25519:
+    return tcry.ge25519_mul8(p)
+
+
+def point_mul8_into(r: Ge25519, p: Ge25519) -> None:
+    tcry.ge25519_mul8(r, p)
+
 
 INV_EIGHT = b"\x79\x2f\xdc\xe2\x29\xe5\x06\x61\xd0\xda\x1c\x7d\xb3\x9d\xd3\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x06"
 INV_EIGHT_SC = decodeint(INV_EIGHT)
+
+
+def new_scalar() -> Sc25519:
+    return tcry.init256_modm()
 
 
 def sc_inv_eight() -> Sc25519:
@@ -115,17 +190,40 @@ def sc_init_into(r: Sc25519, x: int) -> Sc25519:
     return tcry.init256_modm(r, x)
 
 
-sc_copy = tcry.init256_modm
-sc_get64 = tcry.get256_modm
-sc_check = tcry.check256_modm
-check_sc = tcry.check256_modm
+def sc_copy(dst: Sc25519, val: Sc25519):
+    tcry.init256_modm(dst, val)
 
-sc_add = tcry.add256_modm
-sc_add_into = tcry.add256_modm
-sc_sub = tcry.sub256_modm
-sc_sub_into = tcry.sub256_modm
-sc_mul = tcry.mul256_modm
-sc_mul_into = tcry.mul256_modm
+
+def sc_get64(a: Sc25519) -> int:
+    return tcry.get256_modm(a)
+
+
+def sc_check(val: Sc25519) -> None:
+    return tcry.check256_modm
+
+
+def sc_add(a: Sc25519, b: Sc25519) -> Sc25519:
+    return tcry.add256_modm(a, b)
+
+
+def sc_add_into(r: Sc25519, a: Sc25519, b: Sc25519) -> None:
+    tcry.add256_modm(r, a, b)
+
+
+def sc_sub(a: Sc25519, b: Sc25519) -> Sc25519:
+    return tcry.sub256_modm(a, b)
+
+
+def sc_sub_into(r: Sc25519, a: Sc25519, b: Sc25519) -> None:
+    tcry.sub256_modm(r, a, b)
+
+
+def sc_mul(a: Sc25519, b: Sc25519) -> Sc25519:
+    return tcry.mul256_modm(a, b)
+
+
+def sc_mul_into(r: Sc25519, a: Sc25519, b: Sc25519) -> None:
+    tcry.mul256_modm(r, a, b)
 
 
 def sc_isnonzero(c: Sc25519) -> bool:
@@ -135,16 +233,40 @@ def sc_isnonzero(c: Sc25519) -> bool:
     return not tcry.iszero256_modm(c)
 
 
-sc_eq = tcry.eq256_modm
-sc_mulsub = tcry.mulsub256_modm
-sc_mulsub_into = tcry.mulsub256_modm
-sc_muladd = tcry.muladd256_modm
-sc_muladd_into = tcry.muladd256_modm
-sc_inv_into = tcry.inv256_modm
+def sc_eq(a: Sc25519, b: Sc25519) -> bool:
+    return tcry.eq256_modm(a, b) == 1
 
 
-def random_scalar(r=None) -> Sc25519:
-    return tcry.xmr_random_scalar(r if r is not None else new_scalar())
+def sc_mulsub(a: Sc25519, b: Sc25519, c: Sc25519) -> Sc25519:
+    return tcry.mulsub256_modm(a, b, c)
+
+
+def sc_mulsub_into(r: Sc25519, a: Sc25519, b: Sc25519, c: Sc25519) -> None:
+    tcry.mulsub256_modm(r, a, b, c)
+
+
+def sc_muladd(a: Sc25519, b: Sc25519, c: Sc25519) -> Sc25519:
+    return tcry.muladd256_modm(a, b, c)
+
+
+def sc_muladd_into(r: Sc25519, a: Sc25519, b: Sc25519, c: Sc25519) -> None:
+    tcry.muladd256_modm(r, a, b, c)
+
+
+def sc_inv_into(r: Sc25519, a: Sc25519) -> None:
+    tcry.inv256_modm(r, a)
+
+
+def sc_inv(r: Sc25519, a: Sc25519) -> Sc25519:
+    return tcry.inv256_modm(a)
+
+
+def random_scalar() -> Sc25519:
+    return tcry.xmr_random_scalar()
+
+
+def random_scalar_into(r: Sc25519) -> None:
+    return tcry.xmr_random_scalar(r)
 
 
 #
@@ -152,7 +274,9 @@ def random_scalar(r=None) -> Sc25519:
 #
 
 
-def ge25519_double_scalarmult_base_vartime(a, A, b) -> Ge25519:
+def ge25519_double_scalarmult_base_vartime(
+    a: Sc25519, A: Ge25519, b: Sc25519
+) -> Ge25519:
     """
     void ge25519_double_scalarmult_vartime(ge25519 *r, const ge25519 *p1, const bignum256modm s1, const bignum256modm s2);
     r = a * A + b * B
@@ -164,12 +288,14 @@ def ge25519_double_scalarmult_base_vartime(a, A, b) -> Ge25519:
 ge25519_double_scalarmult_vartime2 = tcry.xmr_add_keys3
 
 
-def identity(byte_enc=False) -> Union[Ge25519, bytes]:
-    idd = tcry.ge25519_set_neutral()
+def identity(byte_enc: bool = False) -> Union[Ge25519, bytes]:
+    idd = tcry.ge25519_set_neutral(None)
     return idd if not byte_enc else encodepoint(idd)
 
 
-identity_into = tcry.ge25519_set_neutral
+def identity_into(r: Ge25519) -> None:
+    tcry.ge25519_set_neutral(r)
+
 
 """
 https://www.imperialviolet.org/2013/12/25/elligator.html
@@ -185,17 +311,15 @@ http://elligator.cr.yp.to/elligator-20130828.pdf
 cn_fast_hash = keccak_hash
 
 
-def hash_to_scalar(data: bytes, length: Optional[int] = None):
+def hash_to_scalar(data: bytes) -> Sc25519:
     """
     H_s(P)
     """
-    dt = data[:length] if length else data
-    return tcry.xmr_hash_to_scalar(dt)
+    return tcry.xmr_hash_to_scalar(data)
 
 
-def hash_to_scalar_into(r: Sc25519, data: bytes, length: Optional[int] = None):
-    dt = data[:length] if length else data
-    return tcry.xmr_hash_to_scalar(r, dt)
+def hash_to_scalar_into(r: Sc25519, data: bytes) -> Sc25519:
+    return tcry.xmr_hash_to_scalar(r, data)
 
 
 """
@@ -205,8 +329,14 @@ Code adapted from MiniNero: https://github.com/monero-project/mininero
 https://github.com/monero-project/research-lab/blob/master/whitepaper/ge_fromfe_writeup/ge_fromfe.pdf
 http://archive.is/yfINb
 """
-hash_to_point = tcry.xmr_hash_to_ec
-hash_to_point_into = tcry.xmr_hash_to_ec
+
+
+def hash_to_point(buff: bytes) -> Ge25519:
+    return tcry.xmr_hash_to_ec(buff)
+
+
+def hash_to_point_into(r: Ge25519, buff: bytes) -> None:
+    tcry.xmr_hash_to_ec(r, buff)
 
 
 #
@@ -214,18 +344,32 @@ hash_to_point_into = tcry.xmr_hash_to_ec
 #
 
 
-xmr_H = tcry.ge25519_set_h
+def xmr_H() -> Ge25519:
+    return tcry.ge25519_set_xmr_h(None)
 
 
-def scalarmult_h(i) -> Ge25519:
+def scalarmult_h(i: Union[int, Sc25519]) -> Ge25519:
     return scalarmult(xmr_H(), sc_init(i) if isinstance(i, int) else i)
 
 
-add_keys2 = tcry.xmr_add_keys2_vartime
-add_keys2_into = tcry.xmr_add_keys2_vartime
-add_keys3 = tcry.xmr_add_keys3_vartime
-add_keys3_into = tcry.xmr_add_keys3_vartime
-gen_commitment = tcry.xmr_gen_c
+def add_keys2(a: Sc25519, b: Sc25519, B: Ge25519) -> Ge25519:
+    return tcry.xmr_add_keys2_vartime(a, b, B)
+
+
+def add_keys2_into(r: Ge25519, a: Sc25519, b: Sc25519, B: Ge25519) -> None:
+    tcry.xmr_add_keys2_vartime(r, a, b, B)
+
+
+def add_keys3(r: Ge25519, a: Sc25519, A: Ge25519, b: Sc25519, B: Ge25519) -> Ge25519:
+    return tcry.xmr_add_keys3_vartime(a, A, b, B)
+
+
+def add_keys3_into(r: Ge25519, a: Sc25519, A: Ge25519, b: Sc25519, B: Ge25519) -> None:
+    tcry.xmr_add_keys3_vartime(r, a, A, b, B)
+
+
+def gen_commitment(a: Sc25519, amount: int) -> Ge25519:
+    return tcry.xmr_gen_c(a, amount)
 
 
 def generate_key_derivation(pub: Ge25519, sec: Sc25519) -> Ge25519:
@@ -302,7 +446,7 @@ def check_signature(data: bytes, c: Sc25519, r: Sc25519, pub: Ge25519) -> bool:
     return not sc_isnonzero(res)
 
 
-def xor8(buff: bytes, key: bytes) -> bytes:
+def xor8(buff: bytearray, key: bytes) -> bytes:
     for i in range(8):
         buff[i] ^= key[i]
     return buff

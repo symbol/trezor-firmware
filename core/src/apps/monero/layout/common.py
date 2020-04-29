@@ -4,22 +4,32 @@ from trezor.messages.ButtonAck import ButtonAck
 from trezor.messages.ButtonRequest import ButtonRequest
 from trezor.ui.text import Text
 
+if False:
+    from typing import List, Iterator, Union
+    from trezor.wire import Context
+    from trezor.ui import Component
+
 
 async def naive_pagination(
-    ctx, lines, title, icon=ui.ICON_RESET, icon_color=ui.ORANGE, per_page=5
-):
+    ctx: Context,
+    lines: List[Union[str, int]],
+    title: str,
+    icon: str = ui.ICON_RESET,
+    icon_color: int = ui.ORANGE,
+    per_page: int = 5,
+) -> bool:
     from trezor.ui.scroll import CANCELLED, CONFIRMED, PaginatedWithButtons
 
-    pages = []
+    pages = []  # type: List[Component]
     page_lines = paginate_lines(lines, per_page)
 
-    for i, lines in enumerate(page_lines):
+    for i, lines_on_page in enumerate(page_lines):
         if len(page_lines) > 1:
             paging = "%s/%s" % (i + 1, len(page_lines))
         else:
             paging = ""
         text = Text("%s %s" % (title, paging), icon, icon_color)
-        text.normal(*lines)
+        text.normal(*lines_on_page)
         pages.append(text)
 
     paginated = PaginatedWithButtons(pages, one_by_one=True)
@@ -33,7 +43,9 @@ async def naive_pagination(
             return False
 
 
-def paginate_lines(lines, lines_per_page=5):
+def paginate_lines(
+    lines: List[Union[str, int]], lines_per_page: int = 5
+) -> List[List[Union[int, str]]]:
     """Paginates lines across pages with preserving formatting modifiers (e.g., mono)"""
     pages = []
     cpage = []
@@ -58,9 +70,9 @@ def paginate_lines(lines, lines_per_page=5):
     return pages
 
 
-def format_amount(value):
+def format_amount(value: int) -> str:
     return "%s XMR" % strings.format_amount(value, 12)
 
 
-def split_address(address):
+def split_address(address: str) -> Iterator[str]:
     return utils.chunks(address, 16)

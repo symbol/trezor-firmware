@@ -8,7 +8,7 @@ if not utils.BITCOIN_ONLY:
         load_uint,
         load_uvarint,
     )
-    from apps.monero.xmr.serialize.readwriter import MemoryReaderWriter
+    from apps.monero.xmr.serialize.readwriter import ByteWriter, ByteReader
     from apps.monero.xmr.serialize_messages.base import ECPoint
     from apps.monero.xmr.serialize_messages.tx_prefix import (
         TxinToKey,
@@ -31,10 +31,10 @@ class TestMoneroSerializer(unittest.TestCase):
         # fmt: on
 
         for test_num in test_nums:
-            writer = MemoryReaderWriter()
+            writer = ByteWriter()
 
             dump_uvarint(writer, test_num)
-            test_deser = load_uvarint(MemoryReaderWriter(writer.get_buffer()))
+            test_deser = load_uvarint(ByteReader(writer.get_buffer()))
 
             self.assertEqual(test_num, test_deser)
 
@@ -44,12 +44,12 @@ class TestMoneroSerializer(unittest.TestCase):
         :return:
         """
         ec_data = bytearray(range(32))
-        writer = MemoryReaderWriter()
+        writer = ByteWriter()
 
         ECPoint.dump(writer, ec_data)
         self.assertTrue(len(writer.get_buffer()), ECPoint.SIZE)
 
-        test_deser = ECPoint.load(MemoryReaderWriter(writer.get_buffer()))
+        test_deser = ECPoint.load(ByteReader(writer.get_buffer()))
         self.assertEqual(ec_data, test_deser)
 
     def test_txin_to_key(self):
@@ -61,9 +61,9 @@ class TestMoneroSerializer(unittest.TestCase):
             amount=123, key_offsets=[1, 2, 3, 2 ** 76], k_image=bytearray(range(32))
         )
 
-        writer = MemoryReaderWriter()
+        writer = ByteWriter()
         TxinToKey.dump(writer, msg)
-        test_deser = TxinToKey.load(MemoryReaderWriter(writer.get_buffer()))
+        test_deser = TxinToKey.load(ByteReader(writer.get_buffer()))
 
         self.assertEqual(msg.amount, test_deser.amount)
         self.assertEqual(msg, test_deser)

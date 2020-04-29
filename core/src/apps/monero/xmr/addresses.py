@@ -4,7 +4,6 @@ from apps.monero.xmr.networks import NetworkTypes, net_version
 
 if False:
     from typing import List, Tuple, Optional
-    from apps.monero.xmr.types import Ge25519
     from trezor.messages.MoneroAccountPublicAddress import MoneroAccountPublicAddress
     from trezor.messages.MoneroTransactionDestinationEntry import (
         MoneroTransactionDestinationEntry,
@@ -15,12 +14,17 @@ def addr_to_hash(addr: MoneroAccountPublicAddress) -> bytes:
     """
     Creates hashable address representation
     """
+    assert addr.spend_public_key is not None
+    assert addr.view_public_key is not None
     return bytes(addr.spend_public_key + addr.view_public_key)
 
 
 def encode_addr(
-    version, spend_pub: Ge25519, view_pub: Ge25519, payment_id: Optional[bytes] = None
-) -> str:
+    version: bytes,
+    spend_pub: bytes,
+    view_pub: bytes,
+    payment_id: Optional[bytes] = None,
+) -> bytes:
     """
     Builds Monero address from public keys
     """
@@ -41,19 +45,23 @@ def decode_addr(addr: bytes) -> Tuple[int, bytes, bytes]:
 
 
 def public_addr_encode(
-    pub_addr: MoneroAccountPublicAddress, is_sub=False, net=NetworkTypes.MAINNET
-):
+    pub_addr: MoneroAccountPublicAddress,
+    is_sub: bool = False,
+    net: int = NetworkTypes.MAINNET,
+) -> bytes:
     """
     Encodes public address to Monero address
     """
     net_ver = net_version(net, is_sub)
+    assert pub_addr.spend_public_key is not None
+    assert pub_addr.view_public_key is not None
     return encode_addr(net_ver, pub_addr.spend_public_key, pub_addr.view_public_key)
 
 
 def classify_subaddresses(
     tx_dests: List[MoneroTransactionDestinationEntry],
     change_addr: MoneroAccountPublicAddress,
-) -> Tuple[int, int, int]:
+) -> Tuple[int, int, MoneroAccountPublicAddress]:
     """
     Classify destination subaddresses
     """
@@ -62,6 +70,7 @@ def classify_subaddresses(
     single_dest_subaddress = None
     addr_set = set()
     for tx in tx_dests:
+        assert tx.addr is not None
         if change_addr and addr_eq(change_addr, tx.addr):
             continue
         addr_hashed = addr_to_hash(tx.addr)
@@ -73,10 +82,11 @@ def classify_subaddresses(
             single_dest_subaddress = tx.addr
         else:
             num_stdaddresses += 1
+    assert single_dest_subaddress is not None
     return num_stdaddresses, num_subaddresses, single_dest_subaddress
 
 
-def addr_eq(a: MoneroAccountPublicAddress, b: MoneroAccountPublicAddress):
+def addr_eq(a: MoneroAccountPublicAddress, b: MoneroAccountPublicAddress) -> bool:
     return (
         a.spend_public_key == b.spend_public_key
         and a.view_public_key == b.view_public_key
@@ -86,7 +96,7 @@ def addr_eq(a: MoneroAccountPublicAddress, b: MoneroAccountPublicAddress):
 def get_change_addr_idx(
     outputs: List[MoneroTransactionDestinationEntry],
     change_dts: MoneroTransactionDestinationEntry,
-) -> int:
+) -> Optional[int]:
     """
     Returns ID of the change output from the change_dts and outputs
     """
@@ -95,6 +105,8 @@ def get_change_addr_idx(
 
     change_idx = None
     for idx, dst in enumerate(outputs):
+        assert dst.addr is not None
+        assert change_dts.addr is not None
         if (
             change_dts.amount
             and change_dts.amount == dst.amount
