@@ -53,6 +53,8 @@
 
 #include "common.h"
 
+#include "librust.h"
+
 // Command line options, with their defaults
 STATIC bool compile_only = false;
 STATIC uint emit_opt = MP_EMIT_OPT_NONE;
@@ -472,6 +474,9 @@ reimport:
 MP_NOINLINE int main_(int argc, char **argv);
 
 int main(int argc, char **argv) {
+
+  rust_function();
+
   collect_hw_entropy();
 
 #if MICROPY_PY_THREAD

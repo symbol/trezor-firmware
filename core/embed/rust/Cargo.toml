@@ -1,0 +1,17 @@
+[package]
+name = "rust"
+version = "0.1.0"
+authors = ["SatoshiLabs <info@satoshilabs.com>"]
+edition = "2018"
+
+[lib]
+name = "rust"
+crate-type = ["staticlib"]
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+
+[dependencies]
