@@ -20,6 +20,7 @@ display = Display()
 
 # re-export constants from modtrezorui
 NORMAL = Display.FONT_NORMAL
+MEDIUM = Display.FONT_MEDIUM
 BOLD = Display.FONT_BOLD
 MONO = Display.FONT_MONO
 SIZE = Display.FONT_SIZE

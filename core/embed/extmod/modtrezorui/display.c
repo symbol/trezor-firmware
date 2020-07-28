@@ -31,12 +31,16 @@
 #if TREZOR_MODEL == T
 
 #ifdef TREZOR_FONT_NORMAL_ENABLE
-#include "font_roboto_regular_20.h"
-#define FONT_NORMAL_DATA Font_Roboto_Regular_20
+#include "font_tthoves_regular_18.h"
+#define FONT_NORMAL_DATA Font_TTHoves_Regular_18
+#endif
+#ifdef TREZOR_FONT_MEDIUM_ENABLE
+#include "font_tthoves_medium_20.h"
+#define FONT_MEDIUM_DATA Font_TTHoves_Medium_20
 #endif
 #ifdef TREZOR_FONT_BOLD_ENABLE
-#include "font_roboto_bold_20.h"
-#define FONT_BOLD_DATA Font_Roboto_Bold_20
+#include "font_tthoves_bold_16.h"
+#define FONT_BOLD_DATA Font_TTHoves_Bold_16
 #endif
 #ifdef TREZOR_FONT_MONO_ENABLE
 #include "font_robotomono_regular_20.h"
@@ -48,6 +52,10 @@
 #ifdef TREZOR_FONT_NORMAL_ENABLE
 #include "font_pixeloperator_regular_8.h"
 #define FONT_NORMAL_DATA Font_PixelOperator_Regular_8
+#endif
+#ifdef TREZOR_FONT_MEDIUM_ENABLE
+#include "font_pixeloperator_regular_8.h"
+#define FONT_MEDIUM_DATA Font_PixelOperator_Regular_8
 #endif
 #ifdef TREZOR_FONT_BOLD_ENABLE
 #include "font_pixeloperator_bold_8.h"
@@ -624,6 +632,10 @@ static const uint8_t *get_glyph(int font, uint8_t c) {
       case FONT_NORMAL:
         return FONT_NORMAL_DATA[c - ' '];
 #endif
+#ifdef TREZOR_FONT_MEDIUM_ENABLE
+      case FONT_MEDIUM:
+        return FONT_MEDIUM_DATA[c - ' '];
+#endif
 #ifdef TREZOR_FONT_BOLD_ENABLE
       case FONT_BOLD:
         return FONT_BOLD_DATA[c - ' '];
@@ -644,6 +656,10 @@ static const uint8_t *get_glyph(int font, uint8_t c) {
 #ifdef TREZOR_FONT_NORMAL_ENABLE
     case FONT_NORMAL:
       return NONPRINTABLE_GLYPH(FONT_NORMAL_DATA);
+#endif
+#ifdef TREZOR_FONT_MEDIUM_ENABLE
+    case FONT_MEDIUM:
+      return NONPRINTABLE_GLYPH(FONT_MEDIUM_DATA);
 #endif
 #ifdef TREZOR_FONT_BOLD_ENABLE
     case FONT_BOLD:

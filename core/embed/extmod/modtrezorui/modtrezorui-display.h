@@ -29,6 +29,7 @@
 ///     FONT_SIZE: int  # font height in pixels
 ///     FONT_MONO: int  # id of monospace font
 ///     FONT_NORMAL: int  # id of normal-width font
+///     FONT_MEDIUM: int  # id of medium-width font
 ///     FONT_BOLD: int  # id of bold-width font
 ///
 typedef struct _mp_obj_Display_t {
@@ -598,6 +599,7 @@ STATIC const mp_rom_map_elem_t mod_trezorui_Display_locals_dict_table[] = {
     {MP_ROM_QSTR(MP_QSTR_HEIGHT), MP_ROM_INT(DISPLAY_RESY)},
     {MP_ROM_QSTR(MP_QSTR_FONT_SIZE), MP_ROM_INT(FONT_SIZE)},
     {MP_ROM_QSTR(MP_QSTR_FONT_NORMAL), MP_ROM_INT(FONT_NORMAL)},
+    {MP_ROM_QSTR(MP_QSTR_FONT_MEDIUM), MP_ROM_INT(FONT_MEDIUM)},
     {MP_ROM_QSTR(MP_QSTR_FONT_BOLD), MP_ROM_INT(FONT_BOLD)},
     {MP_ROM_QSTR(MP_QSTR_FONT_MONO), MP_ROM_INT(FONT_MONO)},
 };

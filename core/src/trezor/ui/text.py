@@ -141,6 +141,10 @@ class Text(ui.Component):
         self.content.append(ui.NORMAL)
         self.content.extend(content)
 
+    def medium(self, *content: TextContent) -> None:
+        self.content.append(ui.MEDIUM)
+        self.content.extend(content)
+
     def bold(self, *content: TextContent) -> None:
         self.content.append(ui.BOLD)
         self.content.extend(content)
