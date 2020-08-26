@@ -161,14 +161,23 @@ class Text(ui.Component):
 
     def on_render(self) -> None:
         if self.repaint:
-            model.header(
-                self.header_text,
-                self.header_icon,
-                ui.TITLE_GREY,
-                ui.BG,
-                self.icon_color,
-            )
-            render_text(self.content, self.new_lines, self.max_lines)
+            if self.header_text != "":
+                model.header(
+                    self.header_text,
+                    self.header_icon,
+                    ui.TITLE_GREY,
+                    ui.BG,
+                    self.icon_color,
+                )
+                render_text(self.content, self.new_lines, self.max_lines)
+            else:
+                # no header - currently only T1 uses this
+                render_text(
+                    self.content,
+                    self.new_lines,
+                    self.max_lines,
+                    offset_y=model.NO_HEADER_TEXT_Y,
+                )
             self.repaint = False
 
     if __debug__:

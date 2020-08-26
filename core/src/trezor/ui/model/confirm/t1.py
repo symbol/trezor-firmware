@@ -3,12 +3,13 @@ from trezor import ui
 from ..button import ButtonCancel, ButtonConfirm
 
 if False:
-    from typing import Union
+    from ..button import ButtonContent
 
-DEFAULT_CONFIRM = "CONFIRM"  # type: Union[bytes, str]
+DEFAULT_CONFIRM = "CONFIRM"  # type: ButtonContent
 DEFAULT_CONFIRM_STYLE = ButtonConfirm
-DEFAULT_CANCEL = "CANCEL"  # type: Union[bytes, str]
+DEFAULT_CANCEL = "CANCEL"  # type: ButtonContent
 DEFAULT_CANCEL_STYLE = ButtonCancel
+HOLD_CANCEL = "NO"  # type: ButtonContent
 
 
 def confirm_button_area(
@@ -24,3 +25,7 @@ def confirm_button_area(
             return (0, ui.HEIGHT - 11, 2 * ui.WIDTH // 3, 11)
         else:
             return (0, ui.HEIGHT - 11, ui.WIDTH // 2, 11)
+
+
+def hold_to_confirm_button_area(is_right: bool, only_one: bool = False) -> ui.Area:
+    return confirm_button_area(is_right, only_one)

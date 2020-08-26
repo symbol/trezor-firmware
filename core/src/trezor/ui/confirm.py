@@ -241,10 +241,8 @@ class HoldToConfirm(ui.Layout):
         self.loader = Loader(loader_style)
         self.loader.on_start = self._on_loader_start  # type: ignore
 
-        if cancel:
-            self.confirm = Button(ui.grid(17, n_x=4, cells_x=3), confirm, confirm_style)
-        else:
-            self.confirm = Button(ui.grid(4, n_x=1), confirm, confirm_style)
+        area = model.hold_to_confirm_button_area(True, cancel is False)
+        self.confirm = Button(area, confirm, confirm_style)
         self.confirm.on_press_start = self._on_press_start  # type: ignore
         self.confirm.on_press_end = self._on_press_end  # type: ignore
         self.confirm.on_click = self._on_click  # type: ignore
@@ -252,7 +250,9 @@ class HoldToConfirm(ui.Layout):
         self.cancel = None
         if cancel:
             self.cancel = Button(
-                ui.grid(16, n_x=4), res.load(ui.ICON_CANCEL), ButtonAbort
+                model.hold_to_confirm_button_area(False, False),
+                model.HOLD_CANCEL,
+                ButtonAbort,
             )
             self.cancel.on_click = self.on_cancel  # type: ignore
 
