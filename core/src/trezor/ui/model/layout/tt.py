@@ -75,3 +75,46 @@ def layout_confirm_backup2() -> Text:
 
 CONFIRM_BACKUP_CANCEL = "Skip"  # type: ButtonContent
 CONFIRM_BACKUP_CONFIRM = "Back up"  # type: ButtonContent
+
+
+def confirm_path_warning(path_lines: Iterable[str]) -> Text:
+    text = Text("Confirm path", ui.ICON_WRONG, ui.RED)
+    text.normal("Path")
+    text.mono(*path_lines)
+    text.normal("is unknown.")
+    text.normal("Are you sure?")
+
+    return text
+
+
+QR_X = const(120)
+QR_Y = const(115)
+QR_SIZE_THRESHOLD = const(63)
+
+
+def qr_coef(datalen: int) -> int:
+    return const(4) if datalen < QR_SIZE_THRESHOLD else const(3)
+
+
+SHOW_QR_CONFIRM = DEFAULT_CONFIRM
+SHOW_QR_CANCEL = "Address"
+SHOW_QR_CANCEL_STYLE = ButtonDefault
+
+SHOW_ADDRESS_CONFIRM = DEFAULT_CONFIRM
+SHOW_ADDRESS_CANCEL = "QR"
+SHOW_ADDRESS_CANCEL_STYLE = ButtonDefault
+
+
+def layout_show_qr(desc: str) -> Text:
+    return Text(desc, ui.ICON_RECEIVE, ui.GREEN)
+
+
+def layout_show_address(
+    desc: str, address: Iterable[str], network: Optional[str]
+) -> Text:
+    text = Text(desc, ui.ICON_RECEIVE, ui.GREEN)
+    if network is not None:
+        text.normal("%s network" % network)
+    text.mono(*address)
+
+    return text

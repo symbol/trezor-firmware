@@ -1,10 +1,10 @@
-from micropython import const
 from ubinascii import hexlify
 
 from trezor import ui
 from trezor.messages import ButtonRequestType
 from trezor.ui.button import ButtonDefault
 from trezor.ui.container import Container
+from trezor.ui.model import layout as model
 from trezor.ui.qr import Qr
 from trezor.ui.scroll import Paginated
 from trezor.ui.text import Text
@@ -19,23 +19,17 @@ if False:
 
 
 async def show_address(
-    ctx: wire.Context,
-    address: str,
-    desc: str = "Confirm address",
-    cancel: str = "QR",
-    network: str = None,
+    ctx: wire.Context, address: str, desc: str = "Confirm address", network: str = None,
 ) -> bool:
-    text = Text(desc, ui.ICON_RECEIVE, ui.GREEN)
-    if network is not None:
-        text.normal("%s network" % network)
-    text.mono(*split_address(address))
+    text = model.layout_show_address(desc, split_address(address), network)
 
     return await confirm(
         ctx,
         text,
         code=ButtonRequestType.Address,
-        cancel=cancel,
-        cancel_style=ButtonDefault,
+        confirm=model.SHOW_ADDRESS_CONFIRM,
+        cancel=model.SHOW_ADDRESS_CANCEL,
+        cancel_style=model.SHOW_ADDRESS_CANCEL_STYLE,
     )
 
 
@@ -43,22 +37,20 @@ async def show_qr(
     ctx: wire.Context,
     address: str,
     desc: str = "Confirm address",
-    cancel: str = "Address",
+    cancel: str = model.SHOW_QR_CANCEL,
 ) -> bool:
-    QR_X = const(120)
-    QR_Y = const(115)
-    QR_SIZE_THRESHOLD = const(63)
-    QR_COEF = const(4) if len(address) < QR_SIZE_THRESHOLD else const(3)
-    qr = Qr(address, QR_X, QR_Y, QR_COEF)
-    text = Text(desc, ui.ICON_RECEIVE, ui.GREEN)
+    coef = model.qr_coef(len(address))
+    qr = Qr(address, model.QR_X, model.QR_Y, coef)
+    text = model.layout_show_qr(desc)
     content = Container(qr, text)
 
     return await confirm(
         ctx,
         content,
         code=ButtonRequestType.Address,
+        confirm=model.SHOW_QR_CONFIRM,
         cancel=cancel,
-        cancel_style=ButtonDefault,
+        cancel_style=model.SHOW_QR_CANCEL_STYLE,
     )
 
 

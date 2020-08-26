@@ -1,8 +1,7 @@
 from micropython import const
 
-from trezor import ui
 from trezor.messages import ButtonRequestType
-from trezor.ui.text import Text
+from trezor.ui.model import layout as model
 
 from . import HARDENED
 from .confirm import require_confirm
@@ -33,11 +32,7 @@ async def validate_path(
 
 
 async def show_path_warning(ctx: wire.Context, path: Bip32Path) -> None:
-    text = Text("Confirm path", ui.ICON_WRONG, ui.RED)
-    text.normal("Path")
-    text.mono(*break_address_n_to_lines(path))
-    text.normal("is unknown.")
-    text.normal("Are you sure?")
+    text = model.confirm_path_warning(break_address_n_to_lines(path))
     await require_confirm(ctx, text, ButtonRequestType.UnknownDerivationPath)
 
 
