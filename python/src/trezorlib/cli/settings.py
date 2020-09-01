@@ -74,8 +74,8 @@ def image_to_tt(filename: str) -> bytes:
                 "Failed to convert image to Trezor format"
             ) from e
 
-    if toif_image.size != (144, 144):
-        raise click.ClickException("Wrong size of image - should be 144x144")
+    # if toif_image.size != (144, 144):
+    #     raise click.ClickException("Wrong size of image - should be 144x144")
 
     if toif_image.mode != firmware.ToifMode.full_color:
         raise click.ClickException("Wrong image mode - should be full_color")

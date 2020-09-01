@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+import sys
+from trezorlib._internal import toif
+from trezorlib.client import TrezorClient
+from trezorlib.transport import get_transport
+from trezorlib.ui import ClickUI
+from trezorlib import device
+from PIL import Image
+
+trezor = TrezorClient(get_transport(), ui=ClickUI())
+
+im = Image.open(open(sys.argv[1], "rb"))
+toi = toif.from_image(im)
+device.apply_settings(trezor, homescreen=toi.to_bytes())
