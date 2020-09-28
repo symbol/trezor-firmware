@@ -92,6 +92,15 @@ class TrezorClient:
         self.session_id = session_id
         self.init_device(session_id=session_id)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, _type, value, traceback):
+        pass
+
+    def set_expected_responses(self, expected):
+        pass
+
     def open(self):
         if self.session_counter == 0:
             self.transport.begin_session()

@@ -35,6 +35,9 @@ reads the message's header. When the message type is known the first handler is 
 
 """
 
+import gc
+import micropython
+
 import protobuf
 from trezor import log, loop, messages, ui, utils, workflow
 from trezor.messages import FailureType
@@ -194,6 +197,8 @@ class Context:
                 self.sid,
                 expected_type,
             )
+        gc.collect()
+        micropython.mem_info()
 
         # Load the full message into a buffer, parse out type and data payload
         msg = await self.read_from_wire()
@@ -442,8 +447,7 @@ async def handle_session(
 
         except Exception as exc:
             # The session handling should never exit, just log and continue.
-            if __debug__:
-                log.exception(__name__, exc)
+            log.exception(__name__, exc)
 
 
 def find_registered_workflow_handler(

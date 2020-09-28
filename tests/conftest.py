@@ -18,10 +18,11 @@ import os
 
 import pytest
 
-from trezorlib import debuglink, log
+from trezorlib import log
+from trezorlib.client import TrezorClient
 from trezorlib.debuglink import TrezorClientDebugLink
-from trezorlib.device import wipe as wipe_device
 from trezorlib.transport import enumerate_devices, get_transport
+from trezorlib.ui import ClickUI
 
 from . import ui_tests
 from .device_handler import BackgroundDeviceHandler
@@ -42,9 +43,9 @@ def get_device():
         devices = enumerate_devices()
         for device in devices:
             try:
-                return TrezorClientDebugLink(device, auto_interact=not interact)
-            except Exception:
-                pass
+                return TrezorClient(device, ClickUI())
+            except Exception as e:
+                print(e)
         else:
             raise RuntimeError("No debuggable device found")
 
@@ -101,7 +102,8 @@ def client(request):
         should_format = sd_marker.kwargs.get("formatted", True)
         client.debug.erase_sd_card(format=should_format)
 
-    wipe_device(client)
+    # no load -> no wipe
+    # wipe_device(client)
 
     setup_params = dict(
         uninitialized=False,
@@ -121,16 +123,17 @@ def client(request):
     )
 
     if not setup_params["uninitialized"]:
-        debuglink.load_device(
-            client,
-            mnemonic=setup_params["mnemonic"],
-            pin=setup_params["pin"],
-            passphrase_protection=use_passphrase,
-            label="test",
-            language="en-US",
-            needs_backup=setup_params["needs_backup"],
-            no_backup=setup_params["no_backup"],
-        )
+        # no load on prod fw
+        # debuglink.load_device(
+        #     client,
+        #     mnemonic=setup_params["mnemonic"],
+        #     pin=setup_params["pin"],
+        #     passphrase_protection=use_passphrase,
+        #     label="test",
+        #     language="en-US",
+        #     needs_backup=setup_params["needs_backup"],
+        #     no_backup=setup_params["no_backup"],
+        # )
 
         if use_passphrase and isinstance(setup_params["passphrase"], str):
             client.use_passphrase(setup_params["passphrase"])

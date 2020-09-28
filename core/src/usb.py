@@ -36,20 +36,16 @@ if not utils.BITCOIN_ONLY:
         # fmt: on
     )
 
-if __debug__:
-    # We cannot use this on real device simultaneously with the iface_webauthn
-    # interface, because we have only limited number of endpoints (10).
-    # We start this only for bitcoin-only firmware or for emulator.
-    ENABLE_VCP_IFACE = utils.EMULATOR or utils.BITCOIN_ONLY
-    if ENABLE_VCP_IFACE:
-        # interface used for cdc/vcp console emulation (debug messages)
-        iface_vcp = io.VCP(
-            iface_num=2 if utils.BITCOIN_ONLY else 3,
-            data_iface_num=3 if utils.BITCOIN_ONLY else 4,
-            ep_in=0x83 if utils.BITCOIN_ONLY else 0x84,
-            ep_out=0x03 if utils.BITCOIN_ONLY else 0x04,
-            ep_cmd=0x84 if utils.BITCOIN_ONLY else 0x85,
-        )
+ENABLE_VCP_IFACE = utils.EMULATOR or utils.BITCOIN_ONLY
+if ENABLE_VCP_IFACE:
+    # interface used for cdc/vcp console emulation (debug messages)
+    iface_vcp = io.VCP(
+        iface_num=2 if utils.BITCOIN_ONLY else 3,
+        data_iface_num=3 if utils.BITCOIN_ONLY else 4,
+        ep_in=0x83 if utils.BITCOIN_ONLY else 0x84,
+        ep_out=0x03 if utils.BITCOIN_ONLY else 0x04,
+        ep_cmd=0x84 if utils.BITCOIN_ONLY else 0x85,
+    )
 
 bus = io.USB(
     vendor_id=0x1209,
@@ -66,6 +62,5 @@ if __debug__:
     bus.add(iface_debug)
 if not utils.BITCOIN_ONLY:
     bus.add(iface_webauthn)
-if __debug__:
-    if ENABLE_VCP_IFACE:
-        bus.add(iface_vcp)
+if ENABLE_VCP_IFACE:
+    bus.add(iface_vcp)

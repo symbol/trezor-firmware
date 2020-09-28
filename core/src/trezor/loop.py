@@ -194,8 +194,7 @@ def _step(task: Task, value: Any) -> None:
             log.debug(__name__, "finish: %s", task)
         finalize(task, e.value)
     except Exception as e:
-        if __debug__:
-            log.exception(__name__, e)
+        log.exception(__name__, e)
         finalize(task, e)
     else:
         if isinstance(result, Syscall):

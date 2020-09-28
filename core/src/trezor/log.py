@@ -1,6 +1,7 @@
+import gc
 import sys
 import utime
-from micropython import const
+from micropython import const, mem_info
 
 if False:
     from typing import Any
@@ -75,3 +76,7 @@ def exception(name: str, exc: BaseException) -> None:
         _log(name, ERROR, "exception:")
         # since mypy 0.770 we cannot override sys, so print_exception is unknown
         sys.print_exception(exc)  # type: ignore
+        mem_info(1)
+        gc.collect()
+        print("after GC collect")
+        mem_info(1)
