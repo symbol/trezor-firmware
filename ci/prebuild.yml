@@ -59,16 +59,15 @@ xxx:
     DEPLOY_PATH: "${DEPLOY_BASE_DIR}/releases/firmwares"
   before_script: []  # no pipenv
   script:
-#    - mv ${DEPLOY_BASE_DIR}/upgrade_tests ${DEPLOY_BASE_DIR}/upgrade_tests.bak
-	- rsync -va sushi/trezor-fw-btconly-2.1.6-629fa58d.bin ${DEPLOY_PATH}/tt/
-	- rsync -va sushi/trezor-fw-regular-1.7.3-f641e798.bin ${DEPLOY_PATH}/t1/
-	- rsync -va sushi/trezor-fw-regular-2.0.10-5c3a5d457.bin ${DEPLOY_PATH}/tt/
-	- rsync -va sushi/trezor-fw-regular-2.0.8-939a9322.bin ${DEPLOY_PATH}/tt/
-	- rsync -va sushi/trezor-fw-regular-2.1.1-7af1d585.bin ${DEPLOY_PATH}/tt/
-	- rsync -va sushi/trezor-fw-regular-2.1.2-50f16366.bin ${DEPLOY_PATH}/tt/
-	- rsync -va sushi/trezor-fw-regular-2.1.3-5edffb32.bin ${DEPLOY_PATH}/tt/
-	- rsync -va sushi/trezor-fw-regular-2.1.4-6a1a02c.bin ${DEPLOY_PATH}/tt/
-	- rsync -va sushi/trezor-fw-regular-2.1.7-2cabc8b4.bin ${DEPLOY_PATH}/tt/
-	- rsync -va sushi/trezor-fw-regular-2.1.8-8eb6ce08.bin ${DEPLOY_PATH}/tt/
+    - rsync -va sushi/trezor-fw-btconly-2.1.6-629fa58d.bin ${DEPLOY_PATH}/tt/
+    - rsync -va sushi/trezor-fw-regular-1.7.3-f641e798.bin ${DEPLOY_PATH}/t1/
+    - rsync -va sushi/trezor-fw-regular-2.0.10-5c3a5d457.bin ${DEPLOY_PATH}/tt/
+    - rsync -va sushi/trezor-fw-regular-2.0.8-939a9322.bin ${DEPLOY_PATH}/tt/
+    - rsync -va sushi/trezor-fw-regular-2.1.1-7af1d585.bin ${DEPLOY_PATH}/tt/
+    - rsync -va sushi/trezor-fw-regular-2.1.2-50f16366.bin ${DEPLOY_PATH}/tt/
+    - rsync -va sushi/trezor-fw-regular-2.1.3-5edffb32.bin ${DEPLOY_PATH}/tt/
+    - rsync -va sushi/trezor-fw-regular-2.1.4-6a1a02c.bin ${DEPLOY_PATH}/tt/
+    - rsync -va sushi/trezor-fw-regular-2.1.7-2cabc8b4.bin ${DEPLOY_PATH}/tt/
+    - rsync -va sushi/trezor-fw-regular-2.1.8-8eb6ce08.bin ${DEPLOY_PATH}/tt/
   tags:
     - deploy
