@@ -56,9 +56,11 @@ image: registry.gitlab.com/satoshilabs/trezor/trezor-firmware/trezor-firmware-en
 xxx:
   stage: prebuild
   variables:
-    DEPLOY_PATH: "${DEPLOY_BASE_DIR}/releases/emulators"
+    DEPLOY_PATH: "${DEPLOY_BASE_DIR}/releases/firmwares"
   before_script: []  # no pipenv
   script:
-    - mv ${DEPLOY_BASE_DIR}/upgrade_tests ${DEPLOY_BASE_DIR}/upgrade_tests.bak
+#    - mv ${DEPLOY_BASE_DIR}/upgrade_tests ${DEPLOY_BASE_DIR}/upgrade_tests.bak
+    - mkdir ${DEPLOY_BASE_DIR}/t1
+    - mkdir ${DEPLOY_BASE_DIR}/tt
   tags:
     - deploy
