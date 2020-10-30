@@ -59,31 +59,7 @@ xxx:
     DEPLOY_PATH: "${DEPLOY_BASE_DIR}/releases/firmwares"
   before_script: []  # no pipenv
   script:
-    - mv ${DEPLOY_PATH}/trezor-fw-btconly-1.9.1-c6b2580c.bin ${DEPLOY_PATH}/t1/
-    - mv ${DEPLOY_PATH}/trezor-fw-btconly-1.9.2-63ebb8cc.bin ${DEPLOY_PATH}/t1/
-    - mv ${DEPLOY_PATH}/trezor-fw-btconly-1.9.3-0d5f0066.bin ${DEPLOY_PATH}/t1/
-    - mv ${DEPLOY_PATH}/trezor-fw-btconly-2.2.0-02724da0.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-btconly-2.3.0-0b7a8449.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-btconly-2.3.1-c6b2580c.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-btconly-2.3.2-63ebb8cc.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-btconly-2.3.3-0d5f0066.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-btconly-2.3.4-50854b92.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-btconly-debug-1.9.2-63ebb8cc.bin ${DEPLOY_PATH}/t1/
-    - mv ${DEPLOY_PATH}/trezor-fw-btconly-debug-1.9.3-0d5f0066.bin ${DEPLOY_PATH}/t1/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-1.9.0-0b7a8449.bin ${DEPLOY_PATH}/t1/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-1.9.1-c6b2580c.bin ${DEPLOY_PATH}/t1/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-1.9.2-63ebb8cc.bin ${DEPLOY_PATH}/t1/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-1.9.3-0d5f0066.bin ${DEPLOY_PATH}/t1/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-2.2.0-02724da0.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-2.3.0-0b7a8449.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-2.3.1-c6b2580c.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-2.3.2-63ebb8cc.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-2.3.3-0d5f0066.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-2.3.4-50854b92.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-debug-1.9.2-63ebb8cc.bin ${DEPLOY_PATH}/t1/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-debug-1.9.3-0d5f0066.bin ${DEPLOY_PATH}/t1/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-debug-2.3.2-63ebb8cc.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-debug-2.3.3-0d5f0066.bin ${DEPLOY_PATH}/tt/
-    - mv ${DEPLOY_PATH}/trezor-fw-regular-debug-2.3.4-50854b92.bin ${DEPLOY_PATH}/tt/
+    - rm -rf ${DEPLOY_BASE_DIR}/releases/emulators/macos/
+    - rm -rf ${DEPLOY_BASE_DIR}/upgrade_tests.bak
   tags:
     - deploy
