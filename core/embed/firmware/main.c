@@ -47,6 +47,7 @@
 #include "sdcard.h"
 #include "supervise.h"
 #include "touch.h"
+#include "librust.h"
 
 int main(void) {
   // initialize pseudo-random number generator
@@ -90,6 +91,8 @@ int main(void) {
 
   display_clear();
 #endif
+
+  rust_function();
 
   printf("CORE: Preparing stack\n");
   // Stack limit should be less than real stack size, so we have a chance

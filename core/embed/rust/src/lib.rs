@@ -1,12 +1,16 @@
 #![no_std]
 
 use core::panic::PanicInfo;
+use cty;
 
 extern {
-    // libc
-    pub fn printf(format: *const u8, ...) -> i32;
     // common.c
     pub fn __fatal_error(expr: *const u8, msg: *const u8, file: *const u8, line: i32, func: *const u8);
+
+    pub fn display_init();
+    pub fn display_refresh();
+    pub fn display_print(text: *const u8, textlen: cty::c_int);
+    pub fn display_backlight(val: cty::c_int) -> cty::c_int;
 }
 
 #[panic_handler]
@@ -19,7 +23,10 @@ fn panic(_info: &PanicInfo) -> ! {
 
 #[no_mangle]
 pub extern "C" fn rust_function() {
+    let cstr = b"Hello from Rust!\n";
     unsafe {
-        printf(b"Hello from Rust!\n" as *const u8);
+        display_backlight(255);
+        display_print(cstr as *const u8, 12);
+        display_refresh();
     }
 }

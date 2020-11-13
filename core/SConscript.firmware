@@ -19,6 +19,7 @@ FROZEN = True
 
 # modtrezorconfig
 CPPPATH_MOD += [
+    'embed/rust',
     'embed/extmod/modtrezorconfig',
     'vendor/trezor-storage',
 ]
@@ -622,7 +623,7 @@ program_elf = env.Command(
     target='firmware.elf',
     source=obj_program,
     action=
-    '$LINK -o $TARGET $CCFLAGS $CFLAGS $LINKFLAGS $SOURCES -lc_nano -lm -lgcc',
+    '$LINK -o $TARGET $CCFLAGS $CFLAGS $LINKFLAGS $SOURCES -lc_nano -lm -lgcc -Lembed/rust/target/thumbv7em-none-eabihf/release -lrust',
 )
 
 if TREZOR_MODEL == 'T':
