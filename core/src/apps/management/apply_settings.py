@@ -150,8 +150,7 @@ async def require_confirm_change_display_rotation(ctx, rotation):
     else:
         raise wire.DataError("Unsupported display rotation")
     text = Text("Change rotation", ui.ICON_CONFIG, new_lines=False)
-    text.normal("Do you really want to", "change display rotation")
-    text.normal("to")
+    text.normal("Do you really want to\nchange display rotation\nto")
     text.bold("%s?" % label)
     await require_confirm(ctx, text, ButtonRequestType.ProtectCall)
 
