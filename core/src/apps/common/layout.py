@@ -7,14 +7,14 @@ from trezor.ui.button import ButtonDefault
 from trezor.ui.container import Container
 from trezor.ui.qr import Qr
 from trezor.ui.scroll import Paginated
-from trezor.ui.text import Text
+from trezor.ui.text import TEXT_MAX_LINES, Span, Text
 from trezor.utils import chunks
 
 from apps.common import HARDENED
 from apps.common.confirm import confirm, require_confirm
 
 if False:
-    from typing import Iterable, Iterator, List
+    from typing import Iterable, Iterator, List, Union
     from trezor import wire
 
 
@@ -136,3 +136,59 @@ async def show_success(
     await require_confirm(
         ctx, text, ButtonRequestType.Success, confirm=button, cancel=None
     )
+
+
+def paginate_text(
+    text: str,
+    header: str,
+    font: int = ui.NORMAL,
+    header_icon: str = ui.ICON_DEFAULT,
+    icon_color: int = ui.ORANGE_ICON,
+    break_words: bool = False,
+) -> Union[Text, Paginated]:
+    n_lines = 1
+    span = Span(text, 0, font, break_words=break_words)
+    while span.next_line():
+        n_lines += 1
+
+    if n_lines <= TEXT_MAX_LINES:
+        result = Text(
+            header,
+            header_icon=header_icon,
+            icon_color=icon_color,
+            new_lines=False,
+        )
+        result.content = [font, text]
+        return result
+    else:
+        pages: List[ui.Component] = []
+        span.reset(text, 0, font, break_words=break_words, line_width=204)
+        span.next_line()
+        last_page_break = 0
+        while True:
+            page = Text(
+                header,
+                header_icon=header_icon,
+                icon_color=icon_color,
+                new_lines=False,
+                content_offset=0,
+                char_offset=last_page_break,
+                line_width=204,
+                render_page_overflow=False,
+            )
+            page.content = [font, text]
+            pages.append(page)
+
+            # try scanning TEXT_MAX_LINES more linebreaks
+            for _ in range(TEXT_MAX_LINES):
+                if span.next_line():
+                    last_page_break = span.start
+                else:
+                    last_page_break = -1
+
+            if last_page_break == -1:
+                # there were not TEXT_MAX_LINES more linebreaks.
+                # this means that this was the last (possibly not even full) screen
+                break
+
+        return Paginated(pages)

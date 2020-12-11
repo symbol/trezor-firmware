@@ -206,3 +206,42 @@ def test_signmessage(client, coin_name, path, script_type, address, message, sig
     )
     assert sig.address == address
     assert sig.signature.hex() == signature
+
+
+MESSAGE_LENGTHS = (
+    pytest.param("This is a very long message. " * 64, id="normal_text"),
+    pytest.param("ThisIsAMessageWithoutSpaces" * 64, id="no_spaces"),
+    pytest.param("ThisIsAMessageWithLongWords " * 64, id="long_words"),
+    pytest.param("This\nmessage\nhas\nnewlines\nafter\nevery\nword", id="newlines"),
+)
+
+
+@pytest.mark.skip_t1
+@pytest.mark.parametrize("message", MESSAGE_LENGTHS)
+def test_signmessage_pagination(client, message):
+    message_read = ""
+    message += "End."
+
+    def input_flow():
+        nonlocal message_read
+
+        yield
+        while True:
+            layout = client.debug.wait_layout()
+            message_read += layout.text
+            if not layout.text.endswith("End."):
+                client.debug.swipe_up()
+            else:
+                client.debug.press_yes()
+                break
+
+    with client:
+        client.set_input_flow(input_flow)
+        client.debug.watch_layout(True)
+        btc.sign_message(
+            client,
+            coin_name="Bitcoin",
+            n=parse_path("m/44h/0h/0h/0/0"),
+            message=message,
+        )
+    assert message_read == "Sign BTC message " + message
