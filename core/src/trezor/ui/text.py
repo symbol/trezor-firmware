@@ -297,25 +297,20 @@ class Text(ui.Component):
     def normal(self, *content: TextContent) -> None:
         self.content.append(ui.NORMAL)
         self.content.extend(content)
-        self.breaks = None
 
     def bold(self, *content: TextContent) -> None:
         self.content.append(ui.BOLD)
         self.content.extend(content)
-        self.breaks = None
 
     def mono(self, *content: TextContent) -> None:
         self.content.append(ui.MONO)
         self.content.extend(content)
-        self.breaks = None
 
     def br(self) -> None:
         self.content.append(BR)
-        self.breaks = None
 
     def br_half(self) -> None:
         self.content.append(BR_HALF)
-        self.breaks = None
 
     def on_render(self) -> None:
         if self.repaint:
