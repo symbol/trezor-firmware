@@ -55,5 +55,5 @@ async def require_confirm_verify_message(
 
     await require_confirm(
         ctx,
-        paginate_text(decode_message(message), header, font=ui.MONO, break_words=False),
+        paginate_text(decode_message(message), header, font=ui.MONO),
     )
