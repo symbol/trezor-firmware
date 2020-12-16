@@ -234,6 +234,7 @@ def render_text(
             offset_x=offset_x - INITIAL_OFFSET_X,
             break_words=break_words,
         )
+        char_offset = 0
         while span.next_line():
             ui.display.text(
                 offset_x, offset_y, item, font, fg, bg, span.start, span.length
