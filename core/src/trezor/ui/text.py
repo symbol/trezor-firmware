@@ -3,7 +3,7 @@ from micropython import const
 from trezor import ui
 
 if False:
-    from typing import List, Union
+    from typing import Any, List, Optional, Union
 
 TEXT_HEADER_HEIGHT = const(48)
 TEXT_LINE_HEIGHT = const(26)
@@ -57,7 +57,48 @@ class Span:
         self.word_break = False
         self.advance_whitespace = False
 
+    def count_lines(self) -> int:
+        """Get a number of lines in the specified string.
+
+        Should be used with a cleanly reset span. Leaves the span in the final position.
+        """
+        n_lines = 0
+        while self.next_line():
+            n_lines += 1
+        # deal with trailing newlines: if the final span does not have any content,
+        # do not count it
+        if self.length > 0:
+            n_lines += 1
+        return n_lines
+
+    def has_more_content(self) -> bool:
+        """Look ahead to check if there is more content after the current span is
+        consumed.
+        """
+        start = self.start + self.length
+        if self.advance_whitespace:
+            start += 1
+        return start < len(self.string)
+
     def next_line(self) -> bool:
+        """Advance the span to point to contents of the next line.
+
+        Returns True if the rendered should make newline afterwards, False if this is
+        the end of the text.
+
+        Within the renderer, we use this as:
+
+        >>> while span.next_line():
+        >>>     render_the_line(span)
+        >>>     go_to_next_line()
+        >>> render_the_line(span)  # final line without linebreak
+
+        This is unsuitable for other uses however. To count lines (as in
+        `apps.common.layout.paginate_text`), use instead:
+
+        >>> while span.has_more_content():
+        >>>     span.next_line()
+        """
         # We are making copies of most class variables so that the lookup is faster.
         # This also allows us to pick defaults independently of the current status
         string = self.string
@@ -220,6 +261,7 @@ def render_text(
         if (
             item_width <= line_width
             and item_width + offset_x - INITIAL_OFFSET_X > line_width
+            and "\n" not in item
         ):
             offset_y += TEXT_LINE_HEIGHT
             ui.display.text(INITIAL_OFFSET_X, offset_y, item, font, fg, bg)
@@ -240,8 +282,9 @@ def render_text(
                 offset_x, offset_y, item, font, fg, bg, span.start, span.length
             )
             end_of_page = offset_y >= offset_y_max
+            have_more_content = span.has_more_content() or item_index < len(items) - 1
 
-            if end_of_page and render_page_overflow:
+            if end_of_page and have_more_content and render_page_overflow:
                 ui.display.text(
                     offset_x + span.width, offset_y, "...", ui.BOLD, ui.GREY, bg
                 )
@@ -265,6 +308,43 @@ def render_text(
         elif span.width > 0:
             # only advance cursor if we actually rendered anything
             offset_x += span.width + SPACE
+
+
+if __debug__:
+
+    class DisplayMock:
+        """Mock Display class that stores rendered text in an array.
+
+        Used to extract data for unit tests.
+        """
+
+        def __init__(self) -> None:
+            self.screen_contents: List[str] = []
+            self.orig_display = ui.display
+
+        def __getattr__(self, key: str) -> Any:
+            return getattr(self.orig_display, key)
+
+        def __enter__(self) -> None:
+            ui.display = self  # type: ignore
+
+        def __exit__(self, exc: Any, exc_type: Any, tb: Any) -> None:
+            ui.display = self.orig_display
+
+        def text(
+            self,
+            offset_x: int,
+            offset_y: int,
+            string: str,
+            font: int,
+            fg: int,
+            bg: int,
+            start: int = 0,
+            length: Optional[int] = None,
+        ) -> None:
+            if length is None:
+                length = len(string) - start
+            self.screen_contents.append(string[start : start + length])
 
 
 class Text(ui.Component):
@@ -293,7 +373,6 @@ class Text(ui.Component):
         self.content_offset = content_offset
         self.char_offset = char_offset
         self.line_width = line_width
-        self.repaint = True
 
     def normal(self, *content: TextContent) -> None:
         self.content.append(ui.NORMAL)
@@ -337,8 +416,15 @@ class Text(ui.Component):
     if __debug__:
 
         def read_content(self) -> List[str]:
-            lines = [w for w in self.content if isinstance(w, str)]
-            return [self.header_text] + lines[: self.max_lines]
+            display_mock = DisplayMock()
+            should_repaint = self.repaint
+            try:
+                with display_mock:
+                    self.repaint = True
+                    self.on_render()
+            finally:
+                self.repaint = should_repaint
+            return display_mock.screen_contents
 
 
 LABEL_LEFT = const(0)
