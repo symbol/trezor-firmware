@@ -209,10 +209,13 @@ def test_signmessage(client, coin_name, path, script_type, address, message, sig
 
 
 MESSAGE_LENGTHS = (
-    pytest.param("This is a very long message. " * 64, id="normal_text"),
-    pytest.param("ThisIsAMessageWithoutSpaces" * 64, id="no_spaces"),
-    pytest.param("ThisIsAMessageWithLongWords " * 64, id="long_words"),
+    pytest.param("This is a very long message. " * 16, id="normal_text"),
+    pytest.param("ThisIsAMessageWithoutSpaces" * 16, id="no_spaces"),
+    pytest.param("ThisIsAMessageWithLongWords " * 16, id="long_words"),
     pytest.param("This\nmessage\nhas\nnewlines\nafter\nevery\nword", id="newlines"),
+    pytest.param("Příšerně žluťoučký kůň úpěl ďábelské ódy. " * 16, id="utf_text"),
+    pytest.param("PříšerněŽluťoučkýKůňÚpělĎábelskéÓdy" * 16, id="utf_nospace"),
+    pytest.param("1\n2\n3\n4\n5\n6", id="single_line_over"),
 )
 
 
@@ -223,17 +226,37 @@ def test_signmessage_pagination(client, message):
     message += "End."
 
     def input_flow():
+        # collect screen contents into `message_read`.
+        # Join lines that are separated by a single "-" string, space-separate lines otherwise.
         nonlocal message_read
 
         yield
-        while True:
+        # start assuming there was a word break; this avoids prepending space at start
+        word_break = True
+        max_attempts = 100
+        while max_attempts:
             layout = client.debug.wait_layout()
-            message_read += layout.text
-            if not layout.text.endswith("End."):
+            for line in layout.lines[1:]:
+                if line == "-":
+                    # next line will be attached without space
+                    word_break = True
+                elif word_break:
+                    # attach without space, reset word_break
+                    message_read += line
+                    word_break = False
+                else:
+                    # attach with space
+                    message_read += " " + line
+
+            if not message_read.endswith("End."):
                 client.debug.swipe_up()
             else:
                 client.debug.press_yes()
                 break
+
+            max_attempts -= 1
+
+        assert max_attempts > 0, "failed to scroll through message"
 
     with client:
         client.set_input_flow(input_flow)
@@ -244,4 +267,18 @@ def test_signmessage_pagination(client, message):
             n=parse_path("m/44h/0h/0h/0/0"),
             message=message,
         )
-    assert message_read == "Sign BTC message " + message
+    assert message.replace("\n", " ") == message_read
+
+
+@pytest.mark.skip_t1
+def test_signmessage_pagination_trailing_newline(client):
+    # This can currently only be tested by a human via the UI test diff:
+    message = "THIS\nMUST\nNOT\nBE\nPAGINATED\n"
+    # The trailing newline must not cause a new paginated screen to appear.
+    # The UI must be a single dialog without pagination.
+    btc.sign_message(
+        client,
+        coin_name="Bitcoin",
+        n=parse_path("m/44h/0h/0h/0/0"),
+        message=message,
+    )

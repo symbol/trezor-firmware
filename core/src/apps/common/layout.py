@@ -146,12 +146,8 @@ def paginate_text(
     icon_color: int = ui.ORANGE_ICON,
     break_words: bool = False,
 ) -> Union[Text, Paginated]:
-    n_lines = 1
     span = Span(text, 0, font, break_words=break_words)
-    while span.next_line():
-        n_lines += 1
-
-    if n_lines <= TEXT_MAX_LINES:
+    if span.count_lines() <= TEXT_MAX_LINES:
         result = Text(
             header,
             header_icon=header_icon,
@@ -160,35 +156,28 @@ def paginate_text(
         )
         result.content = [font, text]
         return result
+
     else:
         pages: List[ui.Component] = []
         span.reset(text, 0, font, break_words=break_words, line_width=204)
-        span.next_line()
-        last_page_break = 0
-        while True:
+        while span.has_more_content():
+            # advance to first line of the page
+            span.next_line()
             page = Text(
                 header,
                 header_icon=header_icon,
                 icon_color=icon_color,
                 new_lines=False,
                 content_offset=0,
-                char_offset=last_page_break,
+                char_offset=span.start,
                 line_width=204,
                 render_page_overflow=False,
             )
             page.content = [font, text]
             pages.append(page)
 
-            # try scanning TEXT_MAX_LINES more linebreaks
-            for _ in range(TEXT_MAX_LINES):
-                if span.next_line():
-                    last_page_break = span.start
-                else:
-                    last_page_break = -1
-
-            if last_page_break == -1:
-                # there were not TEXT_MAX_LINES more linebreaks.
-                # this means that this was the last (possibly not even full) screen
-                break
+            # roll over the remaining lines on the page
+            for _ in range(TEXT_MAX_LINES - 1):
+                span.next_line()
 
         return Paginated(pages)
