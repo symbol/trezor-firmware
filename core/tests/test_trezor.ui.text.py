@@ -105,6 +105,45 @@ class TestTextSpan(unittest.TestCase):
             ],
         )
 
+    def test_has_more_content(self):
+        line_width = display.text_width("hello world", ui.NORMAL) - 1
+        span = text.Span("hello world", line_width=line_width)
+        self.assertTrue(span.has_more_content())
+        self.assertTrue(span.next_line())
+        self.assertEqual("hello", span.string[span.start : span.start + span.length])
+
+        # has_more_content is True because there's text remaining on the line
+        self.assertTrue(span.has_more_content())
+        # next_line is False because we should not continue iterating
+        self.assertFalse(span.next_line())
+        self.assertEqual("world", span.string[span.start : span.start + span.length])
+
+        self.assertFalse(span.has_more_content())
+        self.assertFalse(span.next_line())
+        self.assertEqual("world", span.string[span.start : span.start + span.length])
+
+
+    def test_has_more_content_trailing_newline(self):
+        span = text.Span("1\n2\n3\n")
+
+        self.assertTrue(span.has_more_content())
+        self.assertTrue(span.next_line())
+        self.assertEqual("1", span.string[span.start : span.start + span.length])
+
+        self.assertTrue(span.has_more_content())
+        self.assertTrue(span.next_line())
+        self.assertEqual("2", span.string[span.start : span.start + span.length])
+
+        self.assertTrue(span.has_more_content())
+        self.assertTrue(span.next_line())
+        self.assertEqual("3", span.string[span.start : span.start + span.length])
+
+        # has_more_content is False because the "remaining" text is empty
+        self.assertFalse(span.has_more_content())
+        # next_line is False because we should not continue iterating
+        self.assertFalse(span.next_line())
+        self.assertEqual("", span.string[span.start : span.start + span.length])
+
 
 if __name__ == "__main__":
     unittest.main()
