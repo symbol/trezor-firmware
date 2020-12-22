@@ -298,7 +298,6 @@
 "test_msg_signmessage.py::test_signmessage_pagination[no_spaces]": "6b1b8f99bbe14662e0fa0584e38fc39cfe845dad2fce52672e3914a055dba39a",
 "test_msg_signmessage.py::test_signmessage_pagination[normal_text]": "6e6ea775b4da479e6d61c1b6be0e12b28077c6fa2261fea8c07893750cad3f40",
 "test_msg_signmessage.py::test_signmessage_pagination[single_line_over]": "38fcfcc1f8211644d01de5c347a37b59936540aaf72e0167d1b70805839e5202",
-"test_msg_signmessage.py::test_signmessage_pagination[trailing_newline_over]": "4ce4fead7823f790b67685056c28842b722a1220e83536fca3ef8e0c39e7fdf5",
 "test_msg_signmessage.py::test_signmessage_pagination[utf_nospace]": "37cc34d8fa23fd2b8656990c57a4de499a1189ae14c7e17b6781bce088f109c8",
 "test_msg_signmessage.py::test_signmessage_pagination[utf_text]": "37e98829e3ae582e9137122c94c1b46dde22c47b1ecee5e85f8be1e337aa0688",
 "test_msg_signmessage.py::test_signmessage_pagination_trailing_newline": "e5213a06405428866dd8273c159bd75eabc8d0878564691fc9affa54ef9bb3f8",
