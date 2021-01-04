@@ -83,7 +83,7 @@ class Span:
     def next_line(self) -> bool:
         """Advance the span to point to contents of the next line.
 
-        Returns True if the rendered should make newline afterwards, False if this is
+        Returns True if the renderer should make newline afterwards, False if this is
         the end of the text.
 
         Within the renderer, we use this as:
@@ -253,7 +253,8 @@ def render_text(
             if item is BR or item is BR_HALF:
                 # line break or half-line break
                 if offset_y > offset_y_max:
-                    ui.display.text(offset_x, offset_y, "...", ui.BOLD, ui.GREY, bg)
+                    if render_page_overflow:
+                        ui.display.text(offset_x, offset_y, "...", ui.BOLD, ui.GREY, bg)
                     return
                 offset_x = INITIAL_OFFSET_X
                 offset_y += TEXT_LINE_HEIGHT if item is BR else TEXT_LINE_HEIGHT_HALF
