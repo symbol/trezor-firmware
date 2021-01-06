@@ -19,7 +19,7 @@ FROZEN = True
 
 # modtrezorconfig
 CPPPATH_MOD += [
-    'embed/rust',
+#    'embed/rust',
     'embed/extmod/modtrezorconfig',
     'vendor/trezor-storage',
 ]

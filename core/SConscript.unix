@@ -551,6 +551,20 @@ if EVERYTHING:
         action='cd ${SOURCE.dir}; ./gen_context',
     )
 
+
+#
+# Rust library
+#
+
+RUST_BUILD_TARGET = "x86_64-unknown-linux-gnu"
+RUST_LIBDIR = "embed/rust/target/release"
+RUST_LIBS = [
+    "rust",
+]
+
+env.Append(LINKFLAGS=["-L" + RUST_LIBDIR] + ["-l" + lib for lib in RUST_LIBS])
+
+
 #
 # Program objects
 #
@@ -571,4 +585,4 @@ if EVERYTHING:
 program = env.Command(
     target='trezor-emu-core',
     source=obj_program,
-    action='$CC -o $TARGET $SOURCES $_LIBDIRFLAGS $_LIBFLAGS $LINKFLAGS -Lembed/rust/target/release -lrust', )
+    action='$CC -o $TARGET $SOURCES $_LIBDIRFLAGS $_LIBFLAGS $LINKFLAGS', )
