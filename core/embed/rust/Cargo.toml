@@ -16,3 +16,8 @@ panic = "abort"
 
 [dependencies]
 cty = "*"
+alloc-cortex-m = "*"
+
+[dependencies.cstr_core]
+version = "*"
+features = ["alloc"]

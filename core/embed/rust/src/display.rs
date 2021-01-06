@@ -4,4 +4,14 @@ extern "C" {
     pub fn display_refresh();
     pub fn display_print(text: *const cty::c_char, textlen: cty::c_int);
     pub fn display_backlight(val: cty::c_int) -> cty::c_int;
-}
+
+    pub fn display_text_render(
+        x: cty::c_int,
+        y: cty::c_int,
+        text: *const cty::c_char,
+        textlen: cty::c_int,
+        font: cty::c_int,
+        fgcolor: cty::uint16_t,
+        bgcolor: cty::uint16_t,
+    );
+    
