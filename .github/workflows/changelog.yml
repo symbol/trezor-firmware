@@ -1,0 +1,3 @@
+- name: Changelog Reminder
+  uses: peterjgrainger/action-changelog-reminder@v1.3.0
+
