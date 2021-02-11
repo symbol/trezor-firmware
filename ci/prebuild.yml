@@ -59,7 +59,7 @@ xxx:
     DEPLOY_PATH: "${DEPLOY_BASE_DIR}/releases/firmwares"
   before_script: []  # no pipenv
   script:
-    - rm -rf ${DEPLOY_BASE_DIR}/releases/emulators/macos/
-    - rm -rf ${DEPLOY_BASE_DIR}/upgrade_tests.bak
+    - mv ${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-core-2.3.5-ffa96205 ${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-core-v2.3.5
+    - mv ${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-legacy-1.9.4-ffa96205  ${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-legacy-v1.9.4
   tags:
     - deploy
