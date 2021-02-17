@@ -59,6 +59,6 @@ xxx:
     DEPLOY_PATH: "${DEPLOY_BASE_DIR}/releases/firmwares"
   before_script: []  # no pipenv
   script:
-    - mv ${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-core-2.3.6-b19cbf67 ${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-core-2.3.6
+    - mv ${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-core-2.3.6 ${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-core-v2.3.6
   tags:
     - deploy
