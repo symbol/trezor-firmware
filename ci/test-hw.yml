@@ -22,7 +22,7 @@ hardware core regular device test:
     - core fw regular debug build
   variables:
     PYTEST_TIMEOUT: "1200"
-    TESTS_SKIP: "-k 'not 15_of_15 and not test_multisig_mismatch_inputs and not test_sign_tx and not signtx_bgold and not test_opreturn'"
+    TESTS_SKIP: "-k 'not 15_of_15 and not test_multisig_mismatch_inputs and not signtx_bgold and not test_opreturn and not TestMultisig and not authorize_coinjoin'"
   script:
     - cd ci/hardware_tests
     - set -a
@@ -44,9 +44,7 @@ hardware core regular device test:
     - nix-shell --run "poetry run python bootstrap.py tt ../../trezor-*.bin"
     - nix-shell --run "poetry run pytest --random-order-bucket=none -x -m 'not altcoin and not sd_card' $TESTS_SKIP ../../tests/device_tests/test_[a-l]*.py"
     - nix-shell --run "poetry run python bootstrap.py tt ../../trezor-*.bin"
-    - nix-shell --run "poetry run pytest --random-order-bucket=none -x -m 'not altcoin and not sd_card' $TESTS_SKIP ../../tests/device_tests/test_[n-z]*.py"
-    - nix-shell --run "poetry run python bootstrap.py tt ../../trezor-*.bin"
-    - nix-shell --run "poetry run pytest --random-order-bucket=none -x -m 'not altcoin and not sd_card' $TESTS_SKIP ../../tests/device_tests/test_m[^s]*.py"
+    - nix-shell --run "poetry run pytest --random-order-bucket=none -x -m 'not altcoin and not sd_card' $TESTS_SKIP ../../tests/device_tests/test_[n-z]*.py ../../tests/device_tests/test_m[^s]*.py"
     - nix-shell --run "poetry run python bootstrap.py tt ../../trezor-*.bin"
     - nix-shell --run "poetry run pytest --random-order-bucket=none -x -m 'not altcoin and not sd_card' $TESTS_SKIP ../../tests/device_tests/test_msg_[a-r]*.py"
     - nix-shell --run "poetry run python bootstrap.py tt ../../trezor-*.bin"
