@@ -22,7 +22,7 @@ hardware core regular device test:
     - core fw regular debug build
   variables:
     PYTEST_TIMEOUT: "1200"
-    TESTS_SKIP: "-k 'not 15_of_15 and not test_multisig_mismatch_inputs and not signtx_bgold and not test_opreturn and not TestMultisig and not authorize_coinjoin and not signtx_amount_unit and not signtx_external'"
+    TESTS_SKIP: "-k 'not 15_of_15 and not test_multisig_mismatch_inputs and not signtx_bgold and not test_opreturn and not TestMultisig and not authorize_coinjoin and not signtx_amount_unit and not signtx_external and not signtx_mixed_inputs'"
   script:
     - cd ci/hardware_tests
     - set -a
