@@ -86,6 +86,7 @@ core monero test:
     paths:
       - tests/trezor.log
       - core/.coverage.*
+      - core/tests/trezor_monero_tests.log
     expire_in: 1 week
     when: always
 
