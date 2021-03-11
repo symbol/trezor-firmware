@@ -297,6 +297,7 @@ def paginate_paragraphs(
     icon_color: int = ui.ORANGE_ICON,
     break_words: bool = False,
     confirm: Callable[[ui.Component], ui.Layout] = Confirm,
+    max_lines: int = TEXT_MAX_LINES,
 ) -> ui.Layout:
     span = Span("", 0, ui.NORMAL, break_words=break_words)
     lines = 0
@@ -311,13 +312,14 @@ def paginate_paragraphs(
         content.append(font)
         content.append(text)
 
-    if lines <= TEXT_MAX_LINES:
+    if lines <= max_lines:
         result = Text(
             header,
             header_icon=header_icon,
             icon_color=icon_color,
             new_lines=False,
             break_words=break_words,
+            max_lines=max_lines,
         )
         for font, text in para:
             if len(result.content) != 0:
@@ -347,10 +349,11 @@ def paginate_paragraphs(
                         line_width=_PAGINATED_LINE_WIDTH,
                         render_page_overflow=False,
                         break_words=break_words,
+                        max_lines=max_lines,
                     )
                     page.content = content
                     pages.append(page)
-                    lines_left = TEXT_MAX_LINES - 1
+                    lines_left = max_lines - 1
                 else:
                     lines_left -= 1
 

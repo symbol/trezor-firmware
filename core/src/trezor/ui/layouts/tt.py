@@ -589,6 +589,7 @@ async def confirm_properties(
     icon_color: int = ui.GREEN,  # TODO cleanup @ redesign
     hold: bool = False,
     br_code: EnumTypeButtonRequestType = ButtonRequestType.ConfirmOutput,
+    max_lines: int = TEXT_MAX_LINES,
 ) -> None:
     para = []
     for p in props:
@@ -596,7 +597,12 @@ async def confirm_properties(
         if p[1] is not None:
             para.append((ui.BOLD, p[1]))
     content = paginate_paragraphs(
-        para, title, icon, icon_color, confirm=HoldToConfirm if hold else Confirm
+        para,
+        title,
+        icon,
+        icon_color,
+        confirm=HoldToConfirm if hold else Confirm,
+        max_lines=max_lines,
     )
     await raise_if_cancelled(interact(ctx, content, br_type, br_code))
 
