@@ -90,6 +90,7 @@ icons_check: ## generate FIDO service icons
 
 protobuf: ## generate python protobuf headers
 	./tools/build_protobuf
+	./tools/build_protobuf --blob
 
 protobuf_check: ## check that generated protobuf headers are up to date
 	./tools/build_protobuf --check

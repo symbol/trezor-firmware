@@ -580,8 +580,8 @@ rust = env.Command(
 
 env.Depends(rust, qstr_generated)
 
-env.Append(LINKFLAGS=f' -L{RUST_LIBDIR}')
-env.Append(LINKFLAGS=f' -l{RUST_LIB}')
+env.Append(LINKFLAGS=f'-L{RUST_LIBDIR}')
+env.Append(LINKFLAGS=f'-l{RUST_LIB}')
 
 #
 # Program objects

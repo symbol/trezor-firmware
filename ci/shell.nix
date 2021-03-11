@@ -36,6 +36,7 @@ stdenv.mkDerivation ({
     autoflake
     bash
     check
+    clang
     clang-tools
     editorconfig-checker
     gcc
@@ -51,6 +52,7 @@ stdenv.mkDerivation ({
     pkgconfig
     poetry
     protobuf3_6
+    rustup
     wget
     zlib
   ] ++ lib.optionals (!stdenv.isDarwin) [
@@ -74,6 +76,8 @@ stdenv.mkDerivation ({
 
   # Fix bdist-wheel problem by setting source date epoch to a more recent date
   SOURCE_DATE_EPOCH = 1600000000;
+
+  LIBCLANG_PATH = "${llvmPackages.libclang}/lib";
 
 } // (lib.optionalAttrs fullDeps) {
   TREZOR_MONERO_TESTS_PATH = moneroTestsPatched;
