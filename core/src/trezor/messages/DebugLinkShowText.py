@@ -6,7 +6,7 @@ from .DebugLinkShowTextItem import DebugLinkShowTextItem
 
 if __debug__:
     try:
-        from typing import Dict, List  # noqa: F401
+        from typing import Dict, List, Optional  # noqa: F401
         from typing_extensions import Literal  # noqa: F401
     except ImportError:
         pass
@@ -18,10 +18,10 @@ class DebugLinkShowText(p.MessageType):
     def __init__(
         self,
         *,
-        body_text: List[DebugLinkShowTextItem] = None,
-        header_text: str = None,
-        header_icon: str = None,
-        icon_color: str = None,
+        body_text: Optional[List[DebugLinkShowTextItem]] = None,
+        header_text: Optional[str] = None,
+        header_icon: Optional[str] = None,
+        icon_color: Optional[str] = None,
     ) -> None:
         self.body_text = body_text if body_text is not None else []
         self.header_text = header_text

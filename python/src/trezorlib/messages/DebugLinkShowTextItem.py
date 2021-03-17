@@ -4,7 +4,7 @@ from .. import protobuf as p
 
 if __debug__:
     try:
-        from typing import Dict, List  # noqa: F401
+        from typing import Dict, List, Optional  # noqa: F401
         from typing_extensions import Literal  # noqa: F401
         EnumTypeDebugLinkShowTextStyle = Literal[0, 1, 2, 4, 5, 6]
     except ImportError:
@@ -16,8 +16,8 @@ class DebugLinkShowTextItem(p.MessageType):
     def __init__(
         self,
         *,
-        style: EnumTypeDebugLinkShowTextStyle = None,
-        content: str = None,
+        style: Optional[EnumTypeDebugLinkShowTextStyle] = None,
+        content: Optional[str] = None,
     ) -> None:
         self.style = style
         self.content = content
