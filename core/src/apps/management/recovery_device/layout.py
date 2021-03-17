@@ -207,7 +207,7 @@ async def show_group_threshold_reached(ctx: wire.GenericContext) -> None:
 
 
 class RecoveryHomescreen(ui.Component):
-    def __init__(self, text: str, subtext: str = None):
+    def __init__(self, text: str, subtext: Optional[str] = None):
         super().__init__()
         self.text = text
         self.subtext = subtext
@@ -250,7 +250,7 @@ async def homescreen_dialog(
     ctx: wire.GenericContext,
     homepage: RecoveryHomescreen,
     button_label: str,
-    info_func: Callable = None,
+    info_func: Optional[Callable] = None,
 ) -> None:
     while True:
         if info_func:

@@ -60,9 +60,9 @@ def confirm_action(
     br_type: str,
     title: str,
     action: str,
-    description: str = None,
+    description: Optional[str] = None,
     verb: Union[str, bytes] = Confirm.DEFAULT_CONFIRM,
-    icon: str = None,
+    icon: Optional[str] = None,
     br_code: EnumTypeButtonRequestType = ButtonRequestType.Other,
     **kwargs: Any,
 ) -> LayoutType:
@@ -175,7 +175,7 @@ def _hex_lines(hex_data: str, lines: int = TEXT_MAX_LINES) -> Iterator[str]:
 def _show_address(
     address: str,
     desc: str,
-    network: str = None,
+    network: Optional[str] = None,
 ) -> Confirm:
     text = Text(desc, ui.ICON_RECEIVE, ui.GREEN)
     if network is not None:
@@ -214,10 +214,10 @@ def show_xpub(
 async def show_address(
     ctx: wire.GenericContext,
     address: str,
-    address_qr: str = None,
+    address_qr: Optional[str] = None,
     desc: str = "Confirm address",
-    network: str = None,
-    multisig_index: int = None,
+    network: Optional[str] = None,
+    multisig_index: Optional[int] = None,
     xpubs: Sequence[str] = [],
 ) -> None:
     is_multisig = len(xpubs) > 0
