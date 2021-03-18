@@ -1,5 +1,5 @@
 from trezor import wire
-from trezor.crypto.curve import secp256k1
+from trezor.crypto.curve import secp256k1_zkp
 from trezor.crypto.hashlib import sha3_256
 from trezor.messages.Success import Success
 
@@ -15,7 +15,7 @@ async def verify_message(ctx, msg):
         raise wire.DataError("Invalid signature")
     sig = bytearray([msg.signature[64]]) + msg.signature[:64]
 
-    pubkey = secp256k1.verify_recover(sig, digest)
+    pubkey = secp256k1_zkp.Context().verify_recover(sig, digest)
 
     if not pubkey:
         raise wire.DataError("Invalid signature")

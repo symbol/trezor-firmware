@@ -2,7 +2,7 @@ from micropython import const
 
 from trezor import wire
 from trezor.crypto import bech32, bip32, der
-from trezor.crypto.curve import secp256k1
+from trezor.crypto.curve import secp256k1_zkp
 from trezor.messages import InputScriptType, OutputScriptType
 from trezor.utils import ensure
 
@@ -64,7 +64,7 @@ NONSEGWIT_INPUT_SCRIPT_TYPES = (
 
 
 def ecdsa_sign(node: bip32.HDNode, digest: bytes) -> bytes:
-    sig = secp256k1.sign(node.private_key(), digest)
+    sig = secp256k1_zkp.Context().sign(node.private_key(), digest)
     sigder = der.encode_seq((sig[1:33], sig[33:65]))
     return sigder
 

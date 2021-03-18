@@ -143,6 +143,8 @@ async def send_request_chunk(ctx, data_left: int):
 
 def sign_digest(msg: EthereumSignTx, keychain, digest):
     node = keychain.derive(msg.address_n)
+    # we can't use secp256k1-zkp, because it does not support
+    # ethereum canonical signatures
     signature = secp256k1.sign(
         node.private_key(), digest, False, secp256k1.CANONICAL_SIG_ETHEREUM
     )

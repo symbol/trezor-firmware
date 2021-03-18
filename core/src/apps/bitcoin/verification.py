@@ -1,6 +1,6 @@
 from trezor import wire
 from trezor.crypto import der
-from trezor.crypto.curve import secp256k1
+from trezor.crypto.curve import secp256k1_zkp
 from trezor.crypto.hashlib import sha256
 
 from .common import ecdsa_hash_pubkey
@@ -109,7 +109,9 @@ class SignatureVerifier:
             i = 0
             for der_signature, _ in self.signatures:
                 signature = decode_der_signature(der_signature)
-                while not secp256k1.verify(self.public_keys[i], signature, digest):
+                while not secp256k1_zkp.Context().verify(
+                    self.public_keys[i], signature, digest
+                ):
                     i += 1
         except Exception:
             raise wire.DataError("Invalid signature")

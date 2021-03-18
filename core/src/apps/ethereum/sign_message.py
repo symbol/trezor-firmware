@@ -25,6 +25,8 @@ async def sign_message(ctx, msg, keychain):
     await require_confirm_sign_message(ctx, "ETH", msg.message)
 
     node = keychain.derive(msg.address_n)
+    # we can't use secp256k1-zkp, because it does not support
+    # ethereum canonical signatures
     signature = secp256k1.sign(
         node.private_key(),
         message_digest(msg.message),

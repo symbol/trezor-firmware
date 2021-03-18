@@ -1,5 +1,5 @@
 from trezor import wire
-from trezor.crypto.curve import secp256k1
+from trezor.crypto.curve import secp256k1_zkp
 from trezor.messages.InputScriptType import SPENDADDRESS, SPENDP2SHWITNESS, SPENDWITNESS
 from trezor.messages.Success import Success
 
@@ -43,7 +43,7 @@ async def verify_message(ctx: wire.Context, msg: VerifyMessage) -> Success:
     else:
         raise wire.ProcessError("Invalid signature")
 
-    pubkey = secp256k1.verify_recover(signature, digest)
+    pubkey = secp256k1_zkp.Context().verify_recover(signature, digest)
 
     if not pubkey:
         raise wire.ProcessError("Invalid signature")

@@ -1,4 +1,4 @@
-from trezor.crypto.curve import secp256k1
+from trezor.crypto.curve import secp256k1_zkp
 from trezor.crypto.hashlib import sha3_256
 from trezor.messages.EthereumAddress import EthereumAddress
 from trezor.ui.layouts import show_address
@@ -17,7 +17,7 @@ async def get_address(ctx, msg, keychain):
 
     node = keychain.derive(msg.address_n)
     seckey = node.private_key()
-    public_key = secp256k1.publickey(seckey, False)  # uncompressed
+    public_key = secp256k1_zkp.Context().publickey(seckey, False)  # uncompressed
     address_bytes = sha3_256(public_key[1:], keccak=True).digest()[12:]
 
     if len(msg.address_n) > 1:  # path has slip44 network identifier

@@ -1,5 +1,5 @@
 from trezor import wire
-from trezor.crypto.curve import secp256k1
+from trezor.crypto.curve import secp256k1_zkp
 from trezor.crypto.hashlib import sha256
 from trezor.messages import MessageType
 from trezor.messages.BinanceCancelMsg import BinanceCancelMsg
@@ -53,4 +53,4 @@ async def sign_tx(ctx, envelope, keychain: Keychain):
 
 def generate_content_signature(json: bytes, private_key: bytes) -> bytes:
     msghash = sha256(json).digest()
-    return secp256k1.sign(private_key, msghash)[1:65]
+    return secp256k1_zkp.Context().sign(private_key, msghash)[1:65]

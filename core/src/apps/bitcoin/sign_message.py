@@ -1,5 +1,5 @@
 from trezor import wire
-from trezor.crypto.curve import secp256k1
+from trezor.crypto.curve import secp256k1_zkp
 from trezor.messages.InputScriptType import SPENDADDRESS, SPENDP2SHWITNESS, SPENDWITNESS
 from trezor.messages.MessageSignature import MessageSignature
 
@@ -32,7 +32,7 @@ async def sign_message(
 
     address = get_address(script_type, coin, node)
     digest = message_digest(coin, message)
-    signature = secp256k1.sign(seckey, digest)
+    signature = secp256k1_zkp.Context().sign(seckey, digest)
 
     if script_type == SPENDADDRESS:
         pass

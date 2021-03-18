@@ -1,5 +1,5 @@
 from trezor.crypto import der
-from trezor.crypto.curve import secp256k1
+from trezor.crypto.curve import secp256k1_zkp
 from trezor.crypto.hashlib import sha512
 from trezor.messages.RippleSignedTx import RippleSignedTx
 from trezor.messages.RippleSignTx import RippleSignTx
@@ -53,7 +53,7 @@ def first_half_of_sha512(b):
 
 def ecdsa_sign(private_key: bytes, digest: bytes) -> bytes:
     """Signs and encodes signature into DER format"""
-    signature = secp256k1.sign(private_key, digest)
+    signature = secp256k1_zkp.Context().sign(private_key, digest)
     sig_der = der.encode_seq((signature[1:33], signature[33:65]))
     return sig_der
 

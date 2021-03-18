@@ -35,6 +35,8 @@ async def sign_tx(ctx: wire.Context, msg: EosSignTx, keychain: Keychain) -> EosS
     writers.write_bytes_fixed(sha, bytearray(32), 32)
 
     digest = sha.get_digest()
+    # we can't use secp256k1-zkp, because it does not support
+    # eos canonical signatures
     signature = secp256k1.sign(
         node.private_key(), digest, True, secp256k1.CANONICAL_SIG_EOS
     )

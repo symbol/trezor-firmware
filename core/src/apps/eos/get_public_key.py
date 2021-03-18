@@ -1,5 +1,5 @@
 from trezor import wire
-from trezor.crypto.curve import secp256k1
+from trezor.crypto.curve import secp256k1_zkp
 from trezor.messages.EosGetPublicKey import EosGetPublicKey
 from trezor.messages.EosPublicKey import EosPublicKey
 
@@ -16,7 +16,7 @@ if False:
 
 def _get_public_key(node: bip32.HDNode) -> Tuple[str, bytes]:
     seckey = node.private_key()
-    public_key = secp256k1.publickey(seckey, True)
+    public_key = secp256k1_zkp.Context().publickey(seckey, True)
     wif = public_key_to_wif(public_key)
     return wif, public_key
 
