@@ -8,7 +8,7 @@ TREZOR_MODEL = ARGUMENTS.get('TREZOR_MODEL', 'T')
 
 FEATURE_FLAGS = {
     "RDI": True,
-    "SECP256K1_ZKP": False,
+    "SECP256K1_ZKP": True,
     "SYSTEM_VIEW": False,
 }
 
