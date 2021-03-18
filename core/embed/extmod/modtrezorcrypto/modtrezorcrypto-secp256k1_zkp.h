@@ -92,6 +92,31 @@ STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_make_new(
   return MP_OBJ_FROM_PTR(o);
 }
 
+/// def __enter__(self) -> Context:
+///     """
+///     Return the context
+///     """
+
+/// from types import TracebackType
+/// def __exit__(
+///     self, type: Optional[Type[BaseException]],
+///     value: Optional[BaseException],
+///     traceback: Optional[TracebackType],
+/// ) -> None:
+///     """
+///     Destroy the context
+///     """
+STATIC mp_obj_t mod_trezorcrypto_secp256k1_context___exit__(
+    size_t n_args, const mp_obj_t *args) {
+  mp_obj_secp256k1_context_t *o = MP_OBJ_TO_PTR(args[0]);
+  secp256k1_context_preallocated_destroy(o->secp256k1_ctx);
+  memzero(o->secp256k1_ctx_buf, o->secp256k1_ctx_size);
+  return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(
+    mod_trezorcrypto_secp256k1_context___exit___obj, 4, 4,
+    mod_trezorcrypto_secp256k1_context___exit__);
+
 /// def __del__(self) -> None:
 ///     """
 ///     Destructor.
@@ -350,6 +375,9 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_3(
 
 STATIC const mp_rom_map_elem_t
     mod_trezorcrypto_secp256k1_context_locals_dict_table[] = {
+        {MP_ROM_QSTR(MP_QSTR___enter__), MP_ROM_PTR(&mp_identity_obj)},
+        {MP_ROM_QSTR(MP_QSTR___exit__),
+         MP_ROM_PTR(&mod_trezorcrypto_secp256k1_context___exit___obj)},
         {MP_ROM_QSTR(MP_QSTR___del__),
          MP_ROM_PTR(&mod_trezorcrypto_secp256k1_context___del___obj)},
         {MP_ROM_QSTR(MP_QSTR_size),

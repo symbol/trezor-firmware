@@ -17,7 +17,8 @@ async def get_address(ctx, msg, keychain):
 
     node = keychain.derive(msg.address_n)
     seckey = node.private_key()
-    public_key = secp256k1_zkp.Context().publickey(seckey, False)  # uncompressed
+    with secp256k1_zkp.Context() as secp256k1:
+        public_key = secp256k1.publickey(seckey, False)  # uncompressed
     address_bytes = sha3_256(public_key[1:], keccak=True).digest()[12:]
 
     if len(msg.address_n) > 1:  # path has slip44 network identifier

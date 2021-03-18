@@ -109,10 +109,9 @@ class SignatureVerifier:
             i = 0
             for der_signature, _ in self.signatures:
                 signature = decode_der_signature(der_signature)
-                while not secp256k1_zkp.Context().verify(
-                    self.public_keys[i], signature, digest
-                ):
-                    i += 1
+                with secp256k1_zkp.Context() as secp256k1:
+                    while not secp256k1.verify(self.public_keys[i], signature, digest):
+                        i += 1
         except Exception:
             raise wire.DataError("Invalid signature")
 

@@ -53,4 +53,6 @@ async def sign_tx(ctx, envelope, keychain: Keychain):
 
 def generate_content_signature(json: bytes, private_key: bytes) -> bytes:
     msghash = sha256(json).digest()
-    return secp256k1_zkp.Context().sign(private_key, msghash)[1:65]
+    with secp256k1_zkp.Context() as secp256k1:
+        sig = secp256k1.sign(private_key, msghash)[1:65]
+    return sig

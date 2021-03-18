@@ -43,7 +43,8 @@ async def verify_message(ctx: wire.Context, msg: VerifyMessage) -> Success:
     else:
         raise wire.ProcessError("Invalid signature")
 
-    pubkey = secp256k1_zkp.Context().verify_recover(signature, digest)
+    with secp256k1_zkp.Context() as secp256k1:
+        pubkey = secp256k1.verify_recover(signature, digest)
 
     if not pubkey:
         raise wire.ProcessError("Invalid signature")

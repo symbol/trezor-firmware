@@ -32,7 +32,8 @@ async def sign_message(
 
     address = get_address(script_type, coin, node)
     digest = message_digest(coin, message)
-    signature = secp256k1_zkp.Context().sign(seckey, digest)
+    with secp256k1_zkp.Context() as secp256k1:
+        signature = secp256k1.sign(seckey, digest)
 
     if script_type == SPENDADDRESS:
         pass

@@ -16,7 +16,8 @@ if False:
 
 def _get_public_key(node: bip32.HDNode) -> Tuple[str, bytes]:
     seckey = node.private_key()
-    public_key = secp256k1_zkp.Context().publickey(seckey, True)
+    with secp256k1_zkp.Context() as secp256k1:
+        public_key = secp256k1.publickey(seckey, True)
     wif = public_key_to_wif(public_key)
     return wif, public_key
 

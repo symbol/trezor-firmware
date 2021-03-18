@@ -13,6 +13,21 @@ class Context:
         Allocate and initialize secp256k1_context.
         """
 
+    def __enter__(self) -> Context:
+        """
+        Return the context
+        """
+    from types import TracebackType
+
+    def __exit__(
+        self, type: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
+        """
+        Destroy the context
+        """
+
     def __del__(self) -> None:
         """
         Destructor.

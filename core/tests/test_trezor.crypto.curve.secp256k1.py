@@ -3,11 +3,10 @@ from common import *
 from trezor.crypto import random
 from trezor.crypto.curve import secp256k1
 
-if not utils.BITCOIN_ONLY:
-    try:
-        from trezor.crypto.curve import secp256k1_zkp
-    except ImportError:
-        secp256k1_zkp = None
+try:
+    from trezor.crypto.curve import secp256k1_zkp
+except ImportError:
+    secp256k1_zkp = None
 
 
 class Secp256k1Common(object):
@@ -144,7 +143,7 @@ class TestCryptoSecp256k1(Secp256k1Common, unittest.TestCase):
     def __init__(self):
         self.impl = secp256k1
 
-@unittest.skipUnless(secp256k1_zkp is not None, "altcoin")
+@unittest.skipUnless(secp256k1_zkp is not None, "secp256k1_zkp disabled")
 class TestCryptoSecp256k1Zkp(Secp256k1Common, unittest.TestCase):
     def __init__(self):
         self.impl = secp256k1_zkp.Context()

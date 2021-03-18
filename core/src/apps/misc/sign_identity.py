@@ -169,7 +169,8 @@ def sign_challenge(
         raise wire.DataError("Unsupported sigtype")
 
     if curve == "secp256k1":
-        signature = secp256k1_zkp.Context().sign(seckey, data)
+        with secp256k1_zkp.Context() as secp256k1:
+            signature = secp256k1.sign(seckey, data)
     elif curve == "nist256p1":
         signature = nist256p1.sign(seckey, data)
     elif curve == "ed25519":
