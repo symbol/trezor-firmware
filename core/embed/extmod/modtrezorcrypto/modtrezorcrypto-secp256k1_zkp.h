@@ -168,10 +168,10 @@ STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_publickey(
   bool compressed = n_args < 3 || args[2] == mp_const_true;
   vstr_t out = {0};
   vstr_init_len(&out, 65);
-
-  secp256k1_ec_pubkey_serialize(
+  int success = secp256k1_ec_pubkey_serialize(
       ctx, (uint8_t *)out.buf, &out.len, &pk,
       compressed ? SECP256K1_EC_COMPRESSED : SECP256K1_EC_UNCOMPRESSED);
+  ensure(sectrue * success, "Failed to serialize public key");
   return mp_obj_new_str_from_vstr(&mp_type_bytes, &out);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(
@@ -206,8 +206,9 @@ STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_sign(size_t n_args,
     vstr_clear(&out);
     mp_raise_ValueError("Signing failed");
   }
-  secp256k1_ecdsa_recoverable_signature_serialize_compact(
+  int success = secp256k1_ecdsa_recoverable_signature_serialize_compact(
       ctx, (uint8_t *)&out.buf[1], &pby, &sig);
+  ensure(sectrue * success, "Failed to serialize signature");
   out.buf[0] = 27 + pby + compressed * 4;
   return mp_obj_new_str_from_vstr(&mp_type_bytes, &out);
 }
@@ -292,9 +293,10 @@ STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_verify_recover(
   }
   vstr_t out = {0};
   vstr_init_len(&out, 65);
-  secp256k1_ec_pubkey_serialize(
+  int success = secp256k1_ec_pubkey_serialize(
       ctx, (uint8_t *)out.buf, &out.len, &pk,
       compressed ? SECP256K1_EC_COMPRESSED : SECP256K1_EC_UNCOMPRESSED);
+  ensure(sectrue * success, "Failed to serialize public key");
   return mp_obj_new_str_from_vstr(&mp_type_bytes, &out);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_3(
