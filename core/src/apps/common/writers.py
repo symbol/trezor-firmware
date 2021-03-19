@@ -1,6 +1,7 @@
 from trezor.utils import ensure
 
 if False:
+    from typing import Union
     from trezor.utils import Writer
 
 
@@ -78,7 +79,7 @@ def write_uint64_be(w: Writer, n: int) -> int:
     return 8
 
 
-def write_bytes_unchecked(w: Writer, b: bytes) -> int:
+def write_bytes_unchecked(w: Writer, b: Union[bytes, memoryview]) -> int:
     w.extend(b)
     return len(b)
 
