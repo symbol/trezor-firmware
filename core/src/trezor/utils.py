@@ -81,6 +81,9 @@ def chunks(items: Chunkable, size: int) -> Iterator[Chunkable]:
 if False:
 
     class HashContext(Protocol):
+        def __init__(self, data: bytes = None) -> None:
+            ...
+
         def update(self, buf: bytes) -> None:
             ...
 
