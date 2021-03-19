@@ -53,3 +53,26 @@ class ConfirmBase(ui.Layout):
 
         def create_tasks(self) -> tuple[loop.Task, ...]:
             return super().create_tasks() + (confirm_signal(),)
+
+
+class Pageable:
+    def __init__(self) -> None:
+        self._page = 0
+
+    def page(self) -> int:
+        return self._page
+
+    def page_count(self) -> int:
+        raise NotImplementedError
+
+    def is_first(self) -> bool:
+        return self._page == 0
+
+    def is_last(self) -> bool:
+        return self._page == self.page_count() - 1
+
+    def next(self) -> None:
+        self._page = min(self._page + 1, self.page_count() - 1)
+
+    def prev(self) -> None:
+        self._page = max(self._page - 1, 0)
