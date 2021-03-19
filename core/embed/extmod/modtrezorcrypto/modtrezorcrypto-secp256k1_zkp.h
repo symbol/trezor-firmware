@@ -57,7 +57,7 @@ typedef struct _mp_obj_secp256k1_context_t {
   mp_obj_base_t base;
   secp256k1_context *secp256k1_ctx;
   size_t secp256k1_ctx_size;
-  uint8_t secp256k1_ctx_buf[0];  // to be allocate via m_new_obj_var_maybe().
+  uint8_t *secp256k1_ctx_buf;
 } mp_obj_secp256k1_context_t;
 
 /// def __init__(self) -> None:
@@ -72,13 +72,10 @@ STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_make_new(
   const size_t secp256k1_ctx_size = secp256k1_context_preallocated_size(
       SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
 
-  mp_obj_secp256k1_context_t *o = m_new_obj_var_maybe_with_finaliser(
-      mp_obj_secp256k1_context_t, uint8_t, secp256k1_ctx_size);
-  if (!o) {
-    mp_raise_ValueError("secp256k1_zkp context is too large");
-  }
+  mp_obj_secp256k1_context_t *o = m_new_obj(mp_obj_secp256k1_context_t);
   o->base.type = type;
   o->secp256k1_ctx_size = secp256k1_ctx_size;
+  o->secp256k1_ctx_buf = m_new(uint8_t, o->secp256k1_ctx_size);
   o->secp256k1_ctx = secp256k1_context_preallocated_create(
       o->secp256k1_ctx_buf, SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
 
@@ -96,7 +93,7 @@ STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_make_new(
 ///     """
 ///     Return the context
 ///     """
-
+///
 /// from types import TracebackType
 /// def __exit__(
 ///     self, type: Optional[Type[BaseException]],
@@ -109,42 +106,22 @@ STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_make_new(
 STATIC mp_obj_t mod_trezorcrypto_secp256k1_context___exit__(
     size_t n_args, const mp_obj_t *args) {
   mp_obj_secp256k1_context_t *o = MP_OBJ_TO_PTR(args[0]);
-  secp256k1_context_preallocated_destroy(o->secp256k1_ctx);
-  memzero(o->secp256k1_ctx_buf, o->secp256k1_ctx_size);
+  if (o->secp256k1_ctx) {
+    secp256k1_context_preallocated_destroy(o->secp256k1_ctx);
+    o->secp256k1_ctx = NULL;
+  }
+  if (o->secp256k1_ctx_buf) {
+    memzero(o->secp256k1_ctx_buf, o->secp256k1_ctx_size);
+    m_del(uint8_t, o->secp256k1_ctx_buf, o->secp256k1_ctx_size);
+    o->secp256k1_ctx_buf = NULL;
+  }
   return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(
     mod_trezorcrypto_secp256k1_context___exit___obj, 4, 4,
     mod_trezorcrypto_secp256k1_context___exit__);
 
-/// def __del__(self) -> None:
-///     """
-///     Destructor.
-///     """
-STATIC mp_obj_t mod_trezorcrypto_secp256k1_context___del__(mp_obj_t self) {
-  mp_obj_secp256k1_context_t *o = MP_OBJ_TO_PTR(self);
-  secp256k1_context_preallocated_destroy(o->secp256k1_ctx);
-  memzero(o->secp256k1_ctx_buf, o->secp256k1_ctx_size);
-  return mp_const_none;
-}
-
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(mod_trezorcrypto_secp256k1_context___del___obj,
-                                 mod_trezorcrypto_secp256k1_context___del__);
-
-/// def size(self) -> int:
-///     """
-///     Return the size in bytes of the internal secp256k1_ctx_buf buffer.
-///     """
-STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_size(mp_obj_t self) {
-  mp_obj_secp256k1_context_t *o = MP_OBJ_TO_PTR(self);
-  return mp_obj_new_int_from_uint(o->secp256k1_ctx_size);
-}
-
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(mod_trezorcrypto_secp256k1_context_size_obj,
-                                 mod_trezorcrypto_secp256k1_context_size);
-
-static const secp256k1_context *mod_trezorcrypto_get_secp256k1_context(
-    mp_obj_t self) {
+static const secp256k1_context *get_secp256k1_context(mp_obj_t self) {
   mp_obj_secp256k1_context_t *o = MP_OBJ_TO_PTR(self);
   return o->secp256k1_ctx;
 }
@@ -154,7 +131,7 @@ static const secp256k1_context *mod_trezorcrypto_get_secp256k1_context(
 ///     Generate secret key.
 ///     """
 STATIC mp_obj_t mod_trezorcrypto_secp256k1_zkp_generate_secret(mp_obj_t self) {
-  const secp256k1_context *ctx = mod_trezorcrypto_get_secp256k1_context(self);
+  const secp256k1_context *ctx = get_secp256k1_context(self);
   vstr_t sk = {0};
   vstr_init_len(&sk, 32);
 
@@ -177,8 +154,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(
 ///     """
 STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_publickey(
     size_t n_args, const mp_obj_t *args) {
-  const secp256k1_context *ctx =
-      mod_trezorcrypto_get_secp256k1_context(args[0]);
+  const secp256k1_context *ctx = get_secp256k1_context(args[0]);
   mp_buffer_info_t sk = {0};
   mp_get_buffer_raise(args[1], &sk, MP_BUFFER_READ);
   secp256k1_pubkey pk;
@@ -210,8 +186,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(
 ///     """
 STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_sign(size_t n_args,
                                                         const mp_obj_t *args) {
-  const secp256k1_context *ctx =
-      mod_trezorcrypto_get_secp256k1_context(args[0]);
+  const secp256k1_context *ctx = get_secp256k1_context(args[0]);
   mp_buffer_info_t sk = {0}, dig = {0};
   mp_get_buffer_raise(args[1], &sk, MP_BUFFER_READ);
   mp_get_buffer_raise(args[2], &dig, MP_BUFFER_READ);
@@ -249,8 +224,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(
 ///     """
 STATIC mp_obj_t
 mod_trezorcrypto_secp256k1_context_verify(size_t n_args, const mp_obj_t *args) {
-  const secp256k1_context *ctx =
-      mod_trezorcrypto_get_secp256k1_context(args[0]);
+  const secp256k1_context *ctx = get_secp256k1_context(args[0]);
   mp_buffer_info_t pk = {0}, sig = {0}, dig = {0};
   mp_get_buffer_raise(args[1], &pk, MP_BUFFER_READ);
   mp_get_buffer_raise(args[2], &sig, MP_BUFFER_READ);
@@ -290,7 +264,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(
 ///     """
 STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_verify_recover(
     mp_obj_t self, mp_obj_t signature, mp_obj_t digest) {
-  const secp256k1_context *ctx = mod_trezorcrypto_get_secp256k1_context(self);
+  const secp256k1_context *ctx = get_secp256k1_context(self);
   mp_buffer_info_t sig = {0}, dig = {0};
   mp_get_buffer_raise(signature, &sig, MP_BUFFER_READ);
   mp_get_buffer_raise(digest, &dig, MP_BUFFER_READ);
@@ -343,7 +317,7 @@ static int secp256k1_ecdh_hash_passthrough(uint8_t *output, const uint8_t *x,
 ///     """
 STATIC mp_obj_t mod_trezorcrypto_secp256k1_context_multiply(
     mp_obj_t self, mp_obj_t secret_key, mp_obj_t public_key) {
-  const secp256k1_context *ctx = mod_trezorcrypto_get_secp256k1_context(self);
+  const secp256k1_context *ctx = get_secp256k1_context(self);
   mp_buffer_info_t sk = {0}, pk = {0};
   mp_get_buffer_raise(secret_key, &sk, MP_BUFFER_READ);
   mp_get_buffer_raise(public_key, &pk, MP_BUFFER_READ);
@@ -378,10 +352,6 @@ STATIC const mp_rom_map_elem_t
         {MP_ROM_QSTR(MP_QSTR___enter__), MP_ROM_PTR(&mp_identity_obj)},
         {MP_ROM_QSTR(MP_QSTR___exit__),
          MP_ROM_PTR(&mod_trezorcrypto_secp256k1_context___exit___obj)},
-        {MP_ROM_QSTR(MP_QSTR___del__),
-         MP_ROM_PTR(&mod_trezorcrypto_secp256k1_context___del___obj)},
-        {MP_ROM_QSTR(MP_QSTR_size),
-         MP_ROM_PTR(&mod_trezorcrypto_secp256k1_context_size_obj)},
         {MP_ROM_QSTR(MP_QSTR_generate_secret),
          MP_ROM_PTR(&mod_trezorcrypto_secp256k1_zkp_generate_secret_obj)},
         {MP_ROM_QSTR(MP_QSTR_publickey),

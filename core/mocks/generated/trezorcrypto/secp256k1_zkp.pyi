@@ -28,16 +28,6 @@ class Context:
         Destroy the context
         """
 
-    def __del__(self) -> None:
-        """
-        Destructor.
-        """
-
-    def size(self) -> int:
-        """
-        Return the size in bytes of the internal secp256k1_ctx_buf buffer.
-        """
-
     def generate_secret(self) -> bytes:
         """
         Generate secret key.
