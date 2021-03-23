@@ -15,8 +15,8 @@ DUMMY_PAYMENT_ID = b"\x00\x00\x00\x00\x00\x00\x00\x00"
 
 if False:
     from apps.monero.signing.state import State
-    from trezor.messages.MoneroTransactionData import MoneroTransactionData
-    from trezor.messages.MoneroTransactionDestinationEntry import (
+    from trezor.messages import (
+        MoneroTransactionData,
         MoneroTransactionDestinationEntry,
     )
 

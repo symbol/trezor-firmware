@@ -8,21 +8,27 @@ if __debug__:
 
     from trezor import log, loop, wire
     from trezor.ui import display
-    from trezor.messages import MessageType
-    from trezor.messages.DebugLinkLayout import DebugLinkLayout
-    from trezor.messages.Success import Success
+    from trezor.messages import (
+        DebugLinkLayout,
+        DebugSwipeDirection,
+        MessageType,
+        Success,
+    )
+    from trezor import config, crypto, log, loop, utils
 
     from apps import workflow_handlers
 
     if False:
         from trezor.ui import Layout
-        from trezor.messages.DebugLinkDecision import DebugLinkDecision
-        from trezor.messages.DebugLinkGetState import DebugLinkGetState
-        from trezor.messages.DebugLinkRecordScreen import DebugLinkRecordScreen
-        from trezor.messages.DebugLinkReseedRandom import DebugLinkReseedRandom
-        from trezor.messages.DebugLinkState import DebugLinkState
-        from trezor.messages.DebugLinkEraseSdCard import DebugLinkEraseSdCard
-        from trezor.messages.DebugLinkWatchLayout import DebugLinkWatchLayout
+        from trezor.messages import (
+            DebugLinkDecision,
+            DebugLinkEraseSdCard,
+            DebugLinkGetState,
+            DebugLinkRecordScreen,
+            DebugLinkReseedRandom,
+            DebugLinkState,
+            DebugLinkWatchLayout,
+        )
 
     reset_current_words = loop.chan()
     reset_word_index = loop.chan()
@@ -87,7 +93,7 @@ if __debug__:
         if storage.layout_watcher is LAYOUT_WATCHER_LAYOUT:
             await DEBUG_CONTEXT.write(DebugLinkLayout(lines=content))
         else:
-            from trezor.messages.DebugLinkState import DebugLinkState
+            from trezor.messages import DebugLinkState
 
             await DEBUG_CONTEXT.write(DebugLinkState(layout_lines=content))
         storage.layout_watcher = LAYOUT_WATCHER_NONE
@@ -137,7 +143,7 @@ if __debug__:
     async def dispatch_DebugLinkGetState(
         ctx: wire.Context, msg: DebugLinkGetState
     ) -> DebugLinkState | None:
-        from trezor.messages.DebugLinkState import DebugLinkState
+        from trezor.messages import DebugLinkState
         from apps.common import mnemonic, passphrase
 
         m = DebugLinkState()

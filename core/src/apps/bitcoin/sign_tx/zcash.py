@@ -3,11 +3,7 @@ from micropython import const
 
 from trezor import wire
 from trezor.crypto.hashlib import blake2b
-from trezor.messages import InputScriptType
-from trezor.messages.PrevTx import PrevTx
-from trezor.messages.SignTx import SignTx
-from trezor.messages.TxInput import TxInput
-from trezor.messages.TxOutput import TxOutput
+from trezor.messages import InputScriptType, PrevTx, SignTx, TxInput, TxOutput
 from trezor.utils import HashWriter, ensure
 
 from apps.common.coininfo import CoinInfo

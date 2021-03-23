@@ -1,11 +1,10 @@
 from trezor.crypto import random
-from trezor.messages import ButtonRequestType
-from trezor.messages.Entropy import Entropy
+from trezor.messages import ButtonRequestType, Entropy
 from trezor.ui.layouts import confirm_action
 
 if False:
     from trezor.wire import Context
-    from trezor.messages.GetEntropy import GetEntropy
+    from trezor.messages import GetEntropy
 
 
 async def get_entropy(ctx: Context, msg: GetEntropy) -> Entropy:
