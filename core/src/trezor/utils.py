@@ -125,6 +125,16 @@ if False:
     BufferType = Union[bytearray, memoryview]
 
 
+def empty_bytearray(preallocate: int) -> bytearray:
+    """
+    Returns bytearray that won't allocate for at least `preallocate` bytes.
+    Useful in case you want to avoid allocating too often.
+    """
+    b = bytearray(preallocate)
+    b[:] = bytes()
+    return b
+
+
 class BufferWriter:
     """Seekable and writeable view into a buffer."""
 
