@@ -3,7 +3,8 @@ from micropython import const
 from trezor import ui
 from trezor.messages import ButtonRequestType
 from trezor.ui.components.tt.button import ButtonDefault
-from trezor.ui.components.tt.text import Text
+from trezor.ui.components.tt.scroll import Paginated
+from trezor.ui.components.tt.text import TEXT_MAX_LINES, Span, Text
 from trezor.ui.container import Container
 from trezor.ui.qr import Qr
 from trezor.utils import chunks
@@ -54,3 +55,39 @@ def address_n_to_str(address_n: Iterable[int]) -> str:
         return "m"
 
     return "m/" + "/".join([path_item(i) for i in address_n])
+
+
+async def show_warning(
+    ctx: wire.GenericContext,
+    content: Iterable[str],
+    subheader: Iterable[str] = [],
+    button: str = "Try again",
+) -> None:
+    text = Text("Warning", ui.ICON_WRONG, ui.RED)
+    if subheader:
+        for row in subheader:
+            text.bold(row)
+        text.br_half()
+    for row in content:
+        text.normal(row)
+    await require_confirm(
+        ctx, text, ButtonRequestType.Warning, confirm=button, cancel=None
+    )
+
+
+async def show_success(
+    ctx: wire.GenericContext,
+    content: Iterable[str] = [],
+    subheader: Iterable[str] = [],
+    button: str = "Continue",
+) -> None:
+    text = Text("Success", ui.ICON_CONFIRM, ui.GREEN)
+    if subheader:
+        for row in subheader:
+            text.bold(row)
+        text.br_half()
+    for row in content:
+        text.normal(row)
+    await require_confirm(
+        ctx, text, ButtonRequestType.Success, confirm=button, cancel=None
+    )
