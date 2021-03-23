@@ -12,7 +12,7 @@ from .helpers.paths import SCHEMA_PUBKEY
 from .helpers.utils import derive_public_key
 
 if False:
-    from trezor.messages.CardanoGetPublicKey import CardanoGetPublicKey
+    from trezor.messages import CardanoGetPublicKey
 
 
 @seed.with_keychain

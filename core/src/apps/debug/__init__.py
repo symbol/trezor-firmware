@@ -87,7 +87,7 @@ if __debug__:
         if storage.layout_watcher is LAYOUT_WATCHER_LAYOUT:
             await DEBUG_CONTEXT.write(DebugLinkLayout(lines=content))
         else:
-            from trezor.messages.DebugLinkState import DebugLinkState
+            from trezor.messages import DebugLinkState
 
             await DEBUG_CONTEXT.write(DebugLinkState(layout_lines=content))
         storage.layout_watcher = LAYOUT_WATCHER_NONE

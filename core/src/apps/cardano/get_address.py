@@ -17,10 +17,10 @@ from .layout import (
 from .sign_tx import validate_network_info
 
 if False:
-    from trezor.messages.CardanoAddressParametersType import (
+    from trezor.messages import (
         CardanoAddressParametersType,
+        CardanoGetAddress,
     )
-    from trezor.messages.CardanoGetAddress import CardanoGetAddress
 
 
 @seed.with_keychain

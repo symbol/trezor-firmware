@@ -12,8 +12,8 @@ from apps.common.paths import AlwaysMatchingSchema
 from .sign_identity import serialize_identity, serialize_identity_without_proto
 
 if False:
-    from trezor.messages.GetECDHSessionKey import GetECDHSessionKey
-    from trezor.messages.IdentityType import IdentityType
+    from trezor.messages import GetECDHSessionKey
+    from trezor.messages import IdentityType
 
     from apps.common.paths import Bip32Path
 

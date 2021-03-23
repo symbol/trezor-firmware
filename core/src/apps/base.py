@@ -1,8 +1,10 @@
 import storage.cache
 import storage.device
+import storage.recovery
+import storage.sd_salt
+from storage import cache
 from trezor import config, utils, wire, workflow
-from trezor.messages import MessageType
-from trezor.messages.Success import Success
+from trezor.messages import MessageType, Success
 
 from . import workflow_handlers
 
@@ -25,8 +27,7 @@ def get_features() -> Features:
     import storage.sd_salt
 
     from trezor import sdcard
-    from trezor.messages import Capability
-    from trezor.messages.Features import Features
+    from trezor.messages import Capability, Features
 
     from apps.common import mnemonic, safety_checks
 
@@ -134,7 +135,7 @@ async def handle_Ping(ctx: wire.Context, msg: Ping) -> Success:
 async def handle_DoPreauthorized(
     ctx: wire.Context, msg: DoPreauthorized
 ) -> protobuf.MessageType:
-    from trezor.messages.PreauthorizedRequest import PreauthorizedRequest
+    from trezor.messages import PreauthorizedRequest
     from apps.common import authorization
 
     if not authorization.is_set():

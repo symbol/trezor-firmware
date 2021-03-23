@@ -35,6 +35,14 @@ reads the message's header. When the message type is known the first handler is 
 
 """
 
+from storage.cache import InvalidSessionError
+from trezorutils import (
+    protobuf_decode,
+    protobuf_encode,
+    protobuf_len,
+    protobuf_type_for_wire,
+)
+
 import protobuf
 from storage.cache import InvalidSessionError
 from trezor import log, loop, messages, utils, workflow
@@ -138,9 +146,6 @@ class Context:
         self.iface = iface
         self.sid = sid
         self.buffer = buffer
-        self.buffer_writer = utils.BufferWriter(self.buffer)
-
-        self._field_cache: protobuf.FieldCache = {}
 
     async def call(
         self,

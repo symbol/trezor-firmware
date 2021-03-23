@@ -5,9 +5,7 @@ from ..seed import is_shelley_path
 from .utils import to_account_path
 
 if False:
-    from trezor.messages.CardanoAddressParametersType import (
-        CardanoAddressParametersType,
-    )
+    from trezor.messages import CardanoAddressParametersType
     from ..seed import Keychain
 
 

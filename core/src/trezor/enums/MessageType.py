@@ -2,7 +2,6 @@
 # fmt: off
 from trezor import utils
 
-# isort:skip_file
 if __debug__:
     try:
         from typing_extensions import Literal  # noqa: F401

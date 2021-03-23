@@ -7,7 +7,6 @@ from apps.common.keychain import get_keychain
 from apps.common.paths import AlwaysMatchingSchema
 
 if False:
-    from trezor.messages.CipherKeyValue import CipherKeyValue
     from trezor.wire import Context
 
 # This module implements the SLIP-0011 symmetric encryption of key-value pairs using a

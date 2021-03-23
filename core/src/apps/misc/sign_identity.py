@@ -10,8 +10,8 @@ from apps.common.keychain import get_keychain
 from apps.common.paths import AlwaysMatchingSchema
 
 if False:
-    from trezor.messages.IdentityType import IdentityType
-    from trezor.messages.SignIdentity import SignIdentity
+    from trezor.messages import IdentityType
+    from trezor.messages import SignIdentity
 
     from apps.common.paths import Bip32Path
 
