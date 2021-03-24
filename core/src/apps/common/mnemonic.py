@@ -8,7 +8,7 @@ if False:
     from trezor.messages.ResetDevice import EnumTypeBackupType
 
 
-def get() -> tuple[bytes | None, int]:
+def get() -> tuple[bytes | None, EnumTypeBackupType]:
     return get_secret(), get_type()
 
 
