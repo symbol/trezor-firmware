@@ -3,7 +3,8 @@ from trezor import wire
 from trezor.messages.Success import Success
 from trezor.messages.WebAuthnAddResidentCredential import WebAuthnAddResidentCredential
 from trezor.ui.components.common.webauthn import ConfirmInfo
-from trezor.ui.layouts import confirm_webauthn, show_error_and_raise
+from trezor.ui.layouts import show_error_and_raise
+from trezor.ui.layouts.tt.webauthn import confirm_webauthn
 
 from .credential import Fido2Credential
 from .resident_credentials import store_resident_credential

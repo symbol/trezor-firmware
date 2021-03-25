@@ -6,7 +6,7 @@ from trezor.messages.WebAuthnRemoveResidentCredential import (
     WebAuthnRemoveResidentCredential,
 )
 from trezor.ui.components.common.webauthn import ConfirmInfo
-from trezor.ui.layouts import confirm_webauthn
+from trezor.ui.layouts.tt.webauthn import confirm_webauthn
 
 from .credential import Fido2Credential
 from .resident_credentials import get_resident_credential
