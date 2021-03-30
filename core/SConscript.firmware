@@ -396,11 +396,13 @@ if TREZOR_MODEL == 'T':
     CPU_CCFLAGS = '-mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mtune=cortex-m4 '
     CPU_MODEL   = 'STM32F427xx'
     LD_VARIANT  = '_zkp' if FEATURE_FLAGS["SECP256K1_ZKP"] else ''
+    RUST_TARGET = 'thumbv7em-none-eabihf'
 elif TREZOR_MODEL == '1':
     CPU_ASFLAGS = '-mthumb -mcpu=cortex-m3 -mfloat-abi=soft'
     CPU_CCFLAGS = '-mthumb -mtune=cortex-m3 -mcpu=cortex-m3 -mfloat-abi=soft '
     CPU_MODEL   = 'STM32F405xx'
     LD_VARIANT  = '' if EVERYTHING else '_min'
+    RUST_TARGET = 'thumbv7em-none-eabi'
 else:
     raise ValueError('Unknown Trezor model')
 
@@ -623,10 +625,8 @@ if FEATURE_FLAGS["SECP256K1_ZKP"]:
 # Rust library
 #
 
-RUST_TOOLCHAIN = 'nightly'
 RUST_PROFILE = 'release'
 RUST_LIB = 'trezor_lib'
-RUST_TARGET = 'thumbv7em-none-eabihf'
 RUST_LIBDIR = f'embed/rust/target/{RUST_TARGET}/{RUST_PROFILE}'
 RUST_LIBPATH = f'{RUST_LIBDIR}/lib{RUST_LIB}.a'
 RUST_HEADERPATH = f'embed/rust/librust.h'
@@ -637,7 +637,7 @@ def cargo_build():
         profile = '--release'
     else:
         profile = ''
-    return f'cd embed/rust; cargo +{RUST_TOOLCHAIN} build {profile} --target={RUST_TARGET}'
+    return f'cd embed/rust; cargo build {profile} --target={RUST_TARGET}'
 
 rust = env.Command(
     target=RUST_LIBPATH,

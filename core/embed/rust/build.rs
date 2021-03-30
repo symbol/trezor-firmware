@@ -22,7 +22,7 @@ fn generate_qstr_bindings() {
         // Pass in correct include paths.
         .clang_args(&[
             "-I",
-            if target == "thumbv7em-none-eabihf" {
+            if target.starts_with("thumbv7em-none-eabi") {
                 "../../build/firmware"
             } else {
                 "../../build/unix"
@@ -105,8 +105,9 @@ fn generate_micropython_bindings() {
     bindings = bindings.no_copy("_mp_map_t");
 
     // Pass in correct include paths and defines.
-    if target == "thumbv7em-none-eabihf" {
+    if target.starts_with("thumbv7em-none-eabi") {
         bindings = bindings.clang_args(&[
+            "-nostdinc",
             "-I../firmware",
             "-I../trezorhal",
             "-I../../build/firmware",
@@ -119,20 +120,26 @@ fn generate_micropython_bindings() {
             "-DUSE_HAL_DRIVER",
             "-DSTM32_HAL_H=<stm32f4xx.h>",
         ]);
-        // Append gcc-arm-none-eabi's include path.
-        let sysroot = Command::new("arm-none-eabi-gcc")
-            .arg("-print-sysroot")
+        // Append gcc-arm-none-eabi's include paths.
+        let cc_output = Command::new("arm-none-eabi-gcc")
+            .arg("-E")
+            .arg("-Wp,-v")
+            .arg("-")
             .output()
             .expect("arm-none-eabi-gcc failed to execute");
-        if !sysroot.status.success() {
+        if !cc_output.status.success() {
             panic!("arm-none-eabi-gcc failed");
         }
-        bindings = bindings.clang_arg(format!(
-            "-I{}/include",
-            String::from_utf8(sysroot.stdout)
-                .expect("arm-none-eabi-gcc returned invalid output")
-                .trim()
-        ));
+        let include_paths =
+            String::from_utf8(cc_output.stderr).expect("arm-none-eabi-gcc returned invalid output");
+        let include_args = include_paths
+            .lines()
+            .skip_while(|s| !s.contains("search starts here:"))
+            .take_while(|s| !s.contains("End of search list."))
+            .filter(|s| s.starts_with(" "))
+            .map(|s| format!("-I{}", s.trim()));
+
+        bindings = bindings.clang_args(include_args);
     } else {
         bindings = bindings.clang_args(&[
             "-I../unix",
