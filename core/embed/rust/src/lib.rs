@@ -13,9 +13,6 @@ mod micropython;
 mod trezorhal;
 mod util;
 
-mod protobuf;
-mod ui;
-
 use core::panic::PanicInfo;
 use cstr_core::CStr;
 
