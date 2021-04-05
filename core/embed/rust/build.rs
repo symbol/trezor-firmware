@@ -3,6 +3,8 @@ use std::{env, path::PathBuf, process::Command};
 fn main() {
     generate_qstr_bindings();
     generate_micropython_bindings();
+    #[cfg(test)]
+    add_test_dependencies();
 }
 
 /// Generates Rust module that exports QSTR constants used in firmware.
@@ -152,4 +154,11 @@ fn generate_micropython_bindings() {
         .expect("Unable to generate Rust Micropython bindings")
         .write_to_file(PathBuf::from(out_path).join("micropython.rs"))
         .unwrap();
+}
+
+#[cfg(test)]
+fn add_test_dependencies() {
+    cc::Build::new()
+        .object("../../build/unix/vendor/micropython/py/obj.o")
+        .compile("micropython");
 }

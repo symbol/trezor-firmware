@@ -1,4 +1,4 @@
-#![no_std]
+#![cfg_attr(not(test), no_std)]
 #![feature(never_type)]
 #![feature(unsize)]
 #![feature(coerce_unsized)]
@@ -13,9 +13,12 @@ mod micropython;
 mod trezorhal;
 mod util;
 
+#[cfg(not(test))]
 use core::panic::PanicInfo;
+#[cfg(not(test))]
 use cstr_core::CStr;
 
+#[cfg(not(test))]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     // Although it would be ideal to use the original error message, ignoring it
