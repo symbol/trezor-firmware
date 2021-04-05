@@ -86,8 +86,8 @@ impl Obj {
     const unsafe fn immediate(val: usize) -> Self {
         // SAFETY:
         //  - `val` is in `0..=3` range.
-        //  - Micropython compiled with `MICROPY_OBJ_REPR == MICROPY_OBJ_REPR_A`.
-        //  - Micropython compiled with `MICROPY_OBJ_IMMEDIATE_OBJS`.
+        //  - MicroPython compiled with `MICROPY_OBJ_REPR == MICROPY_OBJ_REPR_A`.
+        //  - MicroPython compiled with `MICROPY_OBJ_IMMEDIATE_OBJS`.
         //    micropython/py/obj.h #define MP_OBJ_NEW_IMMEDIATE_OBJ(val)
         //    ((mp_obj_t)(((val) << 3) | 6))
         unsafe { Self::from_bits((val << 3) | 6) }
@@ -223,8 +223,8 @@ impl From<u64> for Obj {
     }
 }
 
-/// Byte slices are converted into `bytes` uPy objects, by allocating new space
-/// on the heap and copying.
+/// Byte slices are converted into `bytes` MicroPython objects, by allocating
+/// new space on the heap and copying.
 impl From<&[u8]> for Obj {
     fn from(val: &[u8]) -> Self {
         // SAFETY:
@@ -233,9 +233,9 @@ impl From<&[u8]> for Obj {
     }
 }
 
-/// String slices are converted into `str` uPy objects. Strings that are already
-/// interned will turn up as QSTRs, strings not found in the QSTR pool will be
-/// allocated on the heap and copied.
+/// String slices are converted into `str` MicroPython objects. Strings that are
+/// already interned will turn up as QSTRs, strings not found in the QSTR pool
+/// will be allocated on the heap and copied.
 impl From<&str> for Obj {
     fn from(val: &str) -> Self {
         // SAFETY:

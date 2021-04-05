@@ -4,6 +4,9 @@ use crate::{error::Error, micropython::obj::Obj};
 
 use super::ffi;
 
+/// Represents a slice of bytes stored on the MicroPython heap and owned by
+/// values that obey the buffer protocol, such as `bytes`, `str`, `bytearray` or
+/// `memoryview`.
 pub struct Buffer {
     ptr: *mut u8,
     len: usize,
@@ -52,6 +55,13 @@ impl AsRef<[u8]> for Buffer {
 }
 
 impl Buffer {
+    /// Convert to a mutable slice of bytes.
+    ///
+    /// # Safety
+    ///
+    /// This method is unsafe because the caller has to guarantee that the bytes
+    /// referenced by `self` are unique, without any other immutable or mutable
+    /// references.
     pub unsafe fn as_mut(&mut self) -> &mut [u8] {
         if self.ptr.is_null() {
             // `ptr` can be null if len == 0.

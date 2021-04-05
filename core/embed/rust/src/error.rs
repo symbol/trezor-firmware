@@ -27,9 +27,9 @@ impl Error {
     }
 }
 
-impl Into<&'static CStr> for Error {
-    fn into(self) -> &'static CStr {
-        self.as_cstr()
+impl From<Error> for &'static CStr {
+    fn from(val: Error) -> Self {
+        val.as_cstr()
     }
 }
 

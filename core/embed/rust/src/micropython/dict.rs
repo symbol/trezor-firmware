@@ -4,9 +4,12 @@ use crate::error::Error;
 
 use super::{ffi, gc::Gc, map::Map, obj::Obj};
 
+/// Insides of the MicroPython `dict` object.
 pub type Dict = ffi::mp_obj_dict_t;
 
 impl Dict {
+    /// Allocate a new dictionary on the GC heap, empty, but with a capacity of
+    /// `capacity` items.
     pub fn alloc_with_capacity(capacity: usize) -> Gc<Self> {
         unsafe {
             let ptr = ffi::mp_obj_new_dict(capacity);
@@ -14,6 +17,7 @@ impl Dict {
         }
     }
 
+    /// Constructs a dictionary definition by taking ownership of given [`Map`].
     pub fn with_map(map: Map) -> Self {
         unsafe {
             Self {
@@ -25,10 +29,12 @@ impl Dict {
         }
     }
 
+    /// Returns a reference to the contained [`Map`].
     pub fn map(&self) -> &Map {
         &self.map
     }
 
+    /// Returns a mutable reference to the contained [`Map`].
     pub fn map_mut(&mut self) -> &mut Map {
         &mut self.map
     }
