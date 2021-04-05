@@ -31,4 +31,4 @@ version = "0.2.2"
 default_features = false
 
 [build-dependencies]
-bindgen = "0.57.0"
+bindgen = "0.58.0"
