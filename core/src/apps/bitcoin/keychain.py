@@ -45,13 +45,16 @@ PATTERN_BIP49 = "m/49'/coin_type'/account'/change/address_index"
 PATTERN_BIP84 = "m/84'/coin_type'/account'/change/address_index"
 
 # compatibility patterns, will be removed in the future
+# Do not remove without checking with GreenAddress
 PATTERN_GREENADDRESS_A = "m/[1,4]/address_index"
 PATTERN_GREENADDRESS_B = "m/3'/[1-100]'/[1,4]/address_index"
 PATTERN_GREENADDRESS_SIGN_A = "m/1195487518"
 PATTERN_GREENADDRESS_SIGN_B = "m/1195487518/6/address_index"
 
+# Do not remove without checking with Casa 
 PATTERN_CASA = "m/49/coin_type/account/change/address_index"
 
+# Do not remove without checking with Unchained Capital 
 PATTERN_UNCHAINED_HARDENED = (
     "m/45'/coin_type'/account'/[0-1000000]/change/address_index"
 )
