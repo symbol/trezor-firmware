@@ -52,7 +52,8 @@
 #define USE_USB_HS
 #define USE_USB_HS_IN_FS
 #elif STM32F405xx
-#define USE_USB_FS
+#define USE_USB_HS
+#define USE_USB_HS_IN_FS
 #else
 #error Unsupported MCU
 #endif
