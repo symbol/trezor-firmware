@@ -578,7 +578,6 @@ RUST_PROFILE = 'release'
 RUST_LIB = 'trezor_lib'
 RUST_LIBDIR = f'embed/rust/target/{RUST_PROFILE}'
 RUST_LIBPATH = f'{RUST_LIBDIR}/lib{RUST_LIB}.a'
-RUST_HEADERPATH = f'embed/rust/librust.h'
 
 def cargo_build():
     # Determine the profile build flags.
