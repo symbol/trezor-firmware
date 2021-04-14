@@ -57,6 +57,7 @@ fn generate_micropython_bindings() {
         .allowlist_function("mp_obj_new_int")
         .allowlist_function("mp_obj_new_int_from_ll")
         .allowlist_function("mp_obj_new_int_from_ull")
+        .allowlist_function("mp_obj_new_int_from_uint")
         .allowlist_function("mp_obj_new_bytes")
         .allowlist_function("mp_obj_new_str")
         .allowlist_function("mp_obj_get_int_maybe")
@@ -101,7 +102,10 @@ fn generate_micropython_bindings() {
         // typ
         .allowlist_var("mp_type_type");
 
-    // Don't add impls that hinder safety guarantees.
+    // `ffi::mp_map_t` type is not allowed to be `Clone` or `Copy` because we tie it
+    // to the data lifetimes with the `MapRef` type, see `src/micropython/map.rs`.
+    // TODO: We should disable `Clone` and `Copy` for all types and only allow-list
+    // the specific cases we require.
     bindings = bindings.no_copy("_mp_map_t");
 
     // Pass in correct include paths and defines.

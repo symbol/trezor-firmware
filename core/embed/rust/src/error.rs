@@ -39,6 +39,9 @@ impl fmt::Debug for Error {
     }
 }
 
+// Implements a conversion from `core::convert::Infallible` to `Error` to so
+// that code generic over `TryFrom` can work with values covered by the blanket
+// impl for `Into`: `https://doc.rust-lang.org/std/convert/enum.Infallible.html`
 impl From<Infallible> for Error {
     fn from(_: Infallible) -> Self {
         unreachable!()
