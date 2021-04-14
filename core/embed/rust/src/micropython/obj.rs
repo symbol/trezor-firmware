@@ -195,10 +195,6 @@ impl From<i64> for Obj {
 
 impl From<u32> for Obj {
     fn from(val: u32) -> Self {
-        extern "C" {
-            fn mp_obj_new_int_from_uint(value: ffi::mp_uint_t) -> ffi::mp_obj_t;
-        }
-
         // `mp_obj_new_int_from_uint` accepts a `mp_uint_t` argument, which is
         // word-sized. We primarily target 32-bit architecture, and therefore keep
         // the primary unsigned conversion type as `u32`, but convert through `into()`
@@ -206,7 +202,7 @@ impl From<u32> for Obj {
 
         // SAFETY:
         //  - Can raise if allocation fails.
-        unsafe { mp_obj_new_int_from_uint(val.into()) }
+        unsafe { ffi::mp_obj_new_int_from_uint(val.into()) }
     }
 }
 
