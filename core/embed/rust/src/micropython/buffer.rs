@@ -53,24 +53,3 @@ impl AsRef<[u8]> for Buffer {
         }
     }
 }
-
-impl Buffer {
-    /// Convert to a mutable slice of bytes.
-    ///
-    /// # Safety
-    ///
-    /// This method is unsafe because the caller has to guarantee that the bytes
-    /// referenced by `self` are unique, without any other immutable or mutable
-    /// references.
-    pub unsafe fn as_mut(&mut self) -> &mut [u8] {
-        if self.ptr.is_null() {
-            // `ptr` can be null if len == 0.
-            &mut []
-        } else {
-            // SAFETY: We assume that `ptr` is pointing to memory:
-            //  - without any live references.
-            //  - of length `len` bytes.
-            unsafe { slice::from_raw_parts_mut(self.ptr, self.len) }
-        }
-    }
-}
