@@ -627,7 +627,7 @@ if FEATURE_FLAGS["SECP256K1_ZKP"]:
 
 RUST_PROFILE = 'release'
 RUST_LIB = 'trezor_lib'
-RUST_LIBDIR = f'embed/rust/target/{RUST_TARGET}/{RUST_PROFILE}'
+RUST_LIBDIR = f'build/rust/{RUST_TARGET}/{RUST_PROFILE}'
 RUST_LIBPATH = f'{RUST_LIBDIR}/lib{RUST_LIB}.a'
 
 def cargo_build():
