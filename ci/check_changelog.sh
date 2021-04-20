@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-base_branch=master
+base_branch=mmilata/towncrier
 fail=0
 subdirs="core python legacy/firmware legacy/bootloader"
 

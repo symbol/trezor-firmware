@@ -67,7 +67,7 @@ wire.setup(usb.iface_wire)
 if __debug__:
     wire.setup(usb.iface_debug, use_workflow=False)
 
-loop.run()
+utils.halt("Hello world.")
 
 # loop is empty. That should not happen
 utils.halt("All tasks have died.")
