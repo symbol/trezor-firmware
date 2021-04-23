@@ -57,12 +57,13 @@ START_TEST(test_cashaddr) {
     ck_assert_int_eq(rawdata_len, 21);
 
     int addr_type = -1;
-    if (rawdata[0] == 0)
+    if (rawdata[0] == 0) {
       addr_type = 0x00;  // P2PKH
-    else if (rawdata[0] == 5)
+    } else if (rawdata[0] == 5) {
       addr_type = 0x08;  // P2SH
-    else
+    } else {
       ck_abort();
+    }
     ck_assert_int_eq(prog[0], addr_type);
 
     ck_assert_int_eq(memcmp(rawdata + 1, prog + 1, 20), 0);
