@@ -22,6 +22,29 @@
 #include "memzero.h"
 #include "py/objint.h"
 
+static bool mpz_as_ll_checked(const mpz_t *i, long long *value) {
+  // Analogue of `mpz_as_int_checked` from mpz.c
+
+  mp_uint_t val = 0;
+  mpz_dig_t *d = i->dig + i->len;
+
+  while (d-- > i->dig) {
+    if (val > (~0x8000000000000000 >> MPZ_DIG_SIZE)) {
+      // will overflow
+      *value = 0;
+      return false;
+    }
+    val = (val << MPZ_DIG_SIZE) | *d;
+  }
+
+  if (i->neg != 0) {
+    val = -val;
+  }
+
+  *value = val;
+  return true;
+}
+
 bool trezor_obj_get_ll_checked(mp_obj_t obj, long long *value) {
   if (mp_obj_is_small_int(obj)) {
     // Value is fitting in a small int range. Return it directly.
@@ -31,19 +54,8 @@ bool trezor_obj_get_ll_checked(mp_obj_t obj, long long *value) {
   } else if (mp_obj_is_type(obj, &mp_type_int)) {
     // Value is not fitting into small int range, but is an integer.
     mp_obj_int_t *self = MP_OBJ_TO_PTR(obj);
-    if (mpz_max_num_bits(&self->mpz) <= sizeof(long long) * 8) {
-      // Value is fitting into long long, copy it out as bytes.
-      uint8_t bytes[sizeof(long long)];
-      memzero(bytes, sizeof(bytes));
-      mpz_as_bytes(&self->mpz, false, sizeof(bytes), bytes);
-      memcpy(value, bytes, sizeof(long long));
-      return true;
-    } else {
-      // Value is not fitting into long long.
-      *value = 0;
-      return false;
-    }
-
+    // Try to get the long long value out of the MPZ struct.
+    return mpz_as_ll_checked(&self->mpz, value);
   } else {
     // Value is not integer.
     *value = 0;
