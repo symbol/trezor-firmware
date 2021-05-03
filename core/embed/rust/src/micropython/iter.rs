@@ -31,10 +31,10 @@ pub struct Iter<'a> {
 impl<'a> Iter<'a> {
     pub fn try_from_obj_with_buf(o: Obj, iter_buf: &'a mut IterBuf) -> Result<Self, Error> {
         // SAFETY:
-        //  - When passed an `iter_buf`, `mp_getiter` usually does not heap-allocate,
-        //    but instead returns a view into the passed object. We maintain this
-        //    invariant by taking a mut ref to `IterBuf` and tying it to the lifetime of
-        //    returned `Iter`.
+        //  - In the common case, `ffi::mp_getiter` does not heap-allocate, but instead
+        //    uses memory from the passed `iter_buf`. We maintain this invariant by
+        //    taking a mut ref to `IterBuf` and tying it to the lifetime of returned
+        //    `Iter`.
         //  - Raises if `o` is not iterable and in other cases as well.
         //  - Returned obj is referencing into `iter_buf`.
         // TODO: Use a fn that doesn't raise on non-iterable object.

@@ -12,6 +12,8 @@ impl Dict {
     /// `capacity` items.
     pub fn alloc_with_capacity(capacity: usize) -> Gc<Self> {
         unsafe {
+            // SAFETY: We expect that `ffi::mp_obj_new_dict` either returns a GC-allocated
+            // pointer to `ffi::mp_obj_dict_t` or raises (i.e. on allocation failure).
             let ptr = ffi::mp_obj_new_dict(capacity);
             Gc::from_raw(ptr.as_ptr().cast())
         }

@@ -172,7 +172,7 @@ impl<'a> MapRef<'a> {
     fn new(map: Map) -> Self {
         Self {
             map,
-            _phantom: PhantomData::default(),
+            _phantom: PhantomData,
         }
     }
 }

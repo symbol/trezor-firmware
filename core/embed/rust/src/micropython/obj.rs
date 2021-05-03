@@ -36,18 +36,22 @@ impl Obj {
 
 impl Obj {
     pub fn is_small_int(self) -> bool {
+        // micropython/py/obj.h mp_obj_is_small_int
         self.as_bits() & 1 != 0
     }
 
     pub fn is_qstr(self) -> bool {
+        // micropython/py/obj.h mp_obj_is_qstr
         self.as_bits() & 7 == 2
     }
 
     pub fn is_immediate(self) -> bool {
+        // micropython/py/obj.h mp_obj_is_immediate_obj
         self.as_bits() & 7 == 6
     }
 
     pub fn is_ptr(self) -> bool {
+        // micropython/py/obj.h mp_obj_is_obj
         self.as_bits() & 3 == 0
     }
 }
