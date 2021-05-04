@@ -25,7 +25,7 @@
 static bool mpz_as_ll_checked(const mpz_t *i, long long *value) {
   // Analogue of `mpz_as_int_checked` from mpz.c
 
-  mp_uint_t val = 0;
+  unsigned long long val = 0;
   mpz_dig_t *d = i->dig + i->len;
 
   while (d-- > i->dig) {
