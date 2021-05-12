@@ -15,9 +15,8 @@ if False:
 
     TextContent = Union[str, int]
 
-# needs to be different from all colors and font ids
-BR = const(-256)
-BR_HALF = const(-257)
+BR = "\n"
+BR_HALF = "\r"
 
 _FONTS = (ui.NORMAL, ui.BOLD, ui.MONO)
 
@@ -171,10 +170,104 @@ class Span:
 _WORKING_SPAN = Span()
 
 
+def calculate_text_pages(
+    items: List[TextContent],
+    new_lines: bool,
+    max_lines: int = TEXT_MAX_LINES,
+    font: int = ui.NORMAL,
+    offset_x: int = TEXT_MARGIN_LEFT,
+    offset_y: int = TEXT_HEADER_HEIGHT,
+    line_width: int = ui.WIDTH - TEXT_MARGIN_LEFT,
+    break_words: bool = False,
+) -> List[Tuple[int, int]]:
+    pages = [(0, 0)]
+
+    def render_text_fn(_x, _y, _text, _font, _fg, _bg):
+        pass
+
+    def page_end_fn(op, char):
+        pages.append((op, char))
+
+    result = ui.display.text_rich(
+        items=items,
+        item_offset=0,
+        char_offset=0,
+        # bounds
+        x0=offset_x,
+        y0=offset_y,
+        x1=offset_x + line_width,
+        y1=offset_y + (TEXT_LINE_HEIGHT * max_lines),
+        # style
+        fg=0,
+        bg=0,
+        font=font,
+        break_words=break_words,
+        insert_new_lines=new_lines,
+        render_page_overflow=False,
+        # callbacks
+        render_text_fn=render_text_fn,
+        page_end_fn=page_end_fn,
+    )
+    if result is None:
+        raise RuntimeError("failed to paginate text")
+    return pages
+
+
 def render_text(
     items: list[TextContent],
     new_lines: bool,
-    max_lines: int,
+    max_lines: int = TEXT_MAX_LINES,
+    font: int = ui.NORMAL,
+    fg: int = ui.FG,
+    bg: int = ui.BG,
+    offset_x: int = TEXT_MARGIN_LEFT,
+    offset_y: int = TEXT_HEADER_HEIGHT,
+    line_width: int = ui.WIDTH - TEXT_MARGIN_LEFT,
+    break_words: bool = False,
+    render_page_overflow: bool = True,
+    item_offset: int = 0,
+    char_offset: int = 0,
+    debug: bool = False,
+) -> None:
+    if __debug__ and debug:
+        lines = []
+
+        def render_text_fn(_x, _y, text, _font, _fg, _bg):
+            lines.append(text.decode())
+
+    else:
+        render_text_fn = None
+
+    result = ui.display.text_rich(
+        items=items,
+        item_offset=item_offset,
+        char_offset=char_offset,
+        # bounds
+        x0=offset_x,
+        y0=offset_y,
+        x1=offset_x + line_width,
+        y1=offset_y + (TEXT_LINE_HEIGHT * max_lines),
+        # style
+        fg=fg,
+        bg=bg,
+        font=font,
+        break_words=break_words,
+        insert_new_lines=new_lines,
+        render_page_overflow=render_page_overflow,
+        render_text_fn=render_text_fn,
+    )
+
+    if result is None:
+        raise RuntimeError("failed to render text")
+
+    if __debug__ and debug:
+        return lines
+
+
+def render_text_python(
+    items: List[TextContent],
+    new_lines: bool,
+    max_lines: int = TEXT_MAX_LINES,
     font: int = ui.NORMAL,
     fg: int = ui.FG,
     bg: int = ui.BG,
