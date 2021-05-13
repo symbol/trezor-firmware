@@ -720,6 +720,8 @@ trezor.res.resources
 import trezor.res.resources
 trezor.sdcard
 import trezor.sdcard
+trezor.sdcard_tt
+import trezor.sdcard_tt
 trezor.strings
 import trezor.strings
 trezor.ui

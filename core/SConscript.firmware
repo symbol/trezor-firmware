@@ -139,10 +139,13 @@ if FEATURE_FLAGS["SECP256K1_ZKP"]:
 
 # modtrezorio
 SOURCE_MOD += [
-    'embed/extmod/modtrezorio/ff.c',
-    'embed/extmod/modtrezorio/ffunicode.c',
     'embed/extmod/modtrezorio/modtrezorio.c',
 ]
+if TREZOR_MODEL == "T":
+    SOURCE_MOD += [
+        'embed/extmod/modtrezorio/ff.c',
+        'embed/extmod/modtrezorio/ffunicode.c',
+    ]
 
 # modtrezorui
 CPPPATH_MOD += [
@@ -493,7 +496,11 @@ if FROZEN:
     SOURCE_PY_DIR = 'src/'
 
     SOURCE_PY = Glob(SOURCE_PY_DIR + '*.py')
-    SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'trezor/*.py'))
+    SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'trezor/*.py',
+       exclude=[
+           SOURCE_PY_DIR + 'trezor/sdcard_tt.py',
+       ] if TREZOR_MODEL != 'T' else [])
+    )
     SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'trezor/crypto/*.py'))
     SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'trezor/res/*.py'))
     SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'trezor/ui/*.py'))
