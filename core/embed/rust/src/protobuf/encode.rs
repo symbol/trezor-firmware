@@ -3,7 +3,7 @@ use core::convert::TryFrom;
 use crate::{
     error::Error,
     micropython::{
-        buffer::Buffer,
+        buffer::{Buffer, BufferMut},
         gc::Gc,
         iter::{Iter, IterBuf},
         list::List,
@@ -37,7 +37,7 @@ pub extern "C" fn protobuf_encode(buf: Obj, def: Obj, obj: Obj) -> Obj {
     util::try_or_raise(|| {
         let def = Gc::<MsgDefObj>::try_from(def)?;
 
-        let buf = &mut Buffer::try_from(buf)?;
+        let buf = &mut BufferMut::try_from(buf)?;
         let stream = &mut BufferStream::new(unsafe {
             // SAFETY: We assume there are no other refs into `buf` at this point. This
             // specifically means that no fields of `obj` should reference `buf` memory.
