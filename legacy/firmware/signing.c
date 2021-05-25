@@ -1070,9 +1070,14 @@ static bool signing_validate_output(TxOutputType *txoutput) {
 
 static bool signing_validate_bin_output(TxOutputBinType *tx_bin_output) {
   if (!coin->decred && tx_bin_output->has_decred_script_version) {
+#if BITCOIN_ONLY
+    fsm_sendFailure(FailureType_Failure_DataError,
+                    _("Unsupported output type."));
+#else
     fsm_sendFailure(
         FailureType_Failure_DataError,
         _("Decred details provided but Decred coin not specified."));
+#endif
     signing_abort();
     return false;
   }
