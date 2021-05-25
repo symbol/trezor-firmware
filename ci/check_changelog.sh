@@ -7,6 +7,16 @@ subdirs="core python legacy/firmware legacy/bootloader"
 git fetch origin "$base_branch"
 
 check_feature_branch () {
+
+    for commit in $(git rev-list origin/$base_branch..)
+    do
+        if git log -n1 --format=%B "$commit" | grep -iFq "[no changelog]"; then
+            echo "Found [no changelog] in $commit, skipping check."
+            fail=0
+            return
+        fi
+    done
+
     for subdir in $subdirs
     do
         echo "Checking $subdir"
@@ -29,7 +39,7 @@ check_release_branch () {
     fi
 }
 
-if echo "$CI_COMMIT_BRANCH" | grep -q "^release/"; then
+if echo "$CI_COMMIT_BRANCH" | grep -Eq "^(release|secfix)/"; then
     check_release_branch
 else
     check_feature_branch
