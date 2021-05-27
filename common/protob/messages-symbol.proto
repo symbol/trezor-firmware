@@ -1,0 +1,92 @@
+syntax = "proto2";
+package hw.trezor.messages.symbol;
+
+// Sugar for easier handling in Java
+option java_package = "com.satoshilabs.trezor.lib.protobuf";
+option java_outer_classname = "TrezorMessageSymbol";
+
+
+/**
+ * Request: Ask device for Symbol address corresponding to address_n path
+ * @start
+ * @next SymbolAddress
+ * @next Failure
+ */
+ message SymbolGetAddress {
+    repeated uint32 address_n    = 1;     // BIP-32 path to derive the key from master node
+    optional uint32 network      = 2;     // Network ID -> 0x68 = (MAIN_NET), 0x98 (TEST_NET), 0x60 (PRIVATE), 0x90 (PRIVATE_TEST)
+    optional bool   show_display = 3;     // Optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains Symbol address derived from device private seed
+ * @end
+ */
+
+message SymbolAddress {
+    optional string address = 1;    // Symbol address in Base32 encoding
+}
+
+message SymbolGetPublicKey {
+    repeated uint32 address_n    = 1;     // BIP-32 path to derive the key from master node
+    optional bool   show_display = 2;     // Optionally show on display before sending the result
+}
+
+message SymbolPublicKey {
+    optional bytes public_key    = 1;     // BIP-32 path to derive the key from master node
+}
+
+
+/**
+ * Request: Ask device to sign transaction
+ * @start
+ * @next SymbolSignedTx
+ * @next Failure
+ */
+message SymbolSignTx {
+    optional SymbolTransactionCommon common   = 1;
+    optional SymbolTransfer          transfer = 2;  // Transfer transaction part
+
+    enum SymbolNetworkType {
+        MAIN_NET     = 0x68;  // Public network
+        TEST_NET     = 0x98;  // Public test network
+        PRIVATE      = 0x60;  // Private network
+        PRIVATE_TEST = 0x90;  // Private test network
+    }
+    
+    //enum EntityType {}
+
+    message SymbolMosaic {
+        optional uint64 mosaic_id = 1;
+        optional uint64 amount    = 2;
+    }
+
+    /**
+    * Structure representing the common part for Symbol transactions
+    */
+    message SymbolTransactionCommon {
+        optional bytes             signer_public_key = 1;
+        optional uint32            version           = 2;
+        optional SymbolNetworkType network_type      = 3;
+      //optional EntityType        entity_type       = 4;
+
+        optional uint64            max_fee           = 4;      // Max fee which should be paid for the transaction
+        optional uint64            deadline          = 5;      // Drop transaction if it does not get included in a block before deadline is reached (Number of milliseconds since the creation of the nemesis block) 
+    }
+
+    /**
+    * Structure representing the transfer transaction part for Symbol transactions
+    */
+    message SymbolTransfer {
+        optional bytes        recipient_address = 1; // Address of the recipient
+        optional uint32       message_size      = 2; // Size of the attached message
+        optional uint32       mosaics_count     = 3; // Number of attached mosaics
+
+        optional uint32       reserved1         = 4; // Reserved padding
+        optional uint32       reserved2         = 5; // Reserved padding
+
+        repeated SymbolMosaic mosaic            = 6; // Mosaics to send
+        optional bytes        message           = 7; // Hexadecimal payload
+    }
+
+}

@@ -141,6 +141,10 @@ def find_message_handler_module(msg_type: int) -> str:
         elif msg_type == MessageType.NEMSignTx:
             return "apps.nem.sign_tx"
 
+        # symbol
+        elif msg_type == MessageType.SymbolGetPublicKey:
+            return "apps.symbol.get_public_key"
+
         # stellar
         elif msg_type == MessageType.StellarGetAddress:
             return "apps.stellar.get_address"

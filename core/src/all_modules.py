@@ -620,6 +620,24 @@ trezor.messages.StellarTxOpRequest
 import trezor.messages.StellarTxOpRequest
 trezor.messages.Success
 import trezor.messages.Success
+trezor.messages.SymbolAddress
+import trezor.messages.SymbolAddress
+trezor.messages.SymbolGetAddress
+import trezor.messages.SymbolGetAddress
+trezor.messages.SymbolGetPublicKey
+import trezor.messages.SymbolGetPublicKey
+trezor.messages.SymbolMosaic
+import trezor.messages.SymbolMosaic
+trezor.messages.SymbolNetworkType
+import trezor.messages.SymbolNetworkType
+trezor.messages.SymbolPublicKey
+import trezor.messages.SymbolPublicKey
+trezor.messages.SymbolSignTx
+import trezor.messages.SymbolSignTx
+trezor.messages.SymbolTransactionCommon
+import trezor.messages.SymbolTransactionCommon
+trezor.messages.SymbolTransfer
+import trezor.messages.SymbolTransfer
 trezor.messages.TezosAddress
 import trezor.messages.TezosAddress
 trezor.messages.TezosBallotOp
@@ -1224,6 +1242,10 @@ apps.stellar.sign_tx
 import apps.stellar.sign_tx
 apps.stellar.writers
 import apps.stellar.writers
+apps.symbol
+import apps.symbol
+apps.symbol.get_public_key
+import apps.symbol.get_public_key
 apps.tezos
 import apps.tezos
 apps.tezos.get_address

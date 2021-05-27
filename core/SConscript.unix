@@ -477,6 +477,7 @@ if FROZEN:
             SOURCE_PY_DIR + 'trezor/messages/Lisk*.py',
             SOURCE_PY_DIR + 'trezor/messages/Monero*.py',
             SOURCE_PY_DIR + 'trezor/messages/NEM*.py',
+            SOURCE_PY_DIR + 'trezor/messages/Symbol*.py',
             SOURCE_PY_DIR + 'trezor/messages/Ripple*.py',
             SOURCE_PY_DIR + 'trezor/messages/Stellar*.py',
             SOURCE_PY_DIR + 'trezor/messages/Tezos*.py',
@@ -527,6 +528,10 @@ if FROZEN:
         SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'apps/nem/*.py'))
         SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'apps/nem/*/*.py'))
         SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'trezor/messages/NEM*.py'))
+
+        SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'apps/symbol/*.py'))
+        SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'apps/symbol/*/*.py'))
+        SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'trezor/messages/Symbol*.py'))
 
         SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'apps/ripple/*.py'))
         SOURCE_PY.extend(Glob(SOURCE_PY_DIR + 'trezor/messages/Ripple*.py'))

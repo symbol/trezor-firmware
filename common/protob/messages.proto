@@ -159,6 +159,10 @@ enum MessageType {
     MessageType_NEMDecryptMessage = 75 [(wire_in) = true];
     MessageType_NEMDecryptedMessage = 76 [(wire_out) = true];
 
+    // Symbol
+    MessageType_SymbolGetPublicKey = 88 [(wire_in) = true];
+    MessageType_SymbolPublicKey = 89 [(wire_out) = true];
+
     // Lisk
     MessageType_LiskGetAddress = 114 [(wire_in) = true];
     MessageType_LiskAddress = 115 [(wire_out) = true];
