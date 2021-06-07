@@ -16,15 +16,15 @@ class SymbolMosaic(p.MessageType):
     def __init__(
         self,
         *,
-        mosaic_id: Optional[int] = None,
+        id: Optional[int] = None,
         amount: Optional[int] = None,
     ) -> None:
-        self.mosaic_id = mosaic_id
+        self.id = id
         self.amount = amount
 
     @classmethod
     def get_fields(cls) -> Dict:
         return {
-            1: ('mosaic_id', p.UVarintType, None),
+            1: ('id', p.UVarintType, None),
             2: ('amount', p.UVarintType, None),
         }

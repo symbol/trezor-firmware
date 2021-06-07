@@ -3,6 +3,8 @@
 # isort:skip_file
 from .. import protobuf as p
 
+from .SymbolMosaic import SymbolMosaic
+
 if __debug__:
     try:
         from typing import Dict, List, Optional  # noqa: F401
@@ -11,20 +13,20 @@ if __debug__:
         pass
 
 
-class SymbolMosaic(p.MessageType):
+class SymbolMosaicSupplyChange(p.MessageType):
 
     def __init__(
         self,
         *,
-        id: Optional[int] = None,
-        amount: Optional[int] = None,
+        mosaic: Optional[SymbolMosaic] = None,
+        action: Optional[int] = None,
     ) -> None:
-        self.id = id
-        self.amount = amount
+        self.mosaic = mosaic
+        self.action = action
 
     @classmethod
     def get_fields(cls) -> Dict:
         return {
-            1: ('id', p.UVarintType, None),
-            2: ('amount', p.UVarintType, None),
+            1: ('mosaic', SymbolMosaic, None),
+            2: ('action', p.UVarintType, None),
         }

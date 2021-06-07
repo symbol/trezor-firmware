@@ -3,6 +3,10 @@
 # isort:skip_file
 from .. import protobuf as p
 
+from .SymbolAddressAlias import SymbolAddressAlias
+from .SymbolMosaicDefinition import SymbolMosaicDefinition
+from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
+from .SymbolNamespaceRegistration import SymbolNamespaceRegistration
 from .SymbolTransactionCommon import SymbolTransactionCommon
 from .SymbolTransfer import SymbolTransfer
 
@@ -15,19 +19,32 @@ if __debug__:
 
 
 class SymbolSignTx(p.MessageType):
+    MESSAGE_WIRE_TYPE = 90
 
     def __init__(
         self,
         *,
-        common: Optional[SymbolTransactionCommon] = None,
+        transaction: Optional[SymbolTransactionCommon] = None,
         transfer: Optional[SymbolTransfer] = None,
+        mosaic_definition: Optional[SymbolMosaicDefinition] = None,
+        mosaic_supply_change: Optional[SymbolMosaicSupplyChange] = None,
+        namespace_registration: Optional[SymbolNamespaceRegistration] = None,
+        address_alias: Optional[SymbolAddressAlias] = None,
     ) -> None:
-        self.common = common
+        self.transaction = transaction
         self.transfer = transfer
+        self.mosaic_definition = mosaic_definition
+        self.mosaic_supply_change = mosaic_supply_change
+        self.namespace_registration = namespace_registration
+        self.address_alias = address_alias
 
     @classmethod
     def get_fields(cls) -> Dict:
         return {
-            1: ('common', SymbolTransactionCommon, None),
+            1: ('transaction', SymbolTransactionCommon, None),
             2: ('transfer', SymbolTransfer, None),
+            3: ('mosaic_definition', SymbolMosaicDefinition, None),
+            4: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
+            5: ('namespace_registration', SymbolNamespaceRegistration, None),
+            6: ('address_alias', SymbolAddressAlias, None),
         }

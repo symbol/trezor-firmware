@@ -17,12 +17,14 @@ class SymbolTransactionCommon(p.MessageType):
     def __init__(
         self,
         *,
-        signer_public_key: Optional[bytes] = None,
+        address_n: Optional[List[int]] = None,
+        signer_public_key: Optional[str] = None,
         version: Optional[int] = None,
         network_type: Optional[EnumTypeSymbolNetworkType] = None,
         max_fee: Optional[int] = None,
         deadline: Optional[int] = None,
     ) -> None:
+        self.address_n = address_n if address_n is not None else []
         self.signer_public_key = signer_public_key
         self.version = version
         self.network_type = network_type
@@ -32,9 +34,10 @@ class SymbolTransactionCommon(p.MessageType):
     @classmethod
     def get_fields(cls) -> Dict:
         return {
-            1: ('signer_public_key', p.BytesType, None),
-            2: ('version', p.UVarintType, None),
-            3: ('network_type', p.EnumType("SymbolNetworkType", (104, 152, 96, 144,)), None),
-            4: ('max_fee', p.UVarintType, None),
-            5: ('deadline', p.UVarintType, None),
+            1: ('address_n', p.UVarintType, p.FLAG_REPEATED),
+            2: ('signer_public_key', p.UnicodeType, None),
+            3: ('version', p.UVarintType, None),
+            4: ('network_type', p.EnumType("SymbolNetworkType", (104, 152, 96, 144,)), None),
+            5: ('max_fee', p.UVarintType, None),
+            6: ('deadline', p.UVarintType, None),
         }

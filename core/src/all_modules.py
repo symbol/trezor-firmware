@@ -622,18 +622,30 @@ trezor.messages.Success
 import trezor.messages.Success
 trezor.messages.SymbolAddress
 import trezor.messages.SymbolAddress
+trezor.messages.SymbolAddressAlias
+import trezor.messages.SymbolAddressAlias
+trezor.messages.SymbolEntityType
+import trezor.messages.SymbolEntityType
 trezor.messages.SymbolGetAddress
 import trezor.messages.SymbolGetAddress
 trezor.messages.SymbolGetPublicKey
 import trezor.messages.SymbolGetPublicKey
 trezor.messages.SymbolMosaic
 import trezor.messages.SymbolMosaic
+trezor.messages.SymbolMosaicDefinition
+import trezor.messages.SymbolMosaicDefinition
+trezor.messages.SymbolMosaicSupplyChange
+import trezor.messages.SymbolMosaicSupplyChange
+trezor.messages.SymbolNamespaceRegistration
+import trezor.messages.SymbolNamespaceRegistration
 trezor.messages.SymbolNetworkType
 import trezor.messages.SymbolNetworkType
 trezor.messages.SymbolPublicKey
 import trezor.messages.SymbolPublicKey
 trezor.messages.SymbolSignTx
 import trezor.messages.SymbolSignTx
+trezor.messages.SymbolSignedTx
+import trezor.messages.SymbolSignedTx
 trezor.messages.SymbolTransactionCommon
 import trezor.messages.SymbolTransactionCommon
 trezor.messages.SymbolTransfer
@@ -1244,8 +1256,34 @@ apps.stellar.writers
 import apps.stellar.writers
 apps.symbol
 import apps.symbol
+apps.symbol.common_serializors
+import apps.symbol.common_serializors
 apps.symbol.get_public_key
 import apps.symbol.get_public_key
+apps.symbol.layout
+import apps.symbol.layout
+apps.symbol.mosaic
+import apps.symbol.mosaic
+apps.symbol.mosaic.layout
+import apps.symbol.mosaic.layout
+apps.symbol.mosaic.serialize
+import apps.symbol.mosaic.serialize
+apps.symbol.namespace
+import apps.symbol.namespace
+apps.symbol.namespace.layout
+import apps.symbol.namespace.layout
+apps.symbol.namespace.serialize
+import apps.symbol.namespace.serialize
+apps.symbol.sign_tx
+import apps.symbol.sign_tx
+apps.symbol.transfer
+import apps.symbol.transfer
+apps.symbol.transfer.layout
+import apps.symbol.transfer.layout
+apps.symbol.transfer.serialize
+import apps.symbol.transfer.serialize
+apps.symbol.validators
+import apps.symbol.validators
 apps.tezos
 import apps.tezos
 apps.tezos.get_address

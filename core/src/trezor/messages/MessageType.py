@@ -111,6 +111,8 @@ if not utils.BITCOIN_ONLY:
     NEMDecryptedMessage: Literal[76] = 76
     SymbolGetPublicKey: Literal[88] = 88
     SymbolPublicKey: Literal[89] = 89
+    SymbolSignTx: Literal[90] = 90
+    SymbolSignedTx: Literal[91] = 91
     LiskGetAddress: Literal[114] = 114
     LiskAddress: Literal[115] = 115
     LiskSignTx: Literal[116] = 116

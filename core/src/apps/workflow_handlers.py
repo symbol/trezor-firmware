@@ -144,6 +144,8 @@ def find_message_handler_module(msg_type: int) -> str:
         # symbol
         elif msg_type == MessageType.SymbolGetPublicKey:
             return "apps.symbol.get_public_key"
+        elif msg_type == MessageType.SymbolSignTx:
+            return "apps.symbol.sign_tx"
 
         # stellar
         elif msg_type == MessageType.StellarGetAddress:

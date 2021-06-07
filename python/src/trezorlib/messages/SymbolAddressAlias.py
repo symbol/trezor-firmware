@@ -11,20 +11,23 @@ if __debug__:
         pass
 
 
-class SymbolMosaic(p.MessageType):
+class SymbolAddressAlias(p.MessageType):
 
     def __init__(
         self,
         *,
-        id: Optional[int] = None,
-        amount: Optional[int] = None,
+        namespace_id: Optional[int] = None,
+        address: Optional[str] = None,
+        action: Optional[int] = None,
     ) -> None:
-        self.id = id
-        self.amount = amount
+        self.namespace_id = namespace_id
+        self.address = address
+        self.action = action
 
     @classmethod
     def get_fields(cls) -> Dict:
         return {
-            1: ('id', p.UVarintType, None),
-            2: ('amount', p.UVarintType, None),
+            1: ('namespace_id', p.UVarintType, None),
+            2: ('address', p.UnicodeType, None),
+            3: ('action', p.UVarintType, None),
         }

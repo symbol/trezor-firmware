@@ -34,6 +34,7 @@ reads the message's header. When the message type is known the first handler is 
 `handle_session` goes through all the workflows.
 
 """
+import sys
 
 import protobuf
 from storage.cache import InvalidSessionError
@@ -314,7 +315,29 @@ async def _handle_single_message(
     res_msg: protobuf.MessageType | None = None
 
     # We need to find a handler for this message type.  Should not raise.
-    handler = find_handler(ctx.iface, msg.type)
+    try:
+        print("\n\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n")
+        print("calling find_handler()")
+        handler = find_handler(ctx.iface, msg.type)
+#    except ImportError as error:
+#        # Output expected ImportErrors.
+#        print(error.__class__.__name__ + ": " + error.msg)
+#        print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
+    except ImportError as e:
+        print("\n\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n\n")
+        #e = sys.exc_info()[0]
+        print("EXCEPTION!!!")
+        print( e )
+        #print("Exception caught: %s" % e.__class__.__name__)
+        raise
+#    except: # catch *all* exceptions
+#        print("\n\nBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\n\n")
+#        e = sys.exc_info()[0]
+#        print( "<p>Error: %s</p>" % e )
+#        raise
+# TODO: SYMBOL DEBUG
+
+    print("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ")
 
     if handler is None:
         # If no handler is found, we can skip decoding and directly

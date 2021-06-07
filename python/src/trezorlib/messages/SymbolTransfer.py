@@ -18,30 +18,18 @@ class SymbolTransfer(p.MessageType):
     def __init__(
         self,
         *,
-        mosaic: Optional[List[SymbolMosaic]] = None,
-        recipient_address: Optional[bytes] = None,
-        message_size: Optional[int] = None,
-        mosaics_count: Optional[int] = None,
-        reserved1: Optional[int] = None,
-        reserved2: Optional[int] = None,
+        mosaics: Optional[List[SymbolMosaic]] = None,
+        recipient_address: Optional[str] = None,
         message: Optional[bytes] = None,
     ) -> None:
-        self.mosaic = mosaic if mosaic is not None else []
+        self.mosaics = mosaics if mosaics is not None else []
         self.recipient_address = recipient_address
-        self.message_size = message_size
-        self.mosaics_count = mosaics_count
-        self.reserved1 = reserved1
-        self.reserved2 = reserved2
         self.message = message
 
     @classmethod
     def get_fields(cls) -> Dict:
         return {
-            1: ('recipient_address', p.BytesType, None),
-            2: ('message_size', p.UVarintType, None),
-            3: ('mosaics_count', p.UVarintType, None),
-            4: ('reserved1', p.UVarintType, None),
-            5: ('reserved2', p.UVarintType, None),
-            6: ('mosaic', SymbolMosaic, p.FLAG_REPEATED),
-            7: ('message', p.BytesType, None),
+            1: ('recipient_address', p.UnicodeType, None),
+            2: ('mosaics', SymbolMosaic, p.FLAG_REPEATED),
+            3: ('message', p.BytesType, None),
         }

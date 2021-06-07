@@ -261,11 +261,16 @@ from .StellarSignedTx import StellarSignedTx
 from .StellarTxOpRequest import StellarTxOpRequest
 from .Success import Success
 from .SymbolAddress import SymbolAddress
+from .SymbolAddressAlias import SymbolAddressAlias
 from .SymbolGetAddress import SymbolGetAddress
 from .SymbolGetPublicKey import SymbolGetPublicKey
 from .SymbolMosaic import SymbolMosaic
+from .SymbolMosaicDefinition import SymbolMosaicDefinition
+from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
+from .SymbolNamespaceRegistration import SymbolNamespaceRegistration
 from .SymbolPublicKey import SymbolPublicKey
 from .SymbolSignTx import SymbolSignTx
+from .SymbolSignedTx import SymbolSignedTx
 from .SymbolTransactionCommon import SymbolTransactionCommon
 from .SymbolTransfer import SymbolTransfer
 from .TezosAddress import TezosAddress
@@ -339,6 +344,7 @@ from . import RecoveryDeviceType
 from . import RequestType
 from . import SafetyCheckLevel
 from . import SdProtectOperationType
+from . import SymbolEntityType
 from . import SymbolNetworkType
 from . import TezosBallotType
 from . import TezosContractType

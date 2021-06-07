@@ -162,6 +162,8 @@ enum MessageType {
     // Symbol
     MessageType_SymbolGetPublicKey = 88 [(wire_in) = true];
     MessageType_SymbolPublicKey = 89 [(wire_out) = true];
+    MessageType_SymbolSignTx = 90 [(wire_in) = true];
+    MessageType_SymbolSignedTx = 91 [(wire_out) = true];
 
     // Lisk
     MessageType_LiskGetAddress = 114 [(wire_in) = true];

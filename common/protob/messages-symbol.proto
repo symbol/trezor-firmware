@@ -44,8 +44,14 @@ message SymbolPublicKey {
  * @next Failure
  */
 message SymbolSignTx {
-    optional SymbolTransactionCommon common   = 1;
-    optional SymbolTransfer          transfer = 2;  // Transfer transaction part
+    optional SymbolTransactionCommon           transaction            = 1;
+    optional SymbolTransfer                    transfer               = 2;
+
+    optional SymbolMosaicDefinition            mosaic_definition      = 3;
+    optional SymbolMosaicSupplyChange          mosaic_supply_change   = 4;
+    
+    optional SymbolNamespaceRegistration       namespace_registration = 5;
+    optional SymbolAddressAlias                address_alias          = 6;
 
     enum SymbolNetworkType {
         MAIN_NET     = 0x68;  // Public network
@@ -53,40 +59,106 @@ message SymbolSignTx {
         PRIVATE      = 0x60;  // Private network
         PRIVATE_TEST = 0x90;  // Private test network
     }
-    
-    //enum EntityType {}
+
+    enum SymbolEntityType {
+        TRANSFER               = 0x4154;
+        
+        MOSAIC_DEFINITION      = 0x414D;
+        MOSAIC_SUPPLY_CHANGE   = 0x424D;
+
+        NAMESPACE_REGISTRATION = 0x414E;
+        ADDRESS_ALIAS          = 0x424E;
+    }
+
 
     message SymbolMosaic {
-        optional uint64 mosaic_id = 1;
-        optional uint64 amount    = 2;
+        optional uint64 id     = 1;
+        optional uint64 amount = 2;
     }
 
     /**
     * Structure representing the common part for Symbol transactions
+    *
+    * https://docs.symbolplatform.com/serialization/transaction.html#transaction
     */
     message SymbolTransactionCommon {
-        optional bytes             signer_public_key = 1;
-        optional uint32            version           = 2;
-        optional SymbolNetworkType network_type      = 3;
-      //optional EntityType        entity_type       = 4;
+        repeated uint32            address_n         = 1;  // BIP-32 path to derive the key from master node
 
-        optional uint64            max_fee           = 4;      // Max fee which should be paid for the transaction
-        optional uint64            deadline          = 5;      // Drop transaction if it does not get included in a block before deadline is reached (Number of milliseconds since the creation of the nemesis block) 
+        optional string            signer_public_key = 2;   // Public key of the signer of the entity
+        optional uint32            version           = 3;   // Version of the structure
+        optional SymbolNetworkType network_type      = 4;   // public or private network
+
+        optional uint64            max_fee           = 5;   // Max fee which should be paid for the transaction
+        optional uint64            deadline          = 6;   // Drop transaction if it does not get included in a block before deadline is reached (Number of milliseconds since the creation of the nemesis block) 
     }
 
     /**
     * Structure representing the transfer transaction part for Symbol transactions
     */
     message SymbolTransfer {
-        optional bytes        recipient_address = 1; // Address of the recipient
-        optional uint32       message_size      = 2; // Size of the attached message
-        optional uint32       mosaics_count     = 3; // Number of attached mosaics
+        optional string       recipient_address = 1; // Address of the recipient
 
-        optional uint32       reserved1         = 4; // Reserved padding
-        optional uint32       reserved2         = 5; // Reserved padding
+      //optional uint32       message_size      = 2; // Size of the attached message
+      //optional uint32       mosaics_count     = 3; // Number of attached mosaics
+      //optional uint32       reserved1         = 4; // Reserved padding
+      //optional uint32       reserved2         = 5; // Reserved padding
 
-        repeated SymbolMosaic mosaic            = 6; // Mosaics to send
-        optional bytes        message           = 7; // Hexadecimal payload
+        repeated SymbolMosaic mosaics           = 2; // Mosaics to send
+        optional bytes        message           = 3; // Hexadecimal payload
     }
 
+  /**
+   *
+   * https://docs.symbolplatform.com/serialization/mosaic.html#mosaicdefinitiontransaction
+   */
+    message SymbolMosaicDefinition {
+        optional uint64 id           = 1; // Identifier of the mosaic
+        optional uint64 duration     = 2; // Mosaic duration expressed in blocks. If set to 0, the mosaic is non-expiring
+        optional uint32 nonce        = 3; // Random nonce used to generate the mosaic id
+        optional uint32 flags        = 4; // Mosaic flags
+        optional uint32 divisibility = 5; // Mosaic divisibility
+    }
+
+
+    /**
+    *
+    * https://docs.symbolplatform.com/serialization/mosaic.html#mosaicsupplychangetransaction
+    */
+    message SymbolMosaicSupplyChange {
+        optional SymbolMosaic mosaic = 1; // Affected mosaic identifier.
+        optional uint32       action = 2; // Supply change action (0x00 -> Decrease, 0x01 -> Increase).
+    }
+
+    /**
+    *
+    * https://docs.symbolplatform.com/serialization/namespace.html#namespaceregistrationtransaction
+    */
+    message SymbolNamespaceRegistration {
+        optional uint64 duration          = 1; // Number of confirmed blocks to rent the namespace for. Required for root namespaces.
+        optional uint64 parent_id         = 2; // Parent namespace identifier. Required for subnamespaces.
+        optional uint64 id                = 3; // Parent namespace identifier. Required for subnamespaces.
+        optional uint32 registration_type = 4; // Namespace registration type.
+        optional string name              = 5; // Namespace name.
+    }
+
+    /**
+    *
+    * https://docs.symbolplatform.com/serialization/namespace.html#addressaliastransaction
+    */
+    message SymbolAddressAlias {
+        optional uint64 namespace_id = 1; // Identifier of the namespace that will become an alias. (hex format, 8 bytes) 
+        optional string address      = 2; // Aliased address (base32 format, 24 bytes).
+        optional uint32 action       = 3; // Alias action.   
+    }
+
+}
+
+
+/**
+ * Response: Contains Symbol transaction data and signature
+ * @end
+ */
+message SymbolSignedTx {
+    required bytes data      = 1;   // Transaction data
+    required bytes signature = 2;   // Signature for the transaction
 }
