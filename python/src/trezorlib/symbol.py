@@ -97,6 +97,14 @@ def create_address_alias(transaction):
 
     return msg
 
+def create_key_link(transaction):
+    msg = messages.SymbolKeyLink()
+
+    msg.public_key = transaction["public_key"]
+    msg.action     = transaction["action"]
+
+    return msg
+
 
 def fill_transaction_by_type(msg, transaction):
     if transaction["type"] == SymbolEntityType.TRANSFER:
@@ -111,6 +119,12 @@ def fill_transaction_by_type(msg, transaction):
         msg.namespace_registration = create_namespace_registration(transaction)
     elif transaction["type"] == SymbolEntityType.ADDRESS_ALIAS:
         msg.address_alias = create_address_alias(transaction)
+    elif transaction["type"] == SymbolEntityType.ACCOUNT_KEY_LINK:
+        msg.account_key_link = create_key_link(transaction)
+    elif transaction["type"] == SymbolEntityType.NODE_KEY_LINK:
+        msg.node_key_link = create_key_link(transaction)
+    elif transaction["type"] == SymbolEntityType.VRF_KEY_LINK:
+        msg.vrf_key_link = create_key_link(transaction)
     else:
         raise ValueError("Unknown transaction type")
 

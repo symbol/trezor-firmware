@@ -7,6 +7,9 @@ if __debug__:
     except ImportError:
         pass
 
+ACCOUNT_KEY_LINK: Literal[16716] = 16716
+NODE_KEY_LINK: Literal[16972] = 16972
+VRF_KEY_LINK: Literal[16963] = 16963
 TRANSFER: Literal[16724] = 16724
 MOSAIC_DEFINITION: Literal[16717] = 16717
 MOSAIC_SUPPLY_CHANGE: Literal[16973] = 16973

@@ -1,3 +1,4 @@
+from apps.symbol import keylink
 from trezor import wire
 from trezor.crypto.curve import ed25519
 from trezor.messages.SymbolSignedTx import SymbolSignedTx
@@ -42,7 +43,12 @@ async def sign_tx(ctx, msg: SymbolSignTx, keychain):
         tx = await namespace.register(ctx, common, msg.namespace_registration)
     elif msg.address_alias:
         tx = await namespace.address_alias(ctx, common, msg.address_alias)
-
+    elif msg.account_key_link:
+        tx = await keylink.account_key_link(ctx, common, msg.account_key_link)
+    elif msg.node_key_link:
+        tx = await keylink.node_key_link(ctx, common, msg.node_key_link)
+    elif msg.vrf_key_link:
+        tx = await keylink.vrf_key_link(ctx, common, msg.vrf_key_link)
     else:
         raise wire.DataError("No transaction provided")
 

@@ -39,6 +39,7 @@ message SymbolPublicKey {
 
 /**
  * Request: Ask device to sign transaction
+ * ----------------------------------------------------------------------------------------------------------------------------
  * @start
  * @next SymbolSignedTx
  * @next Failure
@@ -47,11 +48,17 @@ message SymbolSignTx {
     optional SymbolTransactionCommon           transaction            = 1;
     optional SymbolTransfer                    transfer               = 2;
 
-    optional SymbolMosaicDefinition            mosaic_definition      = 3;
-    optional SymbolMosaicSupplyChange          mosaic_supply_change   = 4;
+    optional SymbolKeyLink                     account_key_link       = 3;
+    optional SymbolKeyLink                     node_key_link          = 4;
+    optional SymbolKeyLink                     vrf_key_link           = 5;
+
+    optional SymbolMosaicDefinition            mosaic_definition      = 6;
+    optional SymbolMosaicSupplyChange          mosaic_supply_change   = 7;
     
-    optional SymbolNamespaceRegistration       namespace_registration = 5;
-    optional SymbolAddressAlias                address_alias          = 6;
+    optional SymbolNamespaceRegistration       namespace_registration = 8;
+    optional SymbolAddressAlias                address_alias          = 9;
+
+
 
     enum SymbolNetworkType {
         MAIN_NET     = 0x68;  // Public network
@@ -61,6 +68,10 @@ message SymbolSignTx {
     }
 
     enum SymbolEntityType {
+        ACCOUNT_KEY_LINK       = 0x414C;
+        NODE_KEY_LINK          = 0x424C;
+        VRF_KEY_LINK           = 0x4243;
+
         TRANSFER               = 0x4154;
         
         MOSAIC_DEFINITION      = 0x414D;
@@ -92,6 +103,29 @@ message SymbolSignTx {
         optional uint64            deadline          = 6;   // Drop transaction if it does not get included in a block before deadline is reached (Number of milliseconds since the creation of the nemesis block) 
     }
 
+
+
+   /**
+    * Account link schemas
+    * ---------------------------------------------------------------------------------------------------------------------------------
+    */
+
+   /**
+     * AccountKeyLinkTransaction, NodeKeyLinkTransaction and VrfKeyLinkTransaction
+     *
+     * https://docs.symbolplatform.com/serialization/account_link.html#accountkeylinktransaction
+     * https://docs.symbolplatform.com/serialization/account_link.html#nodekeylinktransaction
+     * https://docs.symbolplatform.com/serialization/coresystem.html#vrf-key-link-transaction
+    */
+    message SymbolKeyLink {
+        optional string public_key = 1; // Linked public key
+        optional uint32 action     = 2; // 0x00 -> Unlink account, 0x01 -> Link account.
+    }
+
+
+
+
+
     /**
     * Structure representing the transfer transaction part for Symbol transactions
     */
@@ -107,10 +141,16 @@ message SymbolSignTx {
         optional bytes        message           = 3; // Hexadecimal payload
     }
 
-  /**
-   *
-   * https://docs.symbolplatform.com/serialization/mosaic.html#mosaicdefinitiontransaction
-   */
+
+   /**
+    * Mosaic schemas
+    * ---------------------------------------------------------------------------------------------------------------------------------
+    */
+
+   /**
+    *
+    * https://docs.symbolplatform.com/serialization/mosaic.html#mosaicdefinitiontransaction
+    */
     message SymbolMosaicDefinition {
         optional uint64 id           = 1; // Identifier of the mosaic
         optional uint64 duration     = 2; // Mosaic duration expressed in blocks. If set to 0, the mosaic is non-expiring
@@ -128,6 +168,14 @@ message SymbolSignTx {
         optional SymbolMosaic mosaic = 1; // Affected mosaic identifier.
         optional uint32       action = 2; // Supply change action (0x00 -> Decrease, 0x01 -> Increase).
     }
+
+
+
+
+   /**
+    * Namespace schemas
+    * ---------------------------------------------------------------------------------------------------------------------------------
+    */
 
     /**
     *

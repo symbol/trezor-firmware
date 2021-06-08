@@ -4,6 +4,7 @@
 from .. import protobuf as p
 
 from .SymbolAddressAlias import SymbolAddressAlias
+from .SymbolKeyLink import SymbolKeyLink
 from .SymbolMosaicDefinition import SymbolMosaicDefinition
 from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
 from .SymbolNamespaceRegistration import SymbolNamespaceRegistration
@@ -26,6 +27,9 @@ class SymbolSignTx(p.MessageType):
         *,
         transaction: Optional[SymbolTransactionCommon] = None,
         transfer: Optional[SymbolTransfer] = None,
+        account_key_link: Optional[SymbolKeyLink] = None,
+        node_key_link: Optional[SymbolKeyLink] = None,
+        vrf_key_link: Optional[SymbolKeyLink] = None,
         mosaic_definition: Optional[SymbolMosaicDefinition] = None,
         mosaic_supply_change: Optional[SymbolMosaicSupplyChange] = None,
         namespace_registration: Optional[SymbolNamespaceRegistration] = None,
@@ -33,6 +37,9 @@ class SymbolSignTx(p.MessageType):
     ) -> None:
         self.transaction = transaction
         self.transfer = transfer
+        self.account_key_link = account_key_link
+        self.node_key_link = node_key_link
+        self.vrf_key_link = vrf_key_link
         self.mosaic_definition = mosaic_definition
         self.mosaic_supply_change = mosaic_supply_change
         self.namespace_registration = namespace_registration
@@ -43,8 +50,11 @@ class SymbolSignTx(p.MessageType):
         return {
             1: ('transaction', SymbolTransactionCommon, None),
             2: ('transfer', SymbolTransfer, None),
-            3: ('mosaic_definition', SymbolMosaicDefinition, None),
-            4: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
-            5: ('namespace_registration', SymbolNamespaceRegistration, None),
-            6: ('address_alias', SymbolAddressAlias, None),
+            3: ('account_key_link', SymbolKeyLink, None),
+            4: ('node_key_link', SymbolKeyLink, None),
+            5: ('vrf_key_link', SymbolKeyLink, None),
+            6: ('mosaic_definition', SymbolMosaicDefinition, None),
+            7: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
+            8: ('namespace_registration', SymbolNamespaceRegistration, None),
+            9: ('address_alias', SymbolAddressAlias, None),
         }

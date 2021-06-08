@@ -264,6 +264,7 @@ from .SymbolAddress import SymbolAddress
 from .SymbolAddressAlias import SymbolAddressAlias
 from .SymbolGetAddress import SymbolGetAddress
 from .SymbolGetPublicKey import SymbolGetPublicKey
+from .SymbolKeyLink import SymbolKeyLink
 from .SymbolMosaic import SymbolMosaic
 from .SymbolMosaicDefinition import SymbolMosaicDefinition
 from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
