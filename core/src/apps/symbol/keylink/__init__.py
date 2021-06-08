@@ -1,4 +1,4 @@
-from trezor.messages import SymbolKeyLink, SymbolTransactionCommon, SymbolEntityType
+from trezor.messages import SymbolKeyLink, SymbolTransactionCommon, SymbolEntityType, SymbolVotingKeyLink
 
 from . import layout, serialize
 
@@ -21,6 +21,15 @@ def vrf_key_link(
     ) -> bytearray:
 
     return generic(ctx, common, key_link, SymbolEntityType.VRF_KEY_LINK)
+
+
+async def voting_key_link(
+    ctx, common: SymbolTransactionCommon, key_link: SymbolVotingKeyLink
+    ) -> bytearray:
+
+    await  layout.ask_voting_key_link(ctx, common, key_link)
+    return serialize.voting_key_link(common, key_link)
+
 
 
 async def generic(

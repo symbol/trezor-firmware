@@ -274,6 +274,7 @@ from .SymbolSignTx import SymbolSignTx
 from .SymbolSignedTx import SymbolSignedTx
 from .SymbolTransactionCommon import SymbolTransactionCommon
 from .SymbolTransfer import SymbolTransfer
+from .SymbolVotingKeyLink import SymbolVotingKeyLink
 from .TezosAddress import TezosAddress
 from .TezosBallotOp import TezosBallotOp
 from .TezosContractID import TezosContractID

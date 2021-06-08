@@ -1,4 +1,4 @@
-from trezor.messages import SymbolEntityType, SymbolTransactionCommon, SymbolKeyLink
+from trezor.messages import SymbolEntityType, SymbolTransactionCommon, SymbolKeyLink, SymbolVotingKeyLink
 
 from trezor import ui
 from trezor.messages import (
@@ -36,3 +36,21 @@ async def ask_key_link(
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
 
 
+async def ask_voting_key_link(
+    ctx,
+    common: SymbolTransactionCommon,
+    key_link: SymbolVotingKeyLink,
+):
+    if key_link.action == 0:
+        action = "unlink"
+    else:
+        action = "link"
+
+    msg = Text("Vote key link", ui.ICON_SEND, ui.GREEN)
+    msg.normal("Action: %s" % action)
+    msg.normal("Start: %s" % key_link.start_point)
+    msg.normal("End: %s" % key_link.end_point)
+    msg.normal("Pbk: %s" % key_link.public_key)
+    msg.normal("Max fee: %s"  % common.max_fee)
+
+    await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )

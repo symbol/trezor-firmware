@@ -51,12 +51,13 @@ message SymbolSignTx {
     optional SymbolKeyLink                     account_key_link       = 3;
     optional SymbolKeyLink                     node_key_link          = 4;
     optional SymbolKeyLink                     vrf_key_link           = 5;
+    optional SymbolVotingKeyLink               voting_key_link        = 6;
 
-    optional SymbolMosaicDefinition            mosaic_definition      = 6;
-    optional SymbolMosaicSupplyChange          mosaic_supply_change   = 7;
+    optional SymbolMosaicDefinition            mosaic_definition      = 7;
+    optional SymbolMosaicSupplyChange          mosaic_supply_change   = 8;
     
-    optional SymbolNamespaceRegistration       namespace_registration = 8;
-    optional SymbolAddressAlias                address_alias          = 9;
+    optional SymbolNamespaceRegistration       namespace_registration = 9;
+    optional SymbolAddressAlias                address_alias          = 10;
 
 
 
@@ -71,6 +72,7 @@ message SymbolSignTx {
         ACCOUNT_KEY_LINK       = 0x414C;
         NODE_KEY_LINK          = 0x424C;
         VRF_KEY_LINK           = 0x4243;
+        VOTING_KEY_LINK        = 0x4143;
 
         TRANSFER               = 0x4154;
         
@@ -87,7 +89,7 @@ message SymbolSignTx {
         optional uint64 amount = 2;
     }
 
-    /**
+   /**
     * Structure representing the common part for Symbol transactions
     *
     * https://docs.symbolplatform.com/serialization/transaction.html#transaction
@@ -105,17 +107,16 @@ message SymbolSignTx {
 
 
 
-   /**
-    * Account link schemas
-    * ---------------------------------------------------------------------------------------------------------------------------------
-    */
+   
+    // Account link schemas
+    // ---------------------------------------------------------------------------------------------------------------------------------
 
    /**
-     * AccountKeyLinkTransaction, NodeKeyLinkTransaction and VrfKeyLinkTransaction
-     *
-     * https://docs.symbolplatform.com/serialization/account_link.html#accountkeylinktransaction
-     * https://docs.symbolplatform.com/serialization/account_link.html#nodekeylinktransaction
-     * https://docs.symbolplatform.com/serialization/coresystem.html#vrf-key-link-transaction
+    * AccountKeyLinkTransaction, NodeKeyLinkTransaction and VrfKeyLinkTransaction
+    *
+    * https://docs.symbolplatform.com/serialization/account_link.html#accountkeylinktransaction
+    * https://docs.symbolplatform.com/serialization/account_link.html#nodekeylinktransaction
+    * https://docs.symbolplatform.com/serialization/coresystem.html#vrf-key-link-transaction
     */
     message SymbolKeyLink {
         optional string public_key = 1; // Linked public key
@@ -123,7 +124,18 @@ message SymbolSignTx {
     }
 
 
-
+   /**
+    * VotingKeyLinkTransaction
+    *
+    * https://docs.symbolplatform.com/serialization/coresystem.html#votingkeylinktransaction
+    */
+    message SymbolVotingKeyLink {
+        optional string public_key  = 1; // Linked public key
+        optional uint32 start_point = 2; // Start finalization point
+        optional uint32 end_point   = 3; // End finalization point
+        optional uint32 action      = 4; // 0x00 -> Unlink account, 0x01 -> Link account.
+    } 
+    
 
 
     /**

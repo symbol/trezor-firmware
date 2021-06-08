@@ -652,6 +652,8 @@ trezor.messages.SymbolTransactionCommon
 import trezor.messages.SymbolTransactionCommon
 trezor.messages.SymbolTransfer
 import trezor.messages.SymbolTransfer
+trezor.messages.SymbolVotingKeyLink
+import trezor.messages.SymbolVotingKeyLink
 trezor.messages.TezosAddress
 import trezor.messages.TezosAddress
 trezor.messages.TezosBallotOp

@@ -49,6 +49,8 @@ async def sign_tx(ctx, msg: SymbolSignTx, keychain):
         tx = await keylink.node_key_link(ctx, common, msg.node_key_link)
     elif msg.vrf_key_link:
         tx = await keylink.vrf_key_link(ctx, common, msg.vrf_key_link)
+    elif msg.voting_key_link:
+        tx = await keylink.voting_key_link(ctx, common, msg.voting_key_link)
     else:
         raise wire.DataError("No transaction provided")
 

@@ -105,6 +105,15 @@ def create_key_link(transaction):
 
     return msg
 
+def create_voting_key_link(transaction):
+    msg = messages.SymbolVotingKeyLink()
+
+    msg.public_key  = transaction["public_key"]
+    msg.start_point = transaction["start_point"]
+    msg.end_point   = transaction["end_point"]
+    msg.action      = transaction["action"]
+
+    return msg
 
 def fill_transaction_by_type(msg, transaction):
     if transaction["type"] == SymbolEntityType.TRANSFER:
@@ -125,6 +134,8 @@ def fill_transaction_by_type(msg, transaction):
         msg.node_key_link = create_key_link(transaction)
     elif transaction["type"] == SymbolEntityType.VRF_KEY_LINK:
         msg.vrf_key_link = create_key_link(transaction)
+    elif transaction["type"] == SymbolEntityType.VOTING_KEY_LINK:
+        msg.voting_key_link = create_voting_key_link(transaction)
     else:
         raise ValueError("Unknown transaction type")
 

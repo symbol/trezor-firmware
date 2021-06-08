@@ -10,6 +10,7 @@ from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
 from .SymbolNamespaceRegistration import SymbolNamespaceRegistration
 from .SymbolTransactionCommon import SymbolTransactionCommon
 from .SymbolTransfer import SymbolTransfer
+from .SymbolVotingKeyLink import SymbolVotingKeyLink
 
 if __debug__:
     try:
@@ -30,6 +31,7 @@ class SymbolSignTx(p.MessageType):
         account_key_link: Optional[SymbolKeyLink] = None,
         node_key_link: Optional[SymbolKeyLink] = None,
         vrf_key_link: Optional[SymbolKeyLink] = None,
+        voting_key_link: Optional[SymbolVotingKeyLink] = None,
         mosaic_definition: Optional[SymbolMosaicDefinition] = None,
         mosaic_supply_change: Optional[SymbolMosaicSupplyChange] = None,
         namespace_registration: Optional[SymbolNamespaceRegistration] = None,
@@ -40,6 +42,7 @@ class SymbolSignTx(p.MessageType):
         self.account_key_link = account_key_link
         self.node_key_link = node_key_link
         self.vrf_key_link = vrf_key_link
+        self.voting_key_link = voting_key_link
         self.mosaic_definition = mosaic_definition
         self.mosaic_supply_change = mosaic_supply_change
         self.namespace_registration = namespace_registration
@@ -53,8 +56,9 @@ class SymbolSignTx(p.MessageType):
             3: ('account_key_link', SymbolKeyLink, None),
             4: ('node_key_link', SymbolKeyLink, None),
             5: ('vrf_key_link', SymbolKeyLink, None),
-            6: ('mosaic_definition', SymbolMosaicDefinition, None),
-            7: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
-            8: ('namespace_registration', SymbolNamespaceRegistration, None),
-            9: ('address_alias', SymbolAddressAlias, None),
+            6: ('voting_key_link', SymbolVotingKeyLink, None),
+            7: ('mosaic_definition', SymbolMosaicDefinition, None),
+            8: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
+            9: ('namespace_registration', SymbolNamespaceRegistration, None),
+            10: ('address_alias', SymbolAddressAlias, None),
         }
