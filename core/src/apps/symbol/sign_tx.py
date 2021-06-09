@@ -8,7 +8,7 @@ from apps.common import seed
 from apps.common.keychain import with_slip44_keychain
 from apps.common.paths import validate_path
 
-from . import CURVE, PATTERN, SLIP44_ID, transfer, mosaic, namespace
+from . import CURVE, PATTERN, SLIP44_ID, transfer, mosaic, namespace, lockhash
 #from .helpers import NEM_HASH_ALG, check_path
 #from .validators import validate
 
@@ -51,6 +51,8 @@ async def sign_tx(ctx, msg: SymbolSignTx, keychain):
         tx = await keylink.vrf_key_link(ctx, common, msg.vrf_key_link)
     elif msg.voting_key_link:
         tx = await keylink.voting_key_link(ctx, common, msg.voting_key_link)
+    elif msg.hash_lock:
+        tx = await lockhash.hash_lock(ctx, common, msg.hash_lock)
     else:
         raise wire.DataError("No transaction provided")
 
@@ -60,5 +62,3 @@ async def sign_tx(ctx, msg: SymbolSignTx, keychain):
         data=tx,
         signature=signature,
     )
-
-

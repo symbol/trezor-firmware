@@ -630,6 +630,8 @@ trezor.messages.SymbolGetAddress
 import trezor.messages.SymbolGetAddress
 trezor.messages.SymbolGetPublicKey
 import trezor.messages.SymbolGetPublicKey
+trezor.messages.SymbolHashLock
+import trezor.messages.SymbolHashLock
 trezor.messages.SymbolKeyLink
 import trezor.messages.SymbolKeyLink
 trezor.messages.SymbolMosaic
@@ -1270,6 +1272,12 @@ apps.symbol.keylink.layout
 import apps.symbol.keylink.layout
 apps.symbol.keylink.serialize
 import apps.symbol.keylink.serialize
+apps.symbol.lockhash
+import apps.symbol.lockhash
+apps.symbol.lockhash.layout
+import apps.symbol.lockhash.layout
+apps.symbol.lockhash.serialize
+import apps.symbol.lockhash.serialize
 apps.symbol.mosaic
 import apps.symbol.mosaic
 apps.symbol.mosaic.layout

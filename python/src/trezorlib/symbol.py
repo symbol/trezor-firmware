@@ -115,6 +115,17 @@ def create_voting_key_link(transaction):
 
     return msg
 
+def create_hash_lock(transaction):
+    msg = messages.SymbolHashLock()
+
+    mosaic = transaction["mosaic"]
+    msg.mosaic   = messages.SymbolMosaic(id=mosaic["id"], amount=mosaic["amount"])
+    msg.duration = transaction["duration"]
+    msg.hash     = transaction["hash"]
+
+    return msg
+
+
 def fill_transaction_by_type(msg, transaction):
     if transaction["type"] == SymbolEntityType.TRANSFER:
         msg.transfer = create_transfer(transaction)
@@ -136,6 +147,8 @@ def fill_transaction_by_type(msg, transaction):
         msg.vrf_key_link = create_key_link(transaction)
     elif transaction["type"] == SymbolEntityType.VOTING_KEY_LINK:
         msg.voting_key_link = create_voting_key_link(transaction)
+    elif transaction["type"] == SymbolEntityType.HASH_LOCK:
+        msg.hash_lock = create_hash_lock(transaction)
     else:
         raise ValueError("Unknown transaction type")
 

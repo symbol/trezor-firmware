@@ -4,6 +4,7 @@
 from .. import protobuf as p
 
 from .SymbolAddressAlias import SymbolAddressAlias
+from .SymbolHashLock import SymbolHashLock
 from .SymbolKeyLink import SymbolKeyLink
 from .SymbolMosaicDefinition import SymbolMosaicDefinition
 from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
@@ -32,6 +33,7 @@ class SymbolSignTx(p.MessageType):
         node_key_link: Optional[SymbolKeyLink] = None,
         vrf_key_link: Optional[SymbolKeyLink] = None,
         voting_key_link: Optional[SymbolVotingKeyLink] = None,
+        hash_lock: Optional[SymbolHashLock] = None,
         mosaic_definition: Optional[SymbolMosaicDefinition] = None,
         mosaic_supply_change: Optional[SymbolMosaicSupplyChange] = None,
         namespace_registration: Optional[SymbolNamespaceRegistration] = None,
@@ -43,6 +45,7 @@ class SymbolSignTx(p.MessageType):
         self.node_key_link = node_key_link
         self.vrf_key_link = vrf_key_link
         self.voting_key_link = voting_key_link
+        self.hash_lock = hash_lock
         self.mosaic_definition = mosaic_definition
         self.mosaic_supply_change = mosaic_supply_change
         self.namespace_registration = namespace_registration
@@ -57,8 +60,9 @@ class SymbolSignTx(p.MessageType):
             4: ('node_key_link', SymbolKeyLink, None),
             5: ('vrf_key_link', SymbolKeyLink, None),
             6: ('voting_key_link', SymbolVotingKeyLink, None),
-            7: ('mosaic_definition', SymbolMosaicDefinition, None),
-            8: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
-            9: ('namespace_registration', SymbolNamespaceRegistration, None),
-            10: ('address_alias', SymbolAddressAlias, None),
+            7: ('hash_lock', SymbolHashLock, None),
+            8: ('mosaic_definition', SymbolMosaicDefinition, None),
+            9: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
+            10: ('namespace_registration', SymbolNamespaceRegistration, None),
+            11: ('address_alias', SymbolAddressAlias, None),
         }

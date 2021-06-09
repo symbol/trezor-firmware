@@ -53,11 +53,13 @@ message SymbolSignTx {
     optional SymbolKeyLink                     vrf_key_link           = 5;
     optional SymbolVotingKeyLink               voting_key_link        = 6;
 
-    optional SymbolMosaicDefinition            mosaic_definition      = 7;
-    optional SymbolMosaicSupplyChange          mosaic_supply_change   = 8;
+    optional SymbolHashLock                    hash_lock              = 7;
+
+    optional SymbolMosaicDefinition            mosaic_definition      = 8;
+    optional SymbolMosaicSupplyChange          mosaic_supply_change   = 9;
     
-    optional SymbolNamespaceRegistration       namespace_registration = 9;
-    optional SymbolAddressAlias                address_alias          = 10;
+    optional SymbolNamespaceRegistration       namespace_registration = 10;
+    optional SymbolAddressAlias                address_alias          = 11;
 
 
 
@@ -73,6 +75,8 @@ message SymbolSignTx {
         NODE_KEY_LINK          = 0x424C;
         VRF_KEY_LINK           = 0x4243;
         VOTING_KEY_LINK        = 0x4143;
+
+        HASH_LOCK              = 0x4148;
 
         TRANSFER               = 0x4154;
         
@@ -190,9 +194,9 @@ message SymbolSignTx {
     */
 
     /**
-    *
-    * https://docs.symbolplatform.com/serialization/namespace.html#namespaceregistrationtransaction
-    */
+     *
+     * https://docs.symbolplatform.com/serialization/namespace.html#namespaceregistrationtransaction
+     */
     message SymbolNamespaceRegistration {
         optional uint64 duration          = 1; // Number of confirmed blocks to rent the namespace for. Required for root namespaces.
         optional uint64 parent_id         = 2; // Parent namespace identifier. Required for subnamespaces.
@@ -210,6 +214,17 @@ message SymbolSignTx {
         optional string address      = 2; // Aliased address (base32 format, 24 bytes).
         optional uint32 action       = 3; // Alias action.   
     }
+
+    /**
+     *
+     * https://docs.symbolplatform.com/serialization/lock_hash.html#hashlocktransaction
+     */
+    message SymbolHashLock {
+        optional SymbolMosaic mosaic   = 1; // Locked mosaic
+        optional uint64       duration = 2; // Number of blocks for which a lock should be valid
+        optional string       hash     = 3; // AggregateBondedTransaction hash that has to be confirmed before unlocking the mosaics
+    }
+    
 
 }
 
