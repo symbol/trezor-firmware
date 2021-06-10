@@ -177,6 +177,16 @@ def create_mosaic_metadata(transaction):
 
     return msg
 
+def create_multisig_account_modification(transaction):
+    msg = messages.SymbolMultisigAccountModification()
+
+    msg.min_removal_delta  = transaction["min_removal_delta"]
+    msg.min_approval_delta = transaction["min_approval_delta"]
+    msg.address_additions  = transaction["address_additions"]
+    msg.address_deletions  = transaction["address_deletions"]
+
+    return msg
+
 
 
 def fill_transaction_by_type(msg, transaction):
@@ -212,6 +222,8 @@ def fill_transaction_by_type(msg, transaction):
         msg.mosaic_metadata = create_mosaic_metadata(transaction)
     elif transaction["type"] == SymbolEntityType.NAMESPACE_METADATA:
         msg.namespace_metadata = create_mosaic_metadata(transaction)
+    elif transaction["type"] == SymbolEntityType.MULTISIG_ACCOUNT_MODIFICATION:
+        msg.multisig_account_modification = create_multisig_account_modification(transaction)
     else:
         raise ValueError("Unknown transaction type")
 

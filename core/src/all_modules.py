@@ -644,6 +644,8 @@ trezor.messages.SymbolMosaicNamespaceMetadata
 import trezor.messages.SymbolMosaicNamespaceMetadata
 trezor.messages.SymbolMosaicSupplyChange
 import trezor.messages.SymbolMosaicSupplyChange
+trezor.messages.SymbolMultisigAccountModification
+import trezor.messages.SymbolMultisigAccountModification
 trezor.messages.SymbolNamespaceRegistration
 import trezor.messages.SymbolNamespaceRegistration
 trezor.messages.SymbolNetworkType
@@ -1304,6 +1306,12 @@ apps.symbol.mosaic.layout
 import apps.symbol.mosaic.layout
 apps.symbol.mosaic.serialize
 import apps.symbol.mosaic.serialize
+apps.symbol.multisig
+import apps.symbol.multisig
+apps.symbol.multisig.layout
+import apps.symbol.multisig.layout
+apps.symbol.multisig.serialization
+import apps.symbol.multisig.serialization
 apps.symbol.namespace
 import apps.symbol.namespace
 apps.symbol.namespace.layout

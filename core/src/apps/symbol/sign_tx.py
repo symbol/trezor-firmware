@@ -1,4 +1,4 @@
-from apps.symbol import keylink, metadata
+from apps.symbol import keylink, metadata, multisig
 from trezor import wire
 from trezor.crypto.curve import ed25519
 from trezor.messages.SymbolSignedTx import SymbolSignedTx
@@ -63,6 +63,8 @@ async def sign_tx(ctx, msg: SymbolSignTx, keychain):
         tx = await metadata.mosaic_metadata(ctx, common, msg.mosaic_metadata)
     elif msg.namespace_metadata:
         tx = await metadata.namespace_metadata(ctx, common, msg.namespace_metadata)
+    elif msg.multisig_account_modification:
+        tx = await multisig.multisig_account_modification(ctx, common, msg.multisig_account_modification)
     else:
         raise wire.DataError("No transaction provided")
 

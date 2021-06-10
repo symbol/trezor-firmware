@@ -271,6 +271,7 @@ from .SymbolMosaic import SymbolMosaic
 from .SymbolMosaicDefinition import SymbolMosaicDefinition
 from .SymbolMosaicNamespaceMetadata import SymbolMosaicNamespaceMetadata
 from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
+from .SymbolMultisigAccountModification import SymbolMultisigAccountModification
 from .SymbolNamespaceRegistration import SymbolNamespaceRegistration
 from .SymbolPublicKey import SymbolPublicKey
 from .SymbolSecretLock import SymbolSecretLock

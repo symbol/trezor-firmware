@@ -10,6 +10,7 @@ from .SymbolKeyLink import SymbolKeyLink
 from .SymbolMosaicDefinition import SymbolMosaicDefinition
 from .SymbolMosaicNamespaceMetadata import SymbolMosaicNamespaceMetadata
 from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
+from .SymbolMultisigAccountModification import SymbolMultisigAccountModification
 from .SymbolNamespaceRegistration import SymbolNamespaceRegistration
 from .SymbolSecretLock import SymbolSecretLock
 from .SymbolSecretProof import SymbolSecretProof
@@ -43,6 +44,7 @@ class SymbolSignTx(p.MessageType):
         account_metadata: Optional[SymbolAccountMetadata] = None,
         mosaic_metadata: Optional[SymbolMosaicNamespaceMetadata] = None,
         namespace_metadata: Optional[SymbolMosaicNamespaceMetadata] = None,
+        multisig_account_modification: Optional[SymbolMultisigAccountModification] = None,
         mosaic_definition: Optional[SymbolMosaicDefinition] = None,
         mosaic_supply_change: Optional[SymbolMosaicSupplyChange] = None,
         namespace_registration: Optional[SymbolNamespaceRegistration] = None,
@@ -60,6 +62,7 @@ class SymbolSignTx(p.MessageType):
         self.account_metadata = account_metadata
         self.mosaic_metadata = mosaic_metadata
         self.namespace_metadata = namespace_metadata
+        self.multisig_account_modification = multisig_account_modification
         self.mosaic_definition = mosaic_definition
         self.mosaic_supply_change = mosaic_supply_change
         self.namespace_registration = namespace_registration
@@ -80,8 +83,9 @@ class SymbolSignTx(p.MessageType):
             10: ('account_metadata', SymbolAccountMetadata, None),
             11: ('mosaic_metadata', SymbolMosaicNamespaceMetadata, None),
             12: ('namespace_metadata', SymbolMosaicNamespaceMetadata, None),
-            13: ('mosaic_definition', SymbolMosaicDefinition, None),
-            14: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
-            15: ('namespace_registration', SymbolNamespaceRegistration, None),
-            16: ('address_alias', SymbolAddressAlias, None),
+            13: ('multisig_account_modification', SymbolMultisigAccountModification, None),
+            14: ('mosaic_definition', SymbolMosaicDefinition, None),
+            15: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
+            16: ('namespace_registration', SymbolNamespaceRegistration, None),
+            17: ('address_alias', SymbolAddressAlias, None),
         }

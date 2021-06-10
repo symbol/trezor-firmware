@@ -45,28 +45,30 @@ message SymbolPublicKey {
  * @next Failure
  */
 message SymbolSignTx {
-    optional SymbolTransactionCommon           transaction            = 1;
-    optional SymbolTransfer                    transfer               = 2;
+    optional SymbolTransactionCommon           transaction                   = 1;
+    optional SymbolTransfer                    transfer                      = 2;
+       
+    optional SymbolKeyLink                     account_key_link              = 3;
+    optional SymbolKeyLink                     node_key_link                 = 4;
+    optional SymbolKeyLink                     vrf_key_link                  = 5;
+    optional SymbolVotingKeyLink               voting_key_link               = 6;
+       
+    optional SymbolHashLock                    hash_lock                     = 7;
+       
+    optional SymbolSecretLock                  secret_lock                   = 8;
+    optional SymbolSecretProof                 secret_proof                  = 9;
+       
+    optional SymbolAccountMetadata             account_metadata              = 10;
+    optional SymbolMosaicNamespaceMetadata     mosaic_metadata               = 11;
+    optional SymbolMosaicNamespaceMetadata     namespace_metadata            = 12;
 
-    optional SymbolKeyLink                     account_key_link       = 3;
-    optional SymbolKeyLink                     node_key_link          = 4;
-    optional SymbolKeyLink                     vrf_key_link           = 5;
-    optional SymbolVotingKeyLink               voting_key_link        = 6;
+    optional SymbolMultisigAccountModification multisig_account_modification = 13;
 
-    optional SymbolHashLock                    hash_lock              = 7;
-
-    optional SymbolSecretLock                  secret_lock            = 8;
-    optional SymbolSecretProof                 secret_proof           = 9;
-
-    optional SymbolAccountMetadata             account_metadata       = 10;
-    optional SymbolMosaicNamespaceMetadata     mosaic_metadata        = 11;
-    optional SymbolMosaicNamespaceMetadata     namespace_metadata     = 12;
-
-    optional SymbolMosaicDefinition            mosaic_definition      = 13;
-    optional SymbolMosaicSupplyChange          mosaic_supply_change   = 14;
-    
-    optional SymbolNamespaceRegistration       namespace_registration = 15;
-    optional SymbolAddressAlias                address_alias          = 16;
+    optional SymbolMosaicDefinition            mosaic_definition             = 14;
+    optional SymbolMosaicSupplyChange          mosaic_supply_change          = 15;
+           
+    optional SymbolNamespaceRegistration       namespace_registration        = 16;
+    optional SymbolAddressAlias                address_alias                 = 17;
 
 
 
@@ -78,27 +80,29 @@ message SymbolSignTx {
     }
 
     enum SymbolEntityType {
-        ACCOUNT_KEY_LINK       = 0x414C;
-        NODE_KEY_LINK          = 0x424C;
-        VRF_KEY_LINK           = 0x4243;
-        VOTING_KEY_LINK        = 0x4143;
+        ACCOUNT_KEY_LINK              = 0x414C;
+        NODE_KEY_LINK                 = 0x424C;
+        VRF_KEY_LINK                  = 0x4243;
+        VOTING_KEY_LINK               = 0x4143;
+       
+        HASH_LOCK                     = 0x4148;
+       
+        SECRET_LOCK                   = 0x4152;
+        SECRET_PROOF                  = 0x4252;        
+       
+        ACCOUNT_METADATA              = 0x4144;
+        MOSAIC_METADATA               = 0x4244;
+        NAMESPACE_METADATA            = 0x4344;
 
-        HASH_LOCK              = 0x4148;
+        MULTISIG_ACCOUNT_MODIFICATION = 0x4155;
 
-        SECRET_LOCK            = 0x4152;
-        SECRET_PROOF           = 0x4252;        
-
-        ACCOUNT_METADATA       = 0x4144;
-        MOSAIC_METADATA        = 0x4244;
-        NAMESPACE_METADATA     = 0x4344;
-
-        TRANSFER               = 0x4154;
-        
-        MOSAIC_DEFINITION      = 0x414D;
-        MOSAIC_SUPPLY_CHANGE   = 0x424D;
-
-        NAMESPACE_REGISTRATION = 0x414E;
-        ADDRESS_ALIAS          = 0x424E;
+        TRANSFER                      = 0x4154;
+               
+        MOSAIC_DEFINITION             = 0x414D;
+        MOSAIC_SUPPLY_CHANGE          = 0x424D;
+       
+        NAMESPACE_REGISTRATION        = 0x414E;
+        ADDRESS_ALIAS                 = 0x424E;
     }
 
 
@@ -291,6 +295,23 @@ message SymbolSignTx {
         optional uint64                target_id = 2; // Target namespace or mosaic identifier.
     }
 
+
+
+    // Multisig Schemas
+    // ---------------------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * MultisigAccountModificationTransaction
+     * https://docs.symbolplatform.com/serialization/multisig.html#multisigaccountmodificationtransaction
+     */
+    message SymbolMultisigAccountModification {
+        optional uint32 min_removal_delta   = 1;
+        optional uint32 min_approval_delta  = 2;
+        optional uint32 reserve             = 3;
+        repeated string address_additions   = 4;
+        repeated string address_deletions   = 5;
+    }
+    
 }
 
 

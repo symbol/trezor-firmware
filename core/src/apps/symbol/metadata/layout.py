@@ -1,5 +1,3 @@
-import binascii
-
 from trezor.messages import SymbolTransactionCommon, SymbolAccountMetadata, SymbolMosaicNamespaceMetadata
 
 from trezor import ui
@@ -18,13 +16,6 @@ def msg_header( meta: SymbolAccountMetadata, msg: Text):
     msg.normal("Delta: %s" % meta.value_size_delta)
 
     return msg
-
-
-def msg_common_mosaic_namespace( meta: SymbolMosaicNamespaceMetadata, msg: Text ):
-    target_id = binascii.hexlify(meta.target_id)
-    msg.normal("Id: %s" % target_id)
-
-
 
 async def ask_account_metadata(
     ctx,
