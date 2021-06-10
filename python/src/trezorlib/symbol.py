@@ -125,6 +125,59 @@ def create_hash_lock(transaction):
 
     return msg
 
+def create_secret_lock(transaction):
+    msg = messages.SymbolSecretLock()
+
+    msg.recipient      = transaction["recipient"]
+    msg.secret         = transaction["secret"]
+    mosaic             = transaction["mosaic"]
+    msg.mosaic         = messages.SymbolMosaic(id=mosaic["id"], amount=mosaic["amount"])
+    msg.duration       = transaction["duration"]
+    msg.hash_algorithm = transaction["hash_algorithm"]
+
+    return msg
+
+def create_secret_proof(transaction):
+    msg = messages.SymbolSecretProof()
+
+    msg.recipient      = transaction["recipient"]
+    msg.secret         = transaction["secret"]
+    msg.hash_algorithm = transaction["hash_algorithm"]
+    msg.proof          = transaction["proof"]
+
+    return msg
+
+
+
+def create_common_metadata(transaction, msg):
+    msg.address             = transaction["address"]
+    msg.scoped_metadata_key = transaction["scoped_metadata_key"]
+    msg.value_size_delta    = transaction["value_size_delta"]
+    msg.value               = bytes.fromhex(transaction["value"])
+
+
+def create_account_metadata(transaction):
+    msg = messages.SymbolAccountMetadata()
+
+#    msg.address             = transaction["address"]
+#    msg.scoped_metadata_key = transaction["scoped_metadata_key"]
+#    msg.value_size_delta    = transaction["value_size_delta"]
+#    msg.value               = bytes.fromhex(transaction["value"])
+
+    create_common_metadata(transaction, msg)
+
+    return msg
+
+def create_mosaic_metadata(transaction):
+    msg = messages.SymbolMosaicNamespaceMetadata()
+    msg.header = messages.SymbolAccountMetadata()
+
+    msg.target_id = transaction["target_id"]
+    create_common_metadata(transaction, msg.header)    
+
+    return msg
+
+
 
 def fill_transaction_by_type(msg, transaction):
     if transaction["type"] == SymbolEntityType.TRANSFER:
@@ -149,6 +202,16 @@ def fill_transaction_by_type(msg, transaction):
         msg.voting_key_link = create_voting_key_link(transaction)
     elif transaction["type"] == SymbolEntityType.HASH_LOCK:
         msg.hash_lock = create_hash_lock(transaction)
+    elif transaction["type"] == SymbolEntityType.SECRET_LOCK:
+        msg.secret_lock = create_secret_lock(transaction)
+    elif transaction["type"] == SymbolEntityType.SECRET_PROOF:
+        msg.secret_proof = create_secret_proof(transaction)
+    elif transaction["type"] == SymbolEntityType.ACCOUNT_METADATA:
+        msg.account_metadata = create_account_metadata(transaction)
+    elif transaction["type"] == SymbolEntityType.MOSAIC_METADATA:
+        msg.mosaic_metadata = create_mosaic_metadata(transaction)
+    elif transaction["type"] == SymbolEntityType.NAMESPACE_METADATA:
+        msg.namespace_metadata = create_mosaic_metadata(transaction)
     else:
         raise ValueError("Unknown transaction type")
 
@@ -178,5 +241,7 @@ def sign_tx(client, n, transaction):
 
     assert msg.transaction is not None
     msg.transaction.address_n = n
+
+    print(msg)
 
     return client.call(msg)

@@ -55,11 +55,18 @@ message SymbolSignTx {
 
     optional SymbolHashLock                    hash_lock              = 7;
 
-    optional SymbolMosaicDefinition            mosaic_definition      = 8;
-    optional SymbolMosaicSupplyChange          mosaic_supply_change   = 9;
+    optional SymbolSecretLock                  secret_lock            = 8;
+    optional SymbolSecretProof                 secret_proof           = 9;
+
+    optional SymbolAccountMetadata             account_metadata       = 10;
+    optional SymbolMosaicNamespaceMetadata     mosaic_metadata        = 11;
+    optional SymbolMosaicNamespaceMetadata     namespace_metadata     = 12;
+
+    optional SymbolMosaicDefinition            mosaic_definition      = 13;
+    optional SymbolMosaicSupplyChange          mosaic_supply_change   = 14;
     
-    optional SymbolNamespaceRegistration       namespace_registration = 10;
-    optional SymbolAddressAlias                address_alias          = 11;
+    optional SymbolNamespaceRegistration       namespace_registration = 15;
+    optional SymbolAddressAlias                address_alias          = 16;
 
 
 
@@ -77,6 +84,13 @@ message SymbolSignTx {
         VOTING_KEY_LINK        = 0x4143;
 
         HASH_LOCK              = 0x4148;
+
+        SECRET_LOCK            = 0x4152;
+        SECRET_PROOF           = 0x4252;        
+
+        ACCOUNT_METADATA       = 0x4144;
+        MOSAIC_METADATA        = 0x4244;
+        NAMESPACE_METADATA     = 0x4344;
 
         TRANSFER               = 0x4154;
         
@@ -158,10 +172,8 @@ message SymbolSignTx {
     }
 
 
-   /**
-    * Mosaic schemas
-    * ---------------------------------------------------------------------------------------------------------------------------------
-    */
+    // Mosaic Schemas
+    // ---------------------------------------------------------------------------------------------------------------------------------
 
    /**
     *
@@ -188,10 +200,9 @@ message SymbolSignTx {
 
 
 
-   /**
-    * Namespace schemas
-    * ---------------------------------------------------------------------------------------------------------------------------------
-    */
+    // Namespace Schemas
+    // ---------------------------------------------------------------------------------------------------------------------------------
+
 
     /**
      *
@@ -215,8 +226,12 @@ message SymbolSignTx {
         optional uint32 action       = 3; // Alias action.   
     }
 
+
+
+    // Lock Hash Schemas
+    // ---------------------------------------------------------------------------------------------------------------------------------
+
     /**
-     *
      * https://docs.symbolplatform.com/serialization/lock_hash.html#hashlocktransaction
      */
     message SymbolHashLock {
@@ -224,7 +239,57 @@ message SymbolSignTx {
         optional uint64       duration = 2; // Number of blocks for which a lock should be valid
         optional string       hash     = 3; // AggregateBondedTransaction hash that has to be confirmed before unlocking the mosaics
     }
+
+
+    // Lock Secret Schemas
+    // ---------------------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * https://docs.symbolplatform.com/serialization/lock_secret.html#secretlocktransaction
+     */
+     message SymbolSecretLock {
+        optional string       recipient      = 1; // Address that receives the funds once unlocked.
+        optional string       secret         = 2; // Proof hashed.
+        optional SymbolMosaic mosaic         = 3; // Locked mosaic.
+        optional uint64       duration       = 4; // Number of blocks for which a lock should be valid. If reached, the mosaics will be returned to the initiator.
+        optional uint32       hash_algorithm = 5; // Algorithm used to hash the proof.
+    }
     
+    /**
+     * https://docs.symbolplatform.com/serialization/lock_secret.html#secretlocktransaction
+     */
+     message SymbolSecretProof {
+        optional string       recipient      = 1; // Address that receives the funds once unlocked.
+        optional string       secret         = 2; // Proof hashed.
+        optional uint32       hash_algorithm = 3; // Algorithm used to hash the proof.
+        optional string       proof          = 4; // Original random set of bytes.
+    }
+    
+
+
+    // Metadata Schemas
+    // ---------------------------------------------------------------------------------------------------------------------------------
+
+    /** 
+     * AccountMetadataTransaction:
+     * https://docs.symbolplatform.com/serialization/metadata.html#accountmetadatatransaction
+     */
+    message SymbolAccountMetadata {
+        optional string address             = 1; // Metadata target address.
+        optional uint64 scoped_metadata_key = 2; // Metadata key scoped to source, target and type.
+        optional uint32 value_size_delta    = 3; // Change in value size in bytes.
+        optional bytes  value               = 4; // Difference between the previous value and new value.
+    }
+
+    /**
+    * MosaicMetadataTransaction and NamespaceMetadataTransaction:
+    * https://docs.symbolplatform.com/serialization/metadata.html#mosaicmetadatatransaction
+    * https://docs.symbolplatform.com/serialization/metadata.html#namespacemetadatatransaction
+    */
+    message SymbolMosaicNamespaceMetadata {
+        optional SymbolAccountMetadata header    = 1;
+        optional uint64                target_id = 2; // Target namespace or mosaic identifier.
+    }
 
 }
 

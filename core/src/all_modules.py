@@ -620,6 +620,8 @@ trezor.messages.StellarTxOpRequest
 import trezor.messages.StellarTxOpRequest
 trezor.messages.Success
 import trezor.messages.Success
+trezor.messages.SymbolAccountMetadata
+import trezor.messages.SymbolAccountMetadata
 trezor.messages.SymbolAddress
 import trezor.messages.SymbolAddress
 trezor.messages.SymbolAddressAlias
@@ -638,6 +640,8 @@ trezor.messages.SymbolMosaic
 import trezor.messages.SymbolMosaic
 trezor.messages.SymbolMosaicDefinition
 import trezor.messages.SymbolMosaicDefinition
+trezor.messages.SymbolMosaicNamespaceMetadata
+import trezor.messages.SymbolMosaicNamespaceMetadata
 trezor.messages.SymbolMosaicSupplyChange
 import trezor.messages.SymbolMosaicSupplyChange
 trezor.messages.SymbolNamespaceRegistration
@@ -646,6 +650,10 @@ trezor.messages.SymbolNetworkType
 import trezor.messages.SymbolNetworkType
 trezor.messages.SymbolPublicKey
 import trezor.messages.SymbolPublicKey
+trezor.messages.SymbolSecretLock
+import trezor.messages.SymbolSecretLock
+trezor.messages.SymbolSecretProof
+import trezor.messages.SymbolSecretProof
 trezor.messages.SymbolSignTx
 import trezor.messages.SymbolSignTx
 trezor.messages.SymbolSignedTx
@@ -1278,6 +1286,18 @@ apps.symbol.lockhash.layout
 import apps.symbol.lockhash.layout
 apps.symbol.lockhash.serialize
 import apps.symbol.lockhash.serialize
+apps.symbol.locksecret
+import apps.symbol.locksecret
+apps.symbol.locksecret.layout
+import apps.symbol.locksecret.layout
+apps.symbol.locksecret.serialize
+import apps.symbol.locksecret.serialize
+apps.symbol.metadata
+import apps.symbol.metadata
+apps.symbol.metadata.layout
+import apps.symbol.metadata.layout
+apps.symbol.metadata.serialize
+import apps.symbol.metadata.serialize
 apps.symbol.mosaic
 import apps.symbol.mosaic
 apps.symbol.mosaic.layout

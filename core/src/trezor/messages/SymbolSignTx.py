@@ -3,12 +3,16 @@
 # isort:skip_file
 import protobuf as p
 
+from .SymbolAccountMetadata import SymbolAccountMetadata
 from .SymbolAddressAlias import SymbolAddressAlias
 from .SymbolHashLock import SymbolHashLock
 from .SymbolKeyLink import SymbolKeyLink
 from .SymbolMosaicDefinition import SymbolMosaicDefinition
+from .SymbolMosaicNamespaceMetadata import SymbolMosaicNamespaceMetadata
 from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
 from .SymbolNamespaceRegistration import SymbolNamespaceRegistration
+from .SymbolSecretLock import SymbolSecretLock
+from .SymbolSecretProof import SymbolSecretProof
 from .SymbolTransactionCommon import SymbolTransactionCommon
 from .SymbolTransfer import SymbolTransfer
 from .SymbolVotingKeyLink import SymbolVotingKeyLink
@@ -34,6 +38,11 @@ class SymbolSignTx(p.MessageType):
         vrf_key_link: Optional[SymbolKeyLink] = None,
         voting_key_link: Optional[SymbolVotingKeyLink] = None,
         hash_lock: Optional[SymbolHashLock] = None,
+        secret_lock: Optional[SymbolSecretLock] = None,
+        secret_proof: Optional[SymbolSecretProof] = None,
+        account_metadata: Optional[SymbolAccountMetadata] = None,
+        mosaic_metadata: Optional[SymbolMosaicNamespaceMetadata] = None,
+        namespace_metadata: Optional[SymbolMosaicNamespaceMetadata] = None,
         mosaic_definition: Optional[SymbolMosaicDefinition] = None,
         mosaic_supply_change: Optional[SymbolMosaicSupplyChange] = None,
         namespace_registration: Optional[SymbolNamespaceRegistration] = None,
@@ -46,6 +55,11 @@ class SymbolSignTx(p.MessageType):
         self.vrf_key_link = vrf_key_link
         self.voting_key_link = voting_key_link
         self.hash_lock = hash_lock
+        self.secret_lock = secret_lock
+        self.secret_proof = secret_proof
+        self.account_metadata = account_metadata
+        self.mosaic_metadata = mosaic_metadata
+        self.namespace_metadata = namespace_metadata
         self.mosaic_definition = mosaic_definition
         self.mosaic_supply_change = mosaic_supply_change
         self.namespace_registration = namespace_registration
@@ -61,8 +75,13 @@ class SymbolSignTx(p.MessageType):
             5: ('vrf_key_link', SymbolKeyLink, None),
             6: ('voting_key_link', SymbolVotingKeyLink, None),
             7: ('hash_lock', SymbolHashLock, None),
-            8: ('mosaic_definition', SymbolMosaicDefinition, None),
-            9: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
-            10: ('namespace_registration', SymbolNamespaceRegistration, None),
-            11: ('address_alias', SymbolAddressAlias, None),
+            8: ('secret_lock', SymbolSecretLock, None),
+            9: ('secret_proof', SymbolSecretProof, None),
+            10: ('account_metadata', SymbolAccountMetadata, None),
+            11: ('mosaic_metadata', SymbolMosaicNamespaceMetadata, None),
+            12: ('namespace_metadata', SymbolMosaicNamespaceMetadata, None),
+            13: ('mosaic_definition', SymbolMosaicDefinition, None),
+            14: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
+            15: ('namespace_registration', SymbolNamespaceRegistration, None),
+            16: ('address_alias', SymbolAddressAlias, None),
         }

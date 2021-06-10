@@ -26,10 +26,10 @@ from ..common import MNEMONIC12
 # assertion data from T1
 @pytest.mark.altcoin
 @pytest.mark.symbol
-class TestMsgSymbolSignTxKeyLink:
+class TestMsgSymbolSignTxLockHash:
     
     @pytest.mark.setup_client(mnemonic=MNEMONIC12)
-    def test_symbol_signtx_lock_hash(self, client):
+    def test_symbol_signtx_hash_lock(self, client):
         with client:
             client.set_expected_responses(
                 [

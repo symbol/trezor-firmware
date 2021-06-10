@@ -260,6 +260,7 @@ from .StellarSignTx import StellarSignTx
 from .StellarSignedTx import StellarSignedTx
 from .StellarTxOpRequest import StellarTxOpRequest
 from .Success import Success
+from .SymbolAccountMetadata import SymbolAccountMetadata
 from .SymbolAddress import SymbolAddress
 from .SymbolAddressAlias import SymbolAddressAlias
 from .SymbolGetAddress import SymbolGetAddress
@@ -268,9 +269,12 @@ from .SymbolHashLock import SymbolHashLock
 from .SymbolKeyLink import SymbolKeyLink
 from .SymbolMosaic import SymbolMosaic
 from .SymbolMosaicDefinition import SymbolMosaicDefinition
+from .SymbolMosaicNamespaceMetadata import SymbolMosaicNamespaceMetadata
 from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
 from .SymbolNamespaceRegistration import SymbolNamespaceRegistration
 from .SymbolPublicKey import SymbolPublicKey
+from .SymbolSecretLock import SymbolSecretLock
+from .SymbolSecretProof import SymbolSecretProof
 from .SymbolSignTx import SymbolSignTx
 from .SymbolSignedTx import SymbolSignedTx
 from .SymbolTransactionCommon import SymbolTransactionCommon

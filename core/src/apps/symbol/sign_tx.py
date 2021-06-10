@@ -1,4 +1,4 @@
-from apps.symbol import keylink
+from apps.symbol import keylink, metadata
 from trezor import wire
 from trezor.crypto.curve import ed25519
 from trezor.messages.SymbolSignedTx import SymbolSignedTx
@@ -8,7 +8,7 @@ from apps.common import seed
 from apps.common.keychain import with_slip44_keychain
 from apps.common.paths import validate_path
 
-from . import CURVE, PATTERN, SLIP44_ID, transfer, mosaic, namespace, lockhash
+from . import CURVE, PATTERN, SLIP44_ID, transfer, mosaic, namespace, lockhash, locksecret
 #from .helpers import NEM_HASH_ALG, check_path
 #from .validators import validate
 
@@ -53,10 +53,20 @@ async def sign_tx(ctx, msg: SymbolSignTx, keychain):
         tx = await keylink.voting_key_link(ctx, common, msg.voting_key_link)
     elif msg.hash_lock:
         tx = await lockhash.hash_lock(ctx, common, msg.hash_lock)
+    elif msg.secret_lock:
+        tx = await locksecret.secret_lock(ctx, common, msg.secret_lock)
+    elif msg.secret_proof:
+        tx = await locksecret.secret_proof(ctx, common, msg.secret_proof)
+    elif msg.account_metadata:
+        tx = await metadata.account_metadata(ctx, common, msg.account_metadata)
+    elif msg.mosaic_metadata:
+        tx = await metadata.mosaic_metadata(ctx, common, msg.mosaic_metadata)
+    elif msg.namespace_metadata:
+        tx = await metadata.namespace_metadata(ctx, common, msg.namespace_metadata)
     else:
         raise wire.DataError("No transaction provided")
 
-    signature = ed25519.sign(node.private_key(), tx, "keccak")
+    signature = ed25519.sign(node.private_key(), tx, "keccak") #change to sha3-256
 
     return SymbolSignedTx(
         data=tx,

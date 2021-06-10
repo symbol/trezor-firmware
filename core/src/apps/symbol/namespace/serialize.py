@@ -3,7 +3,7 @@ from trezor.messages.SymbolTransactionCommon import SymbolTransactionCommon
 from trezor.messages.SymbolNamespaceRegistration  import SymbolNamespaceRegistration
 from trezor.messages import SymbolAddressAlias, SymbolEntityType
 from trezor.crypto import base32
-import binascii
+#import binascii
 
 from ..common_serializors import serialize_tx_common
 
