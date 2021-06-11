@@ -1,7 +1,7 @@
 from apps.common.writers import write_bytes_unchecked, write_uint32_le, write_uint64_le, write_uint8, write_uint16_le
 from trezor.messages.SymbolTransactionCommon import SymbolTransactionCommon
 from trezor.messages.SymbolNamespaceRegistration  import SymbolNamespaceRegistration
-from trezor.messages import SymbolAddressAlias, SymbolEntityType
+from trezor.messages import SymbolAddressAlias, SymbolEntityType, SymbolMosaicAlias
 from trezor.crypto import base32
 #import binascii
 
@@ -32,5 +32,17 @@ def serialize_address_alias(
     write_uint64_le( tx, address_alias.namespace_id )
     write_bytes_unchecked( tx, address )
     write_uint8( tx, address_alias.action )
+
+    return tx
+
+
+def serialize_mosaic_alias(
+    common: SymbolTransactionCommon, mosaic_alias: SymbolMosaicAlias
+) -> bytearray:
+    tx = serialize_tx_common(common, SymbolEntityType.ADDRESS_ALIAS)
+
+    write_uint64_le( tx, mosaic_alias.namespace_id )
+    write_uint64_le( tx, mosaic_alias.mosaic_id    )
+    write_uint8( tx, mosaic_alias.action )
 
     return tx

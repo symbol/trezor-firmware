@@ -69,7 +69,11 @@ message SymbolSignTx {
            
     optional SymbolNamespaceRegistration       namespace_registration        = 16;
     optional SymbolAddressAlias                address_alias                 = 17;
+    optional SymbolMosaicAlias                 mosaic_alias                  = 18;
 
+    optional SymbolAccountAddressRestriction   account_address_restriction   = 20;
+    optional SymbolAccountMosaicRestriction    account_mosaic_restriction    = 21;
+    optional SymbolAccountOperationRestriction account_operation_restriction = 22;
 
 
     enum SymbolNetworkType {
@@ -103,6 +107,11 @@ message SymbolSignTx {
        
         NAMESPACE_REGISTRATION        = 0x414E;
         ADDRESS_ALIAS                 = 0x424E;
+        MOSAIC_ALIAS                  = 0x434E;
+
+        ACCOUNT_ADDRESS_RESTRICTION   = 0x4150;
+        ACCOUNT_MOSAIC_RESTRICTION    = 0x4250;
+        ACCOUNT_OPERATION_RESTRICTION = 0x4350;
     }
 
 
@@ -179,10 +188,10 @@ message SymbolSignTx {
     // Mosaic Schemas
     // ---------------------------------------------------------------------------------------------------------------------------------
 
-   /**
-    *
-    * https://docs.symbolplatform.com/serialization/mosaic.html#mosaicdefinitiontransaction
-    */
+    /**
+     *
+     * https://docs.symbolplatform.com/serialization/mosaic.html#mosaicdefinitiontransaction
+     */
     message SymbolMosaicDefinition {
         optional uint64 id           = 1; // Identifier of the mosaic
         optional uint64 duration     = 2; // Mosaic duration expressed in blocks. If set to 0, the mosaic is non-expiring
@@ -193,9 +202,9 @@ message SymbolSignTx {
 
 
     /**
-    *
-    * https://docs.symbolplatform.com/serialization/mosaic.html#mosaicsupplychangetransaction
-    */
+     *
+     * https://docs.symbolplatform.com/serialization/mosaic.html#mosaicsupplychangetransaction
+     */
     message SymbolMosaicSupplyChange {
         optional SymbolMosaic mosaic = 1; // Affected mosaic identifier.
         optional uint32       action = 2; // Supply change action (0x00 -> Decrease, 0x01 -> Increase).
@@ -207,9 +216,8 @@ message SymbolSignTx {
     // Namespace Schemas
     // ---------------------------------------------------------------------------------------------------------------------------------
 
-
     /**
-     *
+     * NamespaceRegistrationTransaction:
      * https://docs.symbolplatform.com/serialization/namespace.html#namespaceregistrationtransaction
      */
     message SymbolNamespaceRegistration {
@@ -221,12 +229,22 @@ message SymbolSignTx {
     }
 
     /**
-    *
+    * AddressAliasTransaction:
     * https://docs.symbolplatform.com/serialization/namespace.html#addressaliastransaction
     */
     message SymbolAddressAlias {
         optional uint64 namespace_id = 1; // Identifier of the namespace that will become an alias. (hex format, 8 bytes) 
         optional string address      = 2; // Aliased address (base32 format, 24 bytes).
+        optional uint32 action       = 3; // Alias action.   
+    }
+
+    /**
+    * MosaicAliasTransaction:
+    * https://docs.symbolplatform.com/serialization/namespace.html#addressaliastransaction
+    */
+    message SymbolMosaicAlias {
+        optional uint64 namespace_id = 1; // Identifier of the namespace that will become an alias. (hex format, 8 bytes) 
+        optional uint64 mosaic_id    = 2; // Aliased mosaic identifier
         optional uint32 action       = 3; // Alias action.   
     }
 
@@ -311,7 +329,41 @@ message SymbolSignTx {
         repeated string address_additions   = 4;
         repeated string address_deletions   = 5;
     }
-    
+
+
+    // Restriction Account Schemas
+    // ---------------------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * AccountAddressRestrictionTransaction
+     * https://docs.symbolplatform.com/serialization/restriction_account.html#accountaddressrestrictiontransaction
+     */
+    message SymbolAccountAddressRestriction {
+        optional uint32 type      = 1;
+        repeated string additions = 2;
+        repeated string deletions = 3;
+    }
+
+    /**
+     * AccountMosaicRestrictionTransaction
+     * https://docs.symbolplatform.com/serialization/restriction_account.html#accountmosaicrestrictiontransaction
+    */
+     message SymbolAccountMosaicRestriction {
+        optional uint32 type      = 1;
+        repeated uint64 additions = 2;
+        repeated uint64 deletions = 3;
+    }
+
+    /**
+     * AccountOperationRestrictionTransaction
+     * https://docs.symbolplatform.com/serialization/restriction_account.html#accountoperationrestrictiontransaction
+     */
+     message SymbolAccountOperationRestriction {
+        optional uint32 type      = 1;
+        repeated uint32 additions = 2;
+        repeated uint32 deletions = 3;
+    }
+
 }
 
 

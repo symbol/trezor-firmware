@@ -3,10 +3,14 @@
 # isort:skip_file
 from .. import protobuf as p
 
+from .SymbolAccountAddressRestriction import SymbolAccountAddressRestriction
 from .SymbolAccountMetadata import SymbolAccountMetadata
+from .SymbolAccountMosaicRestriction import SymbolAccountMosaicRestriction
+from .SymbolAccountOperationRestriction import SymbolAccountOperationRestriction
 from .SymbolAddressAlias import SymbolAddressAlias
 from .SymbolHashLock import SymbolHashLock
 from .SymbolKeyLink import SymbolKeyLink
+from .SymbolMosaicAlias import SymbolMosaicAlias
 from .SymbolMosaicDefinition import SymbolMosaicDefinition
 from .SymbolMosaicNamespaceMetadata import SymbolMosaicNamespaceMetadata
 from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
@@ -49,6 +53,10 @@ class SymbolSignTx(p.MessageType):
         mosaic_supply_change: Optional[SymbolMosaicSupplyChange] = None,
         namespace_registration: Optional[SymbolNamespaceRegistration] = None,
         address_alias: Optional[SymbolAddressAlias] = None,
+        mosaic_alias: Optional[SymbolMosaicAlias] = None,
+        account_address_restriction: Optional[SymbolAccountAddressRestriction] = None,
+        account_mosaic_restriction: Optional[SymbolAccountMosaicRestriction] = None,
+        account_operation_restriction: Optional[SymbolAccountOperationRestriction] = None,
     ) -> None:
         self.transaction = transaction
         self.transfer = transfer
@@ -67,6 +75,10 @@ class SymbolSignTx(p.MessageType):
         self.mosaic_supply_change = mosaic_supply_change
         self.namespace_registration = namespace_registration
         self.address_alias = address_alias
+        self.mosaic_alias = mosaic_alias
+        self.account_address_restriction = account_address_restriction
+        self.account_mosaic_restriction = account_mosaic_restriction
+        self.account_operation_restriction = account_operation_restriction
 
     @classmethod
     def get_fields(cls) -> Dict:
@@ -88,4 +100,8 @@ class SymbolSignTx(p.MessageType):
             15: ('mosaic_supply_change', SymbolMosaicSupplyChange, None),
             16: ('namespace_registration', SymbolNamespaceRegistration, None),
             17: ('address_alias', SymbolAddressAlias, None),
+            18: ('mosaic_alias', SymbolMosaicAlias, None),
+            20: ('account_address_restriction', SymbolAccountAddressRestriction, None),
+            21: ('account_mosaic_restriction', SymbolAccountMosaicRestriction, None),
+            22: ('account_operation_restriction', SymbolAccountOperationRestriction, None),
         }

@@ -620,8 +620,14 @@ trezor.messages.StellarTxOpRequest
 import trezor.messages.StellarTxOpRequest
 trezor.messages.Success
 import trezor.messages.Success
+trezor.messages.SymbolAccountAddressRestriction
+import trezor.messages.SymbolAccountAddressRestriction
 trezor.messages.SymbolAccountMetadata
 import trezor.messages.SymbolAccountMetadata
+trezor.messages.SymbolAccountMosaicRestriction
+import trezor.messages.SymbolAccountMosaicRestriction
+trezor.messages.SymbolAccountOperationRestriction
+import trezor.messages.SymbolAccountOperationRestriction
 trezor.messages.SymbolAddress
 import trezor.messages.SymbolAddress
 trezor.messages.SymbolAddressAlias
@@ -638,6 +644,8 @@ trezor.messages.SymbolKeyLink
 import trezor.messages.SymbolKeyLink
 trezor.messages.SymbolMosaic
 import trezor.messages.SymbolMosaic
+trezor.messages.SymbolMosaicAlias
+import trezor.messages.SymbolMosaicAlias
 trezor.messages.SymbolMosaicDefinition
 import trezor.messages.SymbolMosaicDefinition
 trezor.messages.SymbolMosaicNamespaceMetadata
@@ -1310,14 +1318,20 @@ apps.symbol.multisig
 import apps.symbol.multisig
 apps.symbol.multisig.layout
 import apps.symbol.multisig.layout
-apps.symbol.multisig.serialization
-import apps.symbol.multisig.serialization
+apps.symbol.multisig.serialize
+import apps.symbol.multisig.serialize
 apps.symbol.namespace
 import apps.symbol.namespace
 apps.symbol.namespace.layout
 import apps.symbol.namespace.layout
 apps.symbol.namespace.serialize
 import apps.symbol.namespace.serialize
+apps.symbol.restrictionaccount
+import apps.symbol.restrictionaccount
+apps.symbol.restrictionaccount.layout
+import apps.symbol.restrictionaccount.layout
+apps.symbol.restrictionaccount.serialize
+import apps.symbol.restrictionaccount.serialize
 apps.symbol.sign_tx
 import apps.symbol.sign_tx
 apps.symbol.transfer

@@ -97,6 +97,15 @@ def create_address_alias(transaction):
 
     return msg
 
+def create_mosaic_alias(transaction):
+    msg = messages.SymbolMosaicAlias()
+
+    msg.namespace_id = transaction["namespace_id"]
+    msg.mosaic_id    = transaction["mosaic_id"]
+    msg.action       = transaction["action"]
+
+    return msg
+
 def create_key_link(transaction):
     msg = messages.SymbolKeyLink()
 
@@ -187,6 +196,32 @@ def create_multisig_account_modification(transaction):
 
     return msg
 
+def create_account_address_restriction(transaction):
+    msg = messages.SymbolAccountAddressRestriction()
+
+    msg.type = transaction["restriction_type"]
+    msg.additions = transaction["additions"]
+    msg.deletions = transaction["deletions"]
+
+    return msg
+
+def create_account_mosaic_restriction(transaction):
+    msg = messages.SymbolAccountMosaicRestriction()
+
+    msg.type = transaction["restriction_type"]
+    msg.additions = transaction["additions"]
+    msg.deletions = transaction["deletions"]
+
+    return msg
+
+def create_account_operation_restriction(transaction):
+    msg = messages.SymbolAccountOperationRestriction()
+
+    msg.type = transaction["restriction_type"]
+    msg.additions = transaction["additions"]
+    msg.deletions = transaction["deletions"]
+
+    return msg
 
 
 def fill_transaction_by_type(msg, transaction):
@@ -202,6 +237,8 @@ def fill_transaction_by_type(msg, transaction):
         msg.namespace_registration = create_namespace_registration(transaction)
     elif transaction["type"] == SymbolEntityType.ADDRESS_ALIAS:
         msg.address_alias = create_address_alias(transaction)
+    elif transaction["type"] == SymbolEntityType.MOSAIC_ALIAS:
+        msg.mosaic_alias = create_mosaic_alias(transaction)
     elif transaction["type"] == SymbolEntityType.ACCOUNT_KEY_LINK:
         msg.account_key_link = create_key_link(transaction)
     elif transaction["type"] == SymbolEntityType.NODE_KEY_LINK:
@@ -224,7 +261,14 @@ def fill_transaction_by_type(msg, transaction):
         msg.namespace_metadata = create_mosaic_metadata(transaction)
     elif transaction["type"] == SymbolEntityType.MULTISIG_ACCOUNT_MODIFICATION:
         msg.multisig_account_modification = create_multisig_account_modification(transaction)
+    elif transaction["type"] == SymbolEntityType.ACCOUNT_ADDRESS_RESTRICTION:
+        msg.account_address_restriction = create_account_address_restriction(transaction)
+    elif transaction["type"] == SymbolEntityType.ACCOUNT_MOSAIC_RESTRICTION:
+        msg.account_mosaic_restriction = create_account_mosaic_restriction(transaction)
+    elif transaction["type"] == SymbolEntityType.ACCOUNT_OPERATION_RESTRICTION:
+        msg.account_operation_restriction = create_account_operation_restriction(transaction)
     else:
+        print("transaction type: %s" % transaction["type"])
         raise ValueError("Unknown transaction type")
 
 
@@ -254,6 +298,8 @@ def sign_tx(client, n, transaction):
     assert msg.transaction is not None
     msg.transaction.address_n = n
 
+    print("\n\n\n\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     print(msg)
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n\n\n\n")
 
     return client.call(msg)

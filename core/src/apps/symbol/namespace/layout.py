@@ -1,6 +1,3 @@
-import binascii
-
-
 from trezor.messages.SymbolTransactionCommon import SymbolTransactionCommon
 
 from trezor import ui
@@ -8,6 +5,7 @@ from trezor.messages import (
     ButtonRequestType,
     SymbolAddressAlias,
     SymbolNamespaceRegistration,
+    SymbolMosaicAlias,
 )
 from trezor.strings import format_amount
 from trezor.ui.components.tt.text import Text
@@ -53,6 +51,25 @@ async def ask_address_alias(
     msg.normal("Action: %s"         % action)
     msg.normal("Namespace id: %s"   % hex(address_alias.namespace_id))
     msg.normal("Address: %s"        % address_alias.address)
+    msg.normal("max fee: %s"        % common.max_fee)
+
+    await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+async def ask_mosaic_alias(
+    ctx,
+    common: SymbolTransactionCommon,
+    mosaic_alias: SymbolMosaicAlias
+):
+
+    if mosaic_alias.action == 0:
+        action = "Link alias"
+    else:
+        action = "Unlink alias"
+
+    msg = Text("Mosaic alias", ui.ICON_SEND, ui.GREEN)
+    msg.normal("Action: %s"         % action)
+    msg.normal("Namespace id: %s"   % hex(mosaic_alias.namespace_id))
+    msg.normal("Mosaic id: %s"      % hex(mosaic_alias.mosaic_id))
     msg.normal("max fee: %s"        % common.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )

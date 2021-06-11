@@ -91,3 +91,34 @@ class TestMsgSymbolSignTxNamespace:
 #            tx.signature.hex()
 #            == "928b03c4a69fff35ecf0912066ea705895b3028fad141197d7ea2b56f1eef2a2516455e6f35d318f6fa39e2bb40492ac4ae603260790f7ebc7ea69feb4ca4c0a"
 #        ) TODO: SYMBOL DEBUG
+
+
+    @pytest.mark.setup_client(mnemonic=MNEMONIC12)
+    def test_symbol_signtx_mosaic_alias(self, client):
+        tx = symbol.sign_tx(
+            client,
+            parse_path("m/44'/1'/0'/0'/0'"),
+            {
+                "type": SymbolEntityType.MOSAIC_ALIAS,
+
+                "signer_public_key" : "HNPB7JSEKZJ4S4NFA2D6OXTNBH5TASAQKXRZSDEEWJPJEIW4CFKQ====",
+                "version": 1,
+                "network_type": 0x98, #public test net
+
+                "max_fee": 2000000,
+                "deadline": 26736012201,
+
+                "namespace_id": 0x82A9D1AC587EC054,
+                "mosaic_id": 0x123456789ABCDEF0,
+                "action": 1,
+            },
+        )
+
+        assert (
+            tx.data.hex()
+            == "3b5e1fa6445653c971a50687e75e6d09fb30481055e3990c84b25e9222dc115501984e4280841e0000000000a92b97390600000054c07e58acd1a982f0debc9a7856341201"
+        )
+#        assert (
+#            tx.signature.hex()
+#            == "928b03c4a69fff35ecf0912066ea705895b3028fad141197d7ea2b56f1eef2a2516455e6f35d318f6fa39e2bb40492ac4ae603260790f7ebc7ea69feb4ca4c0a"
+#        ) TODO: SYMBOL DEBUG
