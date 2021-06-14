@@ -8,7 +8,7 @@ from apps.common import seed
 from apps.common.keychain import with_slip44_keychain
 from apps.common.paths import validate_path
 
-from . import CURVE, PATTERN, SLIP44_ID, transfer, mosaic, namespace, lockhash, locksecret
+from . import CURVE, PATTERN, SLIP44_ID, transfer, mosaic, namespace, lockhash, locksecret, restrictionmosaic
 #from .helpers import NEM_HASH_ALG, check_path
 #from .validators import validate
 
@@ -73,6 +73,10 @@ async def sign_tx(ctx, msg: SymbolSignTx, keychain):
         tx = await restrictionaccount.account_mosaic_restriction(ctx, common, msg.account_mosaic_restriction)
     elif msg.account_operation_restriction:
         tx = await restrictionaccount.account_operation_restriction(ctx, common, msg.account_operation_restriction)
+    elif msg.mosaic_address_restriction:
+        tx = await restrictionmosaic.mosaic_address_restriction(ctx, common, msg.mosaic_address_restriction)
+    elif msg.mosaic_global_restriction:
+        tx = await restrictionmosaic.mosaic_global_restriction(ctx, common, msg.mosaic_global_restriction)
     else:
         raise wire.DataError("No transaction provided")
 

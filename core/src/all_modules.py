@@ -644,10 +644,14 @@ trezor.messages.SymbolKeyLink
 import trezor.messages.SymbolKeyLink
 trezor.messages.SymbolMosaic
 import trezor.messages.SymbolMosaic
+trezor.messages.SymbolMosaicAddressRestriction
+import trezor.messages.SymbolMosaicAddressRestriction
 trezor.messages.SymbolMosaicAlias
 import trezor.messages.SymbolMosaicAlias
 trezor.messages.SymbolMosaicDefinition
 import trezor.messages.SymbolMosaicDefinition
+trezor.messages.SymbolMosaicGlobalRestriction
+import trezor.messages.SymbolMosaicGlobalRestriction
 trezor.messages.SymbolMosaicNamespaceMetadata
 import trezor.messages.SymbolMosaicNamespaceMetadata
 trezor.messages.SymbolMosaicSupplyChange
@@ -1332,6 +1336,12 @@ apps.symbol.restrictionaccount.layout
 import apps.symbol.restrictionaccount.layout
 apps.symbol.restrictionaccount.serialize
 import apps.symbol.restrictionaccount.serialize
+apps.symbol.restrictionmosaic
+import apps.symbol.restrictionmosaic
+apps.symbol.restrictionmosaic.layout
+import apps.symbol.restrictionmosaic.layout
+apps.symbol.restrictionmosaic.serialize
+import apps.symbol.restrictionmosaic.serialize
 apps.symbol.sign_tx
 import apps.symbol.sign_tx
 apps.symbol.transfer

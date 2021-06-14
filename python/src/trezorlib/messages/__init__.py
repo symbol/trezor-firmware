@@ -271,8 +271,10 @@ from .SymbolGetPublicKey import SymbolGetPublicKey
 from .SymbolHashLock import SymbolHashLock
 from .SymbolKeyLink import SymbolKeyLink
 from .SymbolMosaic import SymbolMosaic
+from .SymbolMosaicAddressRestriction import SymbolMosaicAddressRestriction
 from .SymbolMosaicAlias import SymbolMosaicAlias
 from .SymbolMosaicDefinition import SymbolMosaicDefinition
+from .SymbolMosaicGlobalRestriction import SymbolMosaicGlobalRestriction
 from .SymbolMosaicNamespaceMetadata import SymbolMosaicNamespaceMetadata
 from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
 from .SymbolMultisigAccountModification import SymbolMultisigAccountModification

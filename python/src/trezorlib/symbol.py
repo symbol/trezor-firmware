@@ -223,6 +223,30 @@ def create_account_operation_restriction(transaction):
 
     return msg
 
+def create_mosaic_address_restriction(transaction):
+    msg = messages.SymbolMosaicAddressRestriction()
+
+    msg.mosaic_id = transaction["mosaic_id"]
+    msg.restriction_key = transaction["restriction_key"]
+    msg.previous_restriction_value = transaction["previous_restriction_value"]
+    msg.new_restriction_value = transaction["new_restriction_value"]
+    msg.target_address = transaction["target_address"]
+
+    return msg
+
+def create_mosaic_global_restriction(transaction):
+    msg = messages.SymbolMosaicGlobalRestriction()
+
+    msg.mosaic_id = transaction["mosaic_id"]
+    msg.reference_mosaic_id = transaction["reference_mosaic_id"]
+    msg.restriction_key = transaction["restriction_key"]
+    msg.previous_restriction_value = transaction["previous_restriction_value"]
+    msg.new_restriction_value = transaction["new_restriction_value"]
+    msg.previous_restriction_type = transaction["previous_restriction_type"]
+    msg.new_restriction_type = transaction["new_restriction_type"]
+
+    return msg
+
 
 def fill_transaction_by_type(msg, transaction):
     if transaction["type"] == SymbolEntityType.TRANSFER:
@@ -267,6 +291,10 @@ def fill_transaction_by_type(msg, transaction):
         msg.account_mosaic_restriction = create_account_mosaic_restriction(transaction)
     elif transaction["type"] == SymbolEntityType.ACCOUNT_OPERATION_RESTRICTION:
         msg.account_operation_restriction = create_account_operation_restriction(transaction)
+    elif transaction["type"] == SymbolEntityType.MOSAIC_ADDRESS_RESTRICTION:
+        msg.mosaic_address_restriction = create_mosaic_address_restriction(transaction)
+    elif transaction["type"] == SymbolEntityType.MOSAIC_GLOBAL_RESTRICTION:
+        msg.mosaic_global_restriction = create_mosaic_global_restriction(transaction)
     else:
         print("transaction type: %s" % transaction["type"])
         raise ValueError("Unknown transaction type")

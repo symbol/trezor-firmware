@@ -10,8 +10,10 @@ from .SymbolAccountOperationRestriction import SymbolAccountOperationRestriction
 from .SymbolAddressAlias import SymbolAddressAlias
 from .SymbolHashLock import SymbolHashLock
 from .SymbolKeyLink import SymbolKeyLink
+from .SymbolMosaicAddressRestriction import SymbolMosaicAddressRestriction
 from .SymbolMosaicAlias import SymbolMosaicAlias
 from .SymbolMosaicDefinition import SymbolMosaicDefinition
+from .SymbolMosaicGlobalRestriction import SymbolMosaicGlobalRestriction
 from .SymbolMosaicNamespaceMetadata import SymbolMosaicNamespaceMetadata
 from .SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
 from .SymbolMultisigAccountModification import SymbolMultisigAccountModification
@@ -57,6 +59,8 @@ class SymbolSignTx(p.MessageType):
         account_address_restriction: Optional[SymbolAccountAddressRestriction] = None,
         account_mosaic_restriction: Optional[SymbolAccountMosaicRestriction] = None,
         account_operation_restriction: Optional[SymbolAccountOperationRestriction] = None,
+        mosaic_address_restriction: Optional[SymbolMosaicAddressRestriction] = None,
+        mosaic_global_restriction: Optional[SymbolMosaicGlobalRestriction] = None,
     ) -> None:
         self.transaction = transaction
         self.transfer = transfer
@@ -79,6 +83,8 @@ class SymbolSignTx(p.MessageType):
         self.account_address_restriction = account_address_restriction
         self.account_mosaic_restriction = account_mosaic_restriction
         self.account_operation_restriction = account_operation_restriction
+        self.mosaic_address_restriction = mosaic_address_restriction
+        self.mosaic_global_restriction = mosaic_global_restriction
 
     @classmethod
     def get_fields(cls) -> Dict:
@@ -104,4 +110,6 @@ class SymbolSignTx(p.MessageType):
             20: ('account_address_restriction', SymbolAccountAddressRestriction, None),
             21: ('account_mosaic_restriction', SymbolAccountMosaicRestriction, None),
             22: ('account_operation_restriction', SymbolAccountOperationRestriction, None),
+            23: ('mosaic_address_restriction', SymbolMosaicAddressRestriction, None),
+            24: ('mosaic_global_restriction', SymbolMosaicGlobalRestriction, None),
         }

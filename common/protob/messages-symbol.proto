@@ -75,6 +75,9 @@ message SymbolSignTx {
     optional SymbolAccountMosaicRestriction    account_mosaic_restriction    = 21;
     optional SymbolAccountOperationRestriction account_operation_restriction = 22;
 
+    optional SymbolMosaicAddressRestriction    mosaic_address_restriction    = 23;
+    optional SymbolMosaicGlobalRestriction     mosaic_global_restriction     = 24;
+
 
     enum SymbolNetworkType {
         MAIN_NET     = 0x68;  // Public network
@@ -112,6 +115,9 @@ message SymbolSignTx {
         ACCOUNT_ADDRESS_RESTRICTION   = 0x4150;
         ACCOUNT_MOSAIC_RESTRICTION    = 0x4250;
         ACCOUNT_OPERATION_RESTRICTION = 0x4350;
+
+        MOSAIC_ADDRESS_RESTRICTION    = 0x4251;
+        MOSAIC_GLOBAL_RESTRICTION     = 0x4151;
     }
 
 
@@ -347,8 +353,8 @@ message SymbolSignTx {
     /**
      * AccountMosaicRestrictionTransaction
      * https://docs.symbolplatform.com/serialization/restriction_account.html#accountmosaicrestrictiontransaction
-    */
-     message SymbolAccountMosaicRestriction {
+     */
+    message SymbolAccountMosaicRestriction {
         optional uint32 type      = 1;
         repeated uint64 additions = 2;
         repeated uint64 deletions = 3;
@@ -358,14 +364,44 @@ message SymbolSignTx {
      * AccountOperationRestrictionTransaction
      * https://docs.symbolplatform.com/serialization/restriction_account.html#accountoperationrestrictiontransaction
      */
-     message SymbolAccountOperationRestriction {
+    message SymbolAccountOperationRestriction {
         optional uint32 type      = 1;
         repeated uint32 additions = 2;
         repeated uint32 deletions = 3;
     }
 
-}
 
+    // Restriction Mosaic Schemas
+    // ---------------------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * MosaicAddressRestrictionTransaction
+     * https://docs.symbolplatform.com/serialization/restriction_mosaic.html#mosaicaddressrestrictiontransaction
+     */
+    message SymbolMosaicAddressRestriction {
+        optional uint64 mosaic_id                  = 1;
+        optional uint64 restriction_key            = 2;
+        optional uint64 previous_restriction_value = 3;
+        optional uint64 new_restriction_value      = 4;
+        optional string target_address             = 5;
+    
+    }
+
+    /**
+     * MosaicGlobalRestrictionTransaction
+     * https://docs.symbolplatform.com/serialization/restriction_mosaic.html#mosaicglobalrestrictiontransaction
+     */
+     message SymbolMosaicGlobalRestriction {
+        optional uint64 mosaic_id                  = 1;
+        optional uint64 reference_mosaic_id        = 2;
+        optional uint64 restriction_key            = 3;
+        optional uint64 previous_restriction_value = 4;
+        optional uint64 new_restriction_value      = 5;
+        optional uint32 previous_restriction_type  = 6;
+        optional uint32 new_restriction_type       = 7;    
+    }
+
+}
 
 /**
  * Response: Contains Symbol transaction data and signature
