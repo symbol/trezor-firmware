@@ -1,4 +1,4 @@
-from trezor.messages.SymbolTransactionCommon import SymbolTransactionCommon
+from trezor.messages.SymbolHeader import SymbolHeader
 from trezor.messages.SymbolTransfer import SymbolTransfer
 from trezor.messages.SymbolMosaic import SymbolMosaic
 
@@ -16,11 +16,11 @@ from apps.common.layout import split_address
 
 async def ask_transfer(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     transfer: SymbolTransfer
 ):
     for mosaic in transfer.mosaics:
-        await ask_transfer_mosaic(ctx, common, transfer, mosaic)
+        await ask_transfer_mosaic(ctx, header, transfer, mosaic)
 
     await _require_confirm_transfer(ctx, transfer.recipient_address, len(transfer.mosaics))
     await _require_confirm_payload(ctx, transfer.message)
@@ -28,7 +28,7 @@ async def ask_transfer(
 
 
 async def ask_transfer_mosaic(
-    ctx, common: SymbolTransactionCommon, transfer: SymbolTransfer, mosaic: SymbolMosaic
+    ctx, header: SymbolHeader, transfer: SymbolTransfer, mosaic: SymbolMosaic
 ):
     msg = Text("Confirm mosaic", ui.ICON_SEND, ui.GREEN)
     msg.normal("Confirm transfer of")

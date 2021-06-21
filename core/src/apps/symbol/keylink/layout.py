@@ -1,4 +1,4 @@
-from trezor.messages import SymbolEntityType, SymbolTransactionCommon, SymbolKeyLink, SymbolVotingKeyLink
+from trezor.messages import SymbolEntityType, SymbolHeader, SymbolKeyLink, SymbolVotingKeyLink
 
 from trezor import ui
 from trezor.messages import (
@@ -11,7 +11,7 @@ from apps.common.confirm import require_confirm
 
 async def ask_key_link(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     key_link: SymbolKeyLink,
     entity_type: SymbolEntityType
 ):
@@ -31,14 +31,14 @@ async def ask_key_link(
     msg.normal("Type: %s" % link_type)
     msg.normal("Action: %s" % action)
     msg.normal("Linked pbk: %s" % key_link.public_key)
-    msg.normal("Max fee: %s"  % common.max_fee)
+    msg.normal("Max fee: %s"  % header.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
 
 
 async def ask_voting_key_link(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     key_link: SymbolVotingKeyLink,
 ):
     if key_link.action == 0:
@@ -51,6 +51,6 @@ async def ask_voting_key_link(
     msg.normal("Start: %s" % key_link.start_point)
     msg.normal("End: %s" % key_link.end_point)
     msg.normal("Pbk: %s" % key_link.public_key)
-    msg.normal("Max fee: %s"  % common.max_fee)
+    msg.normal("Max fee: %s"  % header.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )

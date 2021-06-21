@@ -1,4 +1,5 @@
-from trezor.messages import SymbolTransactionCommon, SymbolMultisigAccountModification
+from trezor.messages.SymbolHeader import SymbolHeader
+from trezor.messages.SymbolMultisigAccountModification import SymbolMultisigAccountModification
 
 from trezor import ui
 from trezor.messages import (
@@ -12,7 +13,7 @@ from apps.common.confirm import require_confirm
 
 async def ask_multisig_account_modification(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     multisig: SymbolMultisigAccountModification,
 ):
     msg = Text("Multisig Account Modification", ui.ICON_SEND, ui.GREEN)
@@ -28,7 +29,7 @@ async def ask_multisig_account_modification(
     msg.normal("Min Approval: %s" % multisig.min_approval_delta)
     msg.normal("Min Removal %s" % multisig.min_removal_delta)
 
-    msg.normal("Max fee: %s" % common.max_fee)
+    msg.normal("Max fee: %s" % header.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
 

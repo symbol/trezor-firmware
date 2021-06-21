@@ -266,9 +266,11 @@ from .SymbolAccountMosaicRestriction import SymbolAccountMosaicRestriction
 from .SymbolAccountOperationRestriction import SymbolAccountOperationRestriction
 from .SymbolAddress import SymbolAddress
 from .SymbolAddressAlias import SymbolAddressAlias
+from .SymbolAggregateTransaction import SymbolAggregateTransaction
 from .SymbolGetAddress import SymbolGetAddress
 from .SymbolGetPublicKey import SymbolGetPublicKey
 from .SymbolHashLock import SymbolHashLock
+from .SymbolHeader import SymbolHeader
 from .SymbolKeyLink import SymbolKeyLink
 from .SymbolMosaic import SymbolMosaic
 from .SymbolMosaicAddressRestriction import SymbolMosaicAddressRestriction
@@ -284,7 +286,7 @@ from .SymbolSecretLock import SymbolSecretLock
 from .SymbolSecretProof import SymbolSecretProof
 from .SymbolSignTx import SymbolSignTx
 from .SymbolSignedTx import SymbolSignedTx
-from .SymbolTransactionCommon import SymbolTransactionCommon
+from .SymbolSingleTransaction import SymbolSingleTransaction
 from .SymbolTransfer import SymbolTransfer
 from .SymbolVotingKeyLink import SymbolVotingKeyLink
 from .TezosAddress import TezosAddress

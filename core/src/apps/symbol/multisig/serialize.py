@@ -1,17 +1,19 @@
 from apps.common.writers import write_bytes_unchecked, write_uint32_le, write_uint64_le, write_uint8, write_uint16_le
-from trezor.messages import SymbolEntityType, SymbolTransactionCommon, SymbolMultisigAccountModification
+from trezor.messages import SymbolEntityType
+from trezor.messages.SymbolHeader import SymbolHeader
+from trezor.messages.SymbolMultisigAccountModification import SymbolMultisigAccountModification
 from trezor.crypto import base32
 
-from ..common_serializors import serialize_tx_common
+from ..common_serializors import serialize_tx_header
 
 
 
 def multisig_account_modification(
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     multisig: SymbolMultisigAccountModification,
 ) -> bytearray:
 
-    tx = serialize_tx_common(common, SymbolEntityType.MULTISIG_ACCOUNT_MODIFICATION)
+    tx = serialize_tx_header(header, SymbolEntityType.MULTISIG_ACCOUNT_MODIFICATION)
 
     write_uint8( tx, multisig.min_removal_delta )
     write_uint8( tx, multisig.min_approval_delta )

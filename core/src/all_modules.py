@@ -632,6 +632,8 @@ trezor.messages.SymbolAddress
 import trezor.messages.SymbolAddress
 trezor.messages.SymbolAddressAlias
 import trezor.messages.SymbolAddressAlias
+trezor.messages.SymbolAggregateTransaction
+import trezor.messages.SymbolAggregateTransaction
 trezor.messages.SymbolEntityType
 import trezor.messages.SymbolEntityType
 trezor.messages.SymbolGetAddress
@@ -640,6 +642,8 @@ trezor.messages.SymbolGetPublicKey
 import trezor.messages.SymbolGetPublicKey
 trezor.messages.SymbolHashLock
 import trezor.messages.SymbolHashLock
+trezor.messages.SymbolHeader
+import trezor.messages.SymbolHeader
 trezor.messages.SymbolKeyLink
 import trezor.messages.SymbolKeyLink
 trezor.messages.SymbolMosaic
@@ -672,8 +676,8 @@ trezor.messages.SymbolSignTx
 import trezor.messages.SymbolSignTx
 trezor.messages.SymbolSignedTx
 import trezor.messages.SymbolSignedTx
-trezor.messages.SymbolTransactionCommon
-import trezor.messages.SymbolTransactionCommon
+trezor.messages.SymbolSingleTransaction
+import trezor.messages.SymbolSingleTransaction
 trezor.messages.SymbolTransfer
 import trezor.messages.SymbolTransfer
 trezor.messages.SymbolVotingKeyLink
@@ -1284,6 +1288,12 @@ apps.stellar.writers
 import apps.stellar.writers
 apps.symbol
 import apps.symbol
+apps.symbol.aggregate
+import apps.symbol.aggregate
+apps.symbol.aggregate.layout
+import apps.symbol.aggregate.layout
+apps.symbol.aggregate.serialize
+import apps.symbol.aggregate.serialize
 apps.symbol.common_serializors
 import apps.symbol.common_serializors
 apps.symbol.get_public_key

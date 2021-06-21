@@ -1,19 +1,22 @@
 import binascii
 
 from apps.common.writers import write_bytes_unchecked, write_uint32_le, write_uint64_le, write_uint8, write_uint16_le
-from trezor.messages import SymbolEntityType, SymbolAccountMetadata, SymbolTransactionCommon
+from trezor.messages.SymbolAccountMetadata import SymbolAccountMetadata
+from trezor.messages.SymbolHeader import SymbolHeader
+from trezor.messages import SymbolEntityType
+
 from trezor.crypto import base32
 
-from ..common_serializors import serialize_tx_common
+from ..common_serializors import serialize_tx_header
 
 
 
 def account_metadata(
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     metadata: SymbolAccountMetadata,
 ) -> bytearray:
 
-    tx = serialize_tx_common(common, SymbolEntityType.ACCOUNT_METADATA)
+    tx = serialize_tx_header(header, SymbolEntityType.ACCOUNT_METADATA)
 
     address = base32.decode( metadata.address )
     write_bytes_unchecked( tx, address )
@@ -25,12 +28,12 @@ def account_metadata(
 
 
 def mosaic_namespace_metadata(
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     metadata: SymbolAccountMetadata,
     entity_type: SymbolEntityType
 ) -> bytearray:
 
-    tx = serialize_tx_common( common, entity_type )
+    tx = serialize_tx_header( header, entity_type )
 
     address = base32.decode( metadata.header.address )
     write_bytes_unchecked( tx, address )

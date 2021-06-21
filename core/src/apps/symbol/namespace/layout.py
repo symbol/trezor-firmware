@@ -1,4 +1,4 @@
-from trezor.messages.SymbolTransactionCommon import SymbolTransactionCommon
+from trezor.messages.SymbolHeader import SymbolHeader
 
 from trezor import ui
 from trezor.messages import (
@@ -17,7 +17,7 @@ from apps.common.layout import split_address
 
 async def ask_namespace_registration(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     namespace: SymbolNamespaceRegistration
 ):
 
@@ -30,7 +30,7 @@ async def ask_namespace_registration(
     msg.normal("Type: %s"     % regType)
     msg.normal("Name: %s"     % namespace.name)
     msg.normal("Duration: %s" % namespace.duration)
-    msg.normal("Max fee: %s"  % common.max_fee)
+    msg.normal("Max fee: %s"  % header.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
 
@@ -38,7 +38,7 @@ async def ask_namespace_registration(
 
 async def ask_address_alias(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     address_alias: SymbolAddressAlias
 ):
 
@@ -51,13 +51,13 @@ async def ask_address_alias(
     msg.normal("Action: %s"         % action)
     msg.normal("Namespace id: %s"   % hex(address_alias.namespace_id))
     msg.normal("Address: %s"        % address_alias.address)
-    msg.normal("max fee: %s"        % common.max_fee)
+    msg.normal("max fee: %s"        % header.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
 
 async def ask_mosaic_alias(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     mosaic_alias: SymbolMosaicAlias
 ):
 
@@ -70,7 +70,7 @@ async def ask_mosaic_alias(
     msg.normal("Action: %s"         % action)
     msg.normal("Namespace id: %s"   % hex(mosaic_alias.namespace_id))
     msg.normal("Mosaic id: %s"      % hex(mosaic_alias.mosaic_id))
-    msg.normal("max fee: %s"        % common.max_fee)
+    msg.normal("max fee: %s"        % header.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
 

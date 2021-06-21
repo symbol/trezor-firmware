@@ -1,15 +1,16 @@
 from apps.common.writers import write_bytes_unchecked, write_uint32_le, write_uint64_le, write_uint8, write_uint16_le
-from trezor.messages.SymbolTransactionCommon import SymbolTransactionCommon
-from trezor.messages.SymbolNamespaceRegistration  import SymbolNamespaceRegistration
-from trezor.messages import SymbolEntityType, SymbolMosaicAddressRestriction, SymbolMosaicGlobalRestriction
+from trezor.messages.SymbolHeader import SymbolHeader
+from trezor.messages.SymbolMosaicAddressRestriction import SymbolMosaicAddressRestriction
+from trezor.messages.SymbolMosaicGlobalRestriction import SymbolMosaicGlobalRestriction
+from trezor.messages import SymbolEntityType
 from trezor.crypto import base32
 
-from ..common_serializors import serialize_tx_common
+from ..common_serializors import serialize_tx_header
 
 def mosaic_address_restriction(
-    common: SymbolTransactionCommon, restriction: SymbolMosaicAddressRestriction
+    header: SymbolHeader, restriction: SymbolMosaicAddressRestriction
 ) -> bytearray:
-    tx = serialize_tx_common(common, SymbolEntityType.MOSAIC_ADDRESS_RESTRICTION)
+    tx = serialize_tx_header(header, SymbolEntityType.MOSAIC_ADDRESS_RESTRICTION)
 
     write_uint64_le( tx, restriction.mosaic_id )
     write_uint64_le( tx, restriction.restriction_key )
@@ -21,9 +22,9 @@ def mosaic_address_restriction(
 
 
 def mosaic_global_restriction(
-    common: SymbolTransactionCommon, restriction: SymbolMosaicGlobalRestriction
+    header: SymbolHeader, restriction: SymbolMosaicGlobalRestriction
 ) -> bytearray:
-    tx = serialize_tx_common(common, SymbolEntityType.MOSAIC_GLOBAL_RESTRICTION)
+    tx = serialize_tx_header(header, SymbolEntityType.MOSAIC_GLOBAL_RESTRICTION)
 
     write_uint64_le( tx, restriction.mosaic_id )
     write_uint64_le( tx, restriction.reference_mosaic_id )

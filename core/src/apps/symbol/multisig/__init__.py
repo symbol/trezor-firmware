@@ -1,11 +1,12 @@
-from trezor.messages import SymbolKeyLink, SymbolTransactionCommon, SymbolMultisigAccountModification
+from trezor.messages.SymbolHeader import SymbolHeader
+from trezor.messages.SymbolMultisigAccountModification import SymbolMultisigAccountModification
 
 from . import layout, serialize
 
 
 async def multisig_account_modification(
-    ctx, common: SymbolTransactionCommon, multisig: SymbolMultisigAccountModification
+    ctx, header: SymbolHeader, multisig: SymbolMultisigAccountModification
     ) -> bytearray:
 
-    await  layout.ask_multisig_account_modification(ctx, common, multisig)
-    return serialize.multisig_account_modification(common, multisig)
+    await  layout.ask_multisig_account_modification(ctx, header, multisig)
+    return serialize.multisig_account_modification(header, multisig)

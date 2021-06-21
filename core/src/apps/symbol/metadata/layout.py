@@ -1,4 +1,6 @@
-from trezor.messages import SymbolTransactionCommon, SymbolAccountMetadata, SymbolMosaicNamespaceMetadata
+from trezor.messages.SymbolAccountMetadata import SymbolAccountMetadata
+from trezor.messages.SymbolHeader import SymbolHeader
+from trezor.messages.SymbolMosaicNamespaceMetadata import SymbolMosaicNamespaceMetadata
 
 from trezor import ui
 from trezor.messages import (
@@ -19,21 +21,21 @@ def msg_header( meta: SymbolAccountMetadata, msg: Text):
 
 async def ask_account_metadata(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     meta: SymbolAccountMetadata,
 ):
     msg = Text("Account Metadata", ui.ICON_SEND, ui.GREEN)
 
     msg_header(meta, msg)
 
-    msg.normal("Max fee: %s" % common.max_fee)
+    msg.normal("Max fee: %s" % header.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
 
 
 async def ask_mosaic_namespace_metadata(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     meta: SymbolMosaicNamespaceMetadata,
     txt: str
 ):
@@ -44,6 +46,6 @@ async def ask_mosaic_namespace_metadata(
     target_id = hex(meta.target_id)
     msg.normal("Id: %s" % target_id)
 
-    msg.normal("Max fee: %s" % common.max_fee)
+    msg.normal("Max fee: %s" % header.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )

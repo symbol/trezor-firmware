@@ -1,15 +1,17 @@
 from apps.common.writers import write_bytes_unchecked, write_uint32_le, write_uint64_le, write_uint8, write_uint16_le
-from trezor.messages.SymbolTransactionCommon import SymbolTransactionCommon
-from trezor.messages.SymbolNamespaceRegistration  import SymbolNamespaceRegistration
-from trezor.messages import SymbolEntityType, SymbolAccountAddressRestriction, SymbolAccountMosaicRestriction, SymbolAccountOperationRestriction
+from trezor.messages.SymbolHeader import SymbolHeader
+from trezor.messages.SymbolAccountAddressRestriction   import SymbolAccountAddressRestriction
+from trezor.messages.SymbolAccountMosaicRestriction    import SymbolAccountMosaicRestriction
+from trezor.messages.SymbolAccountOperationRestriction import SymbolAccountOperationRestriction
+from trezor.messages import SymbolEntityType
 from trezor.crypto import base32
 
-from ..common_serializors import serialize_tx_common
+from ..common_serializors import serialize_tx_header
 
 def account_address_restriction(
-    common: SymbolTransactionCommon, restriction: SymbolAccountAddressRestriction
+    header: SymbolHeader, restriction: SymbolAccountAddressRestriction
 ) -> bytearray:
-    tx = serialize_tx_common(common, SymbolEntityType.ACCOUNT_ADDRESS_RESTRICTION)
+    tx = serialize_tx_header(header, SymbolEntityType.ACCOUNT_ADDRESS_RESTRICTION)
 
     write_uint16_le( tx, restriction.type )
     write_uint8( tx, len(restriction.additions) )
@@ -26,9 +28,9 @@ def account_address_restriction(
 
 
 def account_mosaic_restriction(
-    common: SymbolTransactionCommon, restriction: SymbolAccountMosaicRestriction
+    header: SymbolHeader, restriction: SymbolAccountMosaicRestriction
 ) -> bytearray:
-    tx = serialize_tx_common(common, SymbolEntityType.ACCOUNT_MOSAIC_RESTRICTION)
+    tx = serialize_tx_header(header, SymbolEntityType.ACCOUNT_MOSAIC_RESTRICTION)
 
     write_uint16_le( tx, restriction.type )
     write_uint8( tx, len(restriction.additions) )
@@ -45,9 +47,9 @@ def account_mosaic_restriction(
 
 
 def account_operation_restriction(
-    common: SymbolTransactionCommon, restriction: SymbolAccountOperationRestriction
+    header: SymbolHeader, restriction: SymbolAccountOperationRestriction
 ) -> bytearray:
-    tx = serialize_tx_common(common, SymbolEntityType.ACCOUNT_OPERATION_RESTRICTION)
+    tx = serialize_tx_header(header, SymbolEntityType.ACCOUNT_OPERATION_RESTRICTION)
 
     write_uint16_le( tx, restriction.type )
     write_uint8( tx, len(restriction.additions) )

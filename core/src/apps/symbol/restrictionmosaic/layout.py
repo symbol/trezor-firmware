@@ -1,10 +1,10 @@
-from trezor.messages.SymbolTransactionCommon import SymbolTransactionCommon
+from trezor.messages.SymbolHeader import SymbolHeader
+from trezor.messages.SymbolMosaicAddressRestriction import SymbolMosaicAddressRestriction
+from trezor.messages.SymbolMosaicGlobalRestriction import SymbolMosaicGlobalRestriction
 
 from trezor import ui
 from trezor.messages import (
-    ButtonRequestType,
-    SymbolMosaicAddressRestriction,
-    SymbolMosaicGlobalRestriction,
+    ButtonRequestType
     )
 
 from trezor.strings import format_amount
@@ -17,7 +17,7 @@ from apps.common.layout import split_address
 
 async def ask_mosaic_address_restriction(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     restriction: SymbolMosaicAddressRestriction
 ):
     msg = Text("Mosaic Address Restriction", ui.ICON_SEND, ui.GREEN)
@@ -32,7 +32,7 @@ async def ask_mosaic_address_restriction(
 
 async def ask_mosaic_global_restriction(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     restriction: SymbolMosaicGlobalRestriction
 ):
     msg = Text("Mosaic Global Restriction", ui.ICON_SEND, ui.GREEN)

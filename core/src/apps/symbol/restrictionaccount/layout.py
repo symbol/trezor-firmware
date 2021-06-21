@@ -1,13 +1,13 @@
 import binascii
 
-from trezor.messages.SymbolTransactionCommon import SymbolTransactionCommon
+from trezor.messages.SymbolHeader import SymbolHeader
+from trezor.messages.SymbolAccountAddressRestriction   import SymbolAccountAddressRestriction
+from trezor.messages.SymbolAccountMosaicRestriction    import SymbolAccountMosaicRestriction
+from trezor.messages.SymbolAccountOperationRestriction import SymbolAccountOperationRestriction
 
 from trezor import ui
 from trezor.messages import (
-    ButtonRequestType,
-    SymbolAccountAddressRestriction,
-    SymbolAccountMosaicRestriction,
-    SymbolAccountOperationRestriction
+    ButtonRequestType
     )
 
 from trezor.strings import format_amount
@@ -20,7 +20,7 @@ from apps.common.layout import split_address
 
 async def ask_account_address_restriction(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     restriction: SymbolAccountAddressRestriction
 ):
 
@@ -35,14 +35,14 @@ async def ask_account_address_restriction(
     for deletion in restriction.deletions:
         msg.normal("address: %s" % deletion )
 
-    msg.normal("Max fee: %s" % common.max_fee)
+    msg.normal("Max fee: %s" % header.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
 
 
 async def ask_account_mosaic_restriction(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     restriction: SymbolAccountMosaicRestriction
 ):
 
@@ -57,14 +57,14 @@ async def ask_account_mosaic_restriction(
     for deletion in restriction.deletions:
         msg.normal("address: %s" % hex(deletion) )
 
-    msg.normal("Max fee: %s" % common.max_fee)
+    msg.normal("Max fee: %s" % header.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
 
 
 async def ask_account_operation_restriction(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     restriction: SymbolAccountOperationRestriction
 ):
 
@@ -79,6 +79,6 @@ async def ask_account_operation_restriction(
     for deletion in restriction.deletions:
         msg.normal("address: %s" % hex(deletion) )
 
-    msg.normal("Max fee: %s" % common.max_fee)
+    msg.normal("Max fee: %s" % header.max_fee)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )

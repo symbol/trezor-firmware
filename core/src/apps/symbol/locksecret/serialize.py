@@ -1,19 +1,23 @@
 import binascii
 
 from apps.common.writers import write_bytes_unchecked, write_uint32_le, write_uint64_le, write_uint8, write_uint16_le
-from trezor.messages import SymbolEntityType, SymbolSecretLock, SymbolSecretProof, SymbolTransactionCommon
+from trezor.messages import SymbolEntityType
+from trezor.messages.SymbolSecretProof import SymbolSecretProof
+from trezor.messages.SymbolHeader import SymbolHeader
+from trezor.messages.SymbolSecretLock import SymbolSecretLock
+
 from trezor.crypto import base32
 
-from ..common_serializors import serialize_tx_common
+from ..common_serializors import serialize_tx_header
 
 
 
 def secret_lock(
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     lock: SymbolSecretLock,
 ) -> bytearray:
 
-    tx = serialize_tx_common(common, SymbolEntityType.SECRET_LOCK)
+    tx = serialize_tx_header(header, SymbolEntityType.SECRET_LOCK)
 
     address = base32.decode(lock.recipient)
     write_bytes_unchecked( tx, address )
@@ -27,11 +31,11 @@ def secret_lock(
 
 
 def secret_proof(
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     lock: SymbolSecretProof,
 ) -> bytearray:
 
-    tx = serialize_tx_common(common, SymbolEntityType.SECRET_PROOF)
+    tx = serialize_tx_header(header, SymbolEntityType.SECRET_PROOF)
 
     address = base32.decode(lock.recipient)
     write_bytes_unchecked( tx, address )

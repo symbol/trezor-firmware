@@ -1,4 +1,4 @@
-from trezor.messages.SymbolTransactionCommon import SymbolTransactionCommon
+from trezor.messages.SymbolHeader import SymbolHeader
 from trezor.messages.SymbolMosaicDefinition import SymbolMosaicDefinition
 from trezor.messages.SymbolMosaicSupplyChange import SymbolMosaicSupplyChange
 
@@ -16,7 +16,7 @@ from apps.common.layout import split_address
 
 async def ask_mosaic_definition(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     definition: SymbolMosaicDefinition
 ):
     msg = Text("Confirm mosaic definition", ui.ICON_SEND, ui.GREEN)
@@ -26,13 +26,17 @@ async def ask_mosaic_definition(
     msg.bold("mutable: %s"      % bool(definition.flags & 0x01))
     msg.bold("transferable: %s" % bool(definition.flags & 0x02))
     msg.bold("restrictable: %s" % bool(definition.flags & 0x04))
-    msg.bold("max fee: %s"      % common.max_fee)
+
+    if hasattr(header, "max_fee"):
+        msg.bold( "max fee: %s"  % header.max_fee)
+        msg.bold( "deadline: %s" % header.deadline)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+    
 
 async def ask_mosaic_supply_change(
     ctx,
-    common: SymbolTransactionCommon,
+    header: SymbolHeader,
     supply: SymbolMosaicSupplyChange
 ):
     if supply.action == 0:
@@ -44,7 +48,10 @@ async def ask_mosaic_supply_change(
     msg.bold("mosaic id: %s" % supply.mosaic.id)
     msg.normal("%s by" % action)
     msg.bold("%s units" % supply.mosaic.amount)
-    msg.bold("max fee: %s" % common.max_fee)
+
+    if hasattr(header, "max_fee"):
+        msg.bold("max fee: %s" % header.max_fee)
+        msg.bold("deadline: %s" % header.deadline)
 
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
 
