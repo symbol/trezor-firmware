@@ -92,7 +92,7 @@ async def sign_tx(ctx, msg: SymbolSignTx, keychain):
     else:
         raise wire.DataError("No transaction provided")
 
-    signature = ed25519.sign(node.private_key(), tx, "keccak") #change to sha3-256
+    signature = ed25519.sign(node.private_key(), tx)
 
     return SymbolSignedTx(
         data=tx,
