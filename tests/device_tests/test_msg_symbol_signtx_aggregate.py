@@ -33,9 +33,18 @@ class TestMsgSymbolSignTxAggregate:
         with client:
             client.set_expected_responses(
                 [
-                    # Confirm transfer and network fee
+                    # confirm aggregate details
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+
+                    # confirm mosaic definition
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+
+                    # confirm mosaic supply change
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+
+                    # confirm fee
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.SymbolSignedTx,
                 ]
@@ -106,10 +115,13 @@ class TestMsgSymbolSignTxAggregate:
         with client:
             client.set_expected_responses(
                 [
-                    # Confirm transfer and network fee
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.SymbolSignedTx,
                 ]
@@ -186,6 +198,11 @@ class TestMsgSymbolSignTxAggregate:
                 [
                     # Confirm transfer and network fee
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.SymbolSignedTx,
                 ]

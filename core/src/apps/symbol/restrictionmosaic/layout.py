@@ -13,21 +13,28 @@ from trezor.ui.components.tt.text import Text
 from apps.common.confirm import require_confirm
 from apps.common.layout import split_address
 
-
+from .. import common_layout
 
 async def ask_mosaic_address_restriction(
     ctx,
     header: SymbolHeader,
     restriction: SymbolMosaicAddressRestriction
 ):
-    msg = Text("Mosaic Address Restriction", ui.ICON_SEND, ui.GREEN)
-    msg.normal("mosaic id: %s" % hex(restriction.mosaic_id))
-    msg.normal("Restriction key: %s" % hex(restriction.restriction_key))
-    msg.normal("Previous Restriction Value: %s" % hex(restriction.previous_restriction_value))
-    msg.normal("New Restriction Value: %s" % hex(restriction.new_restriction_value))
-    msg.normal("Target Address: %s" % restriction.new_restriction_value)
-
+    msg = Text("Mosaic Adr. Rest.", ui.ICON_SEND, ui.GREEN)
+    msg.normal("Mosaic ID: %s" % hex(restriction.mosaic_id))
+    msg.normal("Restriction Key: %s" % hex(restriction.restriction_key))
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+    msg = Text("Restriction Values", ui.ICON_SEND, ui.GREEN)
+    msg.normal("Previous: %s" % hex(restriction.previous_restriction_value))
+    msg.normal("New: %s" % hex(restriction.new_restriction_value))
+    await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+    msg = Text("Confirm Address:", ui.ICON_SEND, ui.GREEN)
+    msg.normal("%s" % restriction.target_address)
+    await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+    await common_layout.require_confirm_final(ctx, header )
 
 
 async def ask_mosaic_global_restriction(
@@ -35,15 +42,26 @@ async def ask_mosaic_global_restriction(
     header: SymbolHeader,
     restriction: SymbolMosaicGlobalRestriction
 ):
-    msg = Text("Mosaic Global Restriction", ui.ICON_SEND, ui.GREEN)
+    msg = Text("Mosaic Global Rest.", ui.ICON_SEND, ui.GREEN)
     msg.normal("Mosaic Id: %s" % hex(restriction.mosaic_id))
     msg.normal("Reference Mosaic ID: %s" % hex(restriction.reference_mosaic_id))
-    
-    msg.normal("Restriction key: %s" % hex(restriction.restriction_key))
-    msg.normal("Previous Restriction Value: %s" % hex(restriction.previous_restriction_value))
-    msg.normal("New Restriction Value: %s" % hex(restriction.new_restriction_value))
-
-    msg.normal("Previous Restriction Type: %s" % restriction.previous_restriction_type)
-    msg.normal("New Restriction Type: %s" % restriction.new_restriction_type)
-
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+    msg = Text("Restriction key:", ui.ICON_SEND, ui.GREEN)
+    msg.normal("%s" % hex(restriction.restriction_key))
+    await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+    msg = Text("Restriction Values", ui.ICON_SEND, ui.GREEN)
+    msg.normal("Previous: %s" % hex(restriction.previous_restriction_value))
+    msg.normal("New: %s" % hex(restriction.new_restriction_value))
+    await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+    int_to_string = ["No restriction", "=", "!=", "<", "<=", ">", ">="]
+
+    msg = Text( "Restriction Types", ui.ICON_SEND, ui.GREEN )
+    msg.normal( "Previous:  %s" % int_to_string[restriction.previous_restriction_type] )
+    msg.normal( "New:  %s"      % int_to_string[restriction.new_restriction_type] )
+    await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+    await common_layout.require_confirm_final(ctx, header )
+

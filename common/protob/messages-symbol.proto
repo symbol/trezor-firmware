@@ -147,7 +147,7 @@ message SymbolSignTx {
     *
     * https://docs.symbolplatform.com/serialization/transaction.html#transaction
     */
-    message SymbolHeader { //TODO: rename to SymbolCommonHeader
+    message SymbolHeader {
         optional string            signer_public_key = 1;   // Public key of the signer of the entity
         optional uint32            version           = 2;   // Version of the structure
         optional SymbolNetworkType network_type      = 3;   // public or private network

@@ -33,7 +33,9 @@ class TestMsgSymbolSignTxRestrictionMosaic:
         with client:
             client.set_expected_responses(
                 [
-                    # Confirm transfer and network fee
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.SymbolSignedTx,
                 ]
@@ -81,7 +83,11 @@ class TestMsgSymbolSignTxRestrictionMosaic:
                 [
                     # Confirm transfer and network fee
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
-                    proto.SymbolSignedTx,
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                   proto.SymbolSignedTx,
                 ]
             )
 

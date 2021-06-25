@@ -17,6 +17,7 @@ from ..common_serializors import serialize_tx_header
 
 from .. import sign_tx
 
+from .. import common_layout
 
 
 async def aggregate_complete(
@@ -48,6 +49,7 @@ async def aggregate_complete(
     write_uint32_le(ext_tx, 0)                # padding
     write_bytes_unchecked(ext_tx, int_txs)    # add internal transactions
 
-    print( ext_tx )
+    #print( ext_tx )
+    await common_layout.require_confirm_final(ctx, header)
 
     return ext_tx

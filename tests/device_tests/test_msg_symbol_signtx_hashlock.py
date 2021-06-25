@@ -35,6 +35,8 @@ class TestMsgSymbolSignTxLockHash:
                 [
                     # Confirm transfer and network fee
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.SymbolSignedTx,
                 ]
             )

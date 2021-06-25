@@ -35,6 +35,7 @@ class TestMsgSymbolSignTxKeyLink:
                 [
                     # Confirm transfer and network fee
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.SymbolSignedTx,
                 ]
             )
@@ -76,6 +77,7 @@ class TestMsgSymbolSignTxKeyLink:
                 [
                     # Confirm transfer and network fee
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.SymbolSignedTx,
                 ]
             )
@@ -115,6 +117,7 @@ class TestMsgSymbolSignTxKeyLink:
             client.set_expected_responses(
                 [
                     # Confirm transfer and network fee
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.SymbolSignedTx,
                 ]
@@ -156,6 +159,8 @@ class TestMsgSymbolSignTxKeyLink:
             client.set_expected_responses(
                 [
                     # Confirm transfer and network fee
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.SymbolSignedTx,
                 ]

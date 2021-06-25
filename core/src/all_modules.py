@@ -1294,6 +1294,8 @@ apps.symbol.aggregate.layout
 import apps.symbol.aggregate.layout
 apps.symbol.aggregate.serialize
 import apps.symbol.aggregate.serialize
+apps.symbol.common_layout
+import apps.symbol.common_layout
 apps.symbol.common_serializors
 import apps.symbol.common_serializors
 apps.symbol.get_public_key

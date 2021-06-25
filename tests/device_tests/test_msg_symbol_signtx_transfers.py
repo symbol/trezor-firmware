@@ -39,6 +39,7 @@ class TestMsgSymbolSignTxTransfer:
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     # Confirm recipient
                     proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
+                    proto.ButtonRequest(code=proto.ButtonRequestType.ConfirmOutput),
                     proto.SymbolSignedTx,
                 ]
             )

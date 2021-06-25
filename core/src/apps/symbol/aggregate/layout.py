@@ -19,11 +19,10 @@ async def ask_aggregate_complete(
     aggregate: SymbolAggregateTransaction
 ):
 
-    msg = Text( "Aggregate transaction", ui.ICON_SEND, ui.GREEN )
+    msg = Text( "Agg. Transaction", ui.ICON_SEND, ui.GREEN )
     msg.bold( "Hash: %s" % aggregate.transactions_hash )
+    await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+    msg = Text( "Agg. Transaction", ui.ICON_SEND, ui.GREEN )
     msg.bold( "Num of txns: %s" % len(aggregate.transactions) )
-
-    msg.bold( "max fee: %s" % header.max_fee )
-    msg.bold( "deadline: %s" % header.deadline )
-
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )

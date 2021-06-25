@@ -9,10 +9,12 @@ from trezor.messages import (
 from trezor.strings import format_amount
 from trezor.ui.components.tt.text import Text
 
-from apps.common.confirm import require_confirm
+from apps.common.confirm import require_confirm, require_hold_to_confirm
 from apps.common.layout import split_address
 
+from .. import common_layout
 
+#import binascii
 
 async def ask_transfer(
     ctx,
@@ -24,25 +26,30 @@ async def ask_transfer(
 
     await _require_confirm_transfer(ctx, transfer.recipient_address, len(transfer.mosaics))
     await _require_confirm_payload(ctx, transfer.message)
+    await common_layout.require_confirm_final(ctx, header )
 
 
 
 async def ask_transfer_mosaic(
     ctx, header: SymbolHeader, transfer: SymbolTransfer, mosaic: SymbolMosaic
 ):
-    msg = Text("Confirm mosaic", ui.ICON_SEND, ui.GREEN)
+    msg = Text("Confirm Transfer", ui.ICON_SEND, ui.GREEN)
     msg.normal("Confirm transfer of")
-    msg.bold("%s units" % mosaic.amount)
+    msg.bold("%s units" % format_amount(mosaic.amount, common_layout.SYMBOL_MAX_DIVISIBILITY))
     msg.normal("of")
-    msg.bold("mosaic id: %s" % mosaic.id)
+
+    if mosaic.id == common_layout.XYM_MOSAIC_ID_MAINNET:
+        msg.bold("XYM")
+    else:
+        msg.bold( "mosaic id: %s" % hex(mosaic.id) )
+
     await require_confirm(ctx, msg, ButtonRequestType.ConfirmOutput)
 
 
 async def _require_confirm_transfer(ctx, recipient, value):
-    text = Text("Confirm transfer", ui.ICON_SEND, ui.GREEN)
-    text.bold("Send %s XYM" % value)
-    text.normal("to")
-    text.mono(*split_address(recipient))
+    text = Text("Confirm Address", ui.ICON_SEND, ui.GREEN)
+    text.normal("Send to:")
+    text.bold(*split_address(recipient))
     await require_confirm(ctx, text, ButtonRequestType.ConfirmOutput)
 
 
@@ -51,19 +58,12 @@ async def _require_confirm_payload(ctx, payload: bytearray):
     message_payload = payload[1:]
     message_payload = bytes(message_payload).decode()
 
-
     text = Text("Confirm payload", ui.ICON_SEND, ui.GREEN)
-    text.bold("Message type: %s" % message_type)
-    text.normal("Payload message: %s" % message_payload)
 
-#    text = Text("Confirm payload", ui.ICON_SEND, ui.GREEN)
-#    text.bold("Message type: %s", "HOLA1")
-#    text.normal("Payload message: %s", "message_payload")
-
-
-# TODO: SYMBOL DEBUG
-#    print("\n\n\nMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM")
-#    print( text.read_content() )
-#    print("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n\n\n")
+    int_to_string = ["Plain message", "Encrypted message", "Persistent harvesting delegation"]
+    text.normal("%s:" % int_to_string[message_type])
+    text.bold("%s" % message_payload)
 
     await require_confirm(ctx, text, ButtonRequestType.ConfirmOutput)
+
+

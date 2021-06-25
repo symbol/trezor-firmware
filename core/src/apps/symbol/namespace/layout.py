@@ -13,6 +13,7 @@ from trezor.ui.components.tt.text import Text
 from apps.common.confirm import require_confirm
 from apps.common.layout import split_address
 
+from .. import common_layout
 
 
 async def ask_namespace_registration(
@@ -26,13 +27,17 @@ async def ask_namespace_registration(
     else:
         regType = "Child namespace"
 
-    msg = Text("Namespace registration", ui.ICON_SEND, ui.GREEN)
-    msg.normal("Type: %s"     % regType)
+    msg = Text("Namespace Reg.", ui.ICON_SEND, ui.GREEN)
     msg.normal("Name: %s"     % namespace.name)
-    msg.normal("Duration: %s" % namespace.duration)
-    msg.normal("Max fee: %s"  % header.max_fee)
-
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+    msg = Text("Parameters:", ui.ICON_SEND, ui.GREEN)
+    msg.normal("Type: %s"     % regType)
+    msg.normal("Duration: %s" % common_layout.duration_to_str(namespace.duration))
+    await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+    
+    await common_layout.require_confirm_final(ctx, header)
+
 
 
 
@@ -47,13 +52,17 @@ async def ask_address_alias(
     else:
         action = "Unlink alias"
 
-    msg = Text("Address alias", ui.ICON_SEND, ui.GREEN)
+    msg = Text("Address Alias", ui.ICON_SEND, ui.GREEN)
     msg.normal("Action: %s"         % action)
     msg.normal("Namespace id: %s"   % hex(address_alias.namespace_id))
-    msg.normal("Address: %s"        % address_alias.address)
-    msg.normal("max fee: %s"        % header.max_fee)
-
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+    msg = Text("Address:", ui.ICON_SEND, ui.GREEN)
+    msg.normal("%s"        % address_alias.address)
+    await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
+
+    await common_layout.require_confirm_final(ctx, header)
+
 
 async def ask_mosaic_alias(
     ctx,
@@ -62,17 +71,16 @@ async def ask_mosaic_alias(
 ):
 
     if mosaic_alias.action == 0:
-        action = "Link alias"
+        action = "Link Alias"
     else:
-        action = "Unlink alias"
+        action = "Unlink Alias"
 
-    msg = Text("Mosaic alias", ui.ICON_SEND, ui.GREEN)
+    msg = Text("Mosaic Alias", ui.ICON_SEND, ui.GREEN)
     msg.normal("Action: %s"         % action)
     msg.normal("Namespace id: %s"   % hex(mosaic_alias.namespace_id))
     msg.normal("Mosaic id: %s"      % hex(mosaic_alias.mosaic_id))
-    msg.normal("max fee: %s"        % header.max_fee)
-
     await require_confirm( ctx, msg, ButtonRequestType.ConfirmOutput )
 
+    await common_layout.require_confirm_final(ctx, header)
 
 
