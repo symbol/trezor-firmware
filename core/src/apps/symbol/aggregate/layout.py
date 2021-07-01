@@ -13,7 +13,7 @@ from apps.common.layout import split_address
 
 
 
-async def ask_aggregate_complete(
+async def ask_aggregate_complete_bonded(
     ctx,
     header: SymbolHeader,
     aggregate: SymbolAggregateTransaction

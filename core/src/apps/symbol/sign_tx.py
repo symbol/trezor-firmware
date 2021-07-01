@@ -86,7 +86,7 @@ async def sign_tx(ctx, msg: SymbolSignTx, keychain):
 
 
     if msg.aggregate:
-        tx = await aggregate.aggregate_complete( ctx, msg.aggregate.header, msg.aggregate )
+        tx = await aggregate.aggregate_complete_bonded( ctx, msg.aggregate.header, msg.aggregate )
     elif msg.single:
         tx = await dispatch(ctx, msg.single.header, msg.single)
     else:

@@ -67,9 +67,3 @@ class TestMsgSymbolSignTxLockHash:
                 tx.data.hex()
                 == "3b5e1fa6445653c971a50687e75e6d09fb30481055e3990c84b25e9222dc11550198484180841e0000000000f6a98b3906000000cc403c7a113bdf7c80969800000000000f000000000000002b51ebcbc3e40efe8af68a0408f5a72474b1327a64e3e3b47d9b139230c7833b"
             )
-
-#TODO: SYMBOL DEBUG
-#            assert (
-#                tx.signature.hex()
-#                == "9cda2045324d05c791a4fc312ecceb62954e7740482f8df8928560d63cf273dea595023640179f112de755c79717757ef76962175378d6d87360ddb3f3e5f70f"
-#            )

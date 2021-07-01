@@ -66,10 +66,6 @@ class TestMsgSymbolSignTxNamespace:
                 tx.data.hex()
                 == "3b5e1fa6445653c971a50687e75e6d09fb30481055e3990c84b25e9222dc115501984e4180841e0000000000128838c40600000000a3020000000000c880d8ebba4a85a90011666f6f35373673676e6c78646e66626478"
             )
-#        assert (
-#            tx.signature.hex()
-#            == "928b03c4a69fff35ecf0912066ea705895b3028fad141197d7ea2b56f1eef2a2516455e6f35d318f6fa39e2bb40492ac4ae603260790f7ebc7ea69feb4ca4c0a"
-#        ) TODO: SYMBOL DEBUG
 
 
 
@@ -109,10 +105,6 @@ class TestMsgSymbolSignTxNamespace:
                 tx.data.hex()
                 == "3b5e1fa6445653c971a50687e75e6d09fb30481055e3990c84b25e9222dc115501984e4280841e0000000000a92b97390600000054c07e58acd1a98298f2a5e8e063ad1a9085ef5b5167e2f1a5645c48fa2c024901"
             )
-#        assert (
-#            tx.signature.hex()
-#            == "928b03c4a69fff35ecf0912066ea705895b3028fad141197d7ea2b56f1eef2a2516455e6f35d318f6fa39e2bb40492ac4ae603260790f7ebc7ea69feb4ca4c0a"
-#        ) TODO: SYMBOL DEBUG
 
 
     @pytest.mark.setup_client(mnemonic=MNEMONIC12)
@@ -150,7 +142,3 @@ class TestMsgSymbolSignTxNamespace:
                 tx.data.hex()
                 == "3b5e1fa6445653c971a50687e75e6d09fb30481055e3990c84b25e9222dc115501984e4280841e0000000000a92b97390600000054c07e58acd1a982f0debc9a7856341201"
             )
-#        assert (
-#            tx.signature.hex()
-#            == "928b03c4a69fff35ecf0912066ea705895b3028fad141197d7ea2b56f1eef2a2516455e6f35d318f6fa39e2bb40492ac4ae603260790f7ebc7ea69feb4ca4c0a"
-#        ) TODO: SYMBOL DEBUG

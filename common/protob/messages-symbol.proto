@@ -6,27 +6,6 @@ option java_package = "com.satoshilabs.trezor.lib.protobuf";
 option java_outer_classname = "TrezorMessageSymbol";
 
 
-/**
- * Request: Ask device for Symbol address corresponding to address_n path
- * @start
- * @next SymbolAddress
- * @next Failure
- */
- message SymbolGetAddress {
-    repeated uint32 address_n    = 1;     // BIP-32 path to derive the key from master node
-    optional uint32 network      = 2;     // Network ID -> 0x68 = (MAIN_NET), 0x98 (TEST_NET), 0x60 (PRIVATE), 0x90 (PRIVATE_TEST)
-    optional bool   show_display = 3;     // Optionally show on display before sending the result
-}
-
-/**
- * Response: Contains Symbol address derived from device private seed
- * @end
- */
-
-message SymbolAddress {
-    optional string address = 1;    // Symbol address in Base32 encoding
-}
-
 message SymbolGetPublicKey {
     repeated uint32 address_n    = 1;     // BIP-32 path to derive the key from master node
     optional bool   show_display = 2;     // Optionally show on display before sending the result
@@ -49,7 +28,6 @@ message SymbolSignTx {
     repeated uint32                     address_n = 1;  // BIP-32 path to derive the key from master node
     optional SymbolAggregateTransaction aggregate = 2;
     optional SymbolSingleTransaction    single    = 3;
-
 
 
     message SymbolSingleTransaction {
@@ -156,9 +134,7 @@ message SymbolSignTx {
         optional uint64            deadline          = 5;   // Drop transaction if it does not get included in a block before deadline is reached (Number of milliseconds since the creation of the nemesis block) 
     }
 
-
-
-   
+    
     // Account link schemas
     // ---------------------------------------------------------------------------------------------------------------------------------
 
@@ -177,7 +153,6 @@ message SymbolSignTx {
 
    /**
     * VotingKeyLinkTransaction
-    *
     * https://docs.symbolplatform.com/serialization/coresystem.html#votingkeylinktransaction
     */
     message SymbolVotingKeyLink {
@@ -185,9 +160,7 @@ message SymbolSignTx {
         optional uint32 start_point = 2; // Start finalization point
         optional uint32 end_point   = 3; // End finalization point
         optional uint32 action      = 4; // 0x00 -> Unlink account, 0x01 -> Link account.
-    } 
-    
-
+    }
 
     /**
     * Structure representing the transfer transaction part for Symbol transactions
@@ -203,7 +176,7 @@ message SymbolSignTx {
     // ---------------------------------------------------------------------------------------------------------------------------------
 
     /**
-     *
+     * MosaicDefinitionTransaction
      * https://docs.symbolplatform.com/serialization/mosaic.html#mosaicdefinitiontransaction
      */
     message SymbolMosaicDefinition {
@@ -214,9 +187,8 @@ message SymbolSignTx {
         optional uint32 divisibility = 5; // Mosaic divisibility
     }
 
-
     /**
-     *
+     * MosaicSupplyChangeTransaction
      * https://docs.symbolplatform.com/serialization/mosaic.html#mosaicsupplychangetransaction
      */
     message SymbolMosaicSupplyChange {
@@ -408,7 +380,8 @@ message SymbolSignTx {
         optional uint32 new_restriction_type       = 7;    
     }
 
-    // Aggregate Schemas
+
+    // Aggregate Schema
     // ---------------------------------------------------------------------------------------------------------------------------------
 
     /**
@@ -419,11 +392,21 @@ message SymbolSignTx {
         optional SymbolHeader            header            = 1;
         optional string                  transactions_hash = 2;
         repeated SymbolSingleTransaction transactions      = 3;
-        repeated string                  cosignatures      = 4;        
+        repeated SymbolCosignature       cosignatures      = 4;
     }
 
-}
+    /**
+     * Cosignature
+     * https://docs.symbolplatform.com/serialization/aggregate.html#id2
+     */
+     message SymbolCosignature {
+         optional uint64 version           = 1;
+         optional string signer_public_key = 2;
+         optional string signature         = 3;
+     }
 
+
+}
 
 
 /**

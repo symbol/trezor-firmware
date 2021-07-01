@@ -55,10 +55,6 @@ class TestMsgSymbolSignTxMosaics:
             tx.data.hex()
             == "3b5e1fa6445653c971a50687e75e6d09fb30481055e3990c84b25e9222dc115501984d4180841e0000000000f6a98b39060000009a785634120000000500000000000000111111110500"
         )
-#        assert (
-#            tx.signature.hex()
-#            == "928b03c4a69fff35ecf0912066ea705895b3028fad141197d7ea2b56f1eef2a2516455e6f35d318f6fa39e2bb40492ac4ae603260790f7ebc7ea69feb4ca4c0a"
-#        ) TODO: SYMBOL DEBUG
 
 
     @pytest.mark.setup_client(mnemonic=MNEMONIC12)
@@ -88,7 +84,3 @@ class TestMsgSymbolSignTxMosaics:
             tx.data.hex()
             == "3b5e1fa6445653c971a50687e75e6d09fb30481055e3990c84b25e9222dc115501984d4280841e00000000001f2a933906000000cc403c7a113bdf7c40420f000000000001"
         )
-#        assert (
-#            tx.signature.hex()
-#            == "928b03c4a69fff35ecf0912066ea705895b3028fad141197d7ea2b56f1eef2a2516455e6f35d318f6fa39e2bb40492ac4ae603260790f7ebc7ea69feb4ca4c0a"
-#        ) TODO: SYMBOL DEBUG

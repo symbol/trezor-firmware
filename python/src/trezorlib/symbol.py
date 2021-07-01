@@ -245,60 +245,19 @@ def create_aggregate_transaction(transaction):
 
         msg.transactions.append( single )
 
-#        single = messages.SymbolSingleTransaction()
-#        fill_transaction_by_type(single, etxn)
-#        msg.transactions.append( single )
-
+    msg.cosignatures = []
+    if "cosignatures" in transaction:
+        for cosignature in transaction["cosignatures"]:
+            symbol_cosig = messages.SymbolCosignature(
+                version           = cosignature["version"],
+                signer_public_key = cosignature["signer_public_key"],
+                signature         = cosignature["signature"]
+                )
+            msg.cosignatures.append(symbol_cosig)
+ 
     return msg
 
-def fill_transaction_by_type(msg: messages.SymbolSingleTransaction, transaction):
-    if transaction["type"] == SymbolEntityType.TRANSFER:
-        msg.transfer = create_transfer(transaction)
-    elif transaction["type"] == SymbolEntityType.MOSAIC_SUPPLY_CHANGE:
-        msg.mosaic_supply_change = create_mosaic_supply_change(transaction)
-    elif transaction["type"] == SymbolEntityType.MOSAIC_DEFINITION:
-        msg.mosaic_definition = create_mosaic_definition(transaction)
-    elif transaction["type"] == SymbolEntityType.NAMESPACE_REGISTRATION:
-        msg.namespace_registration = create_namespace_registration(transaction)
-    elif transaction["type"] == SymbolEntityType.ADDRESS_ALIAS:
-        msg.address_alias = create_address_alias(transaction)
-    elif transaction["type"] == SymbolEntityType.MOSAIC_ALIAS:
-        msg.mosaic_alias = create_mosaic_alias(transaction)
-    elif transaction["type"] == SymbolEntityType.ACCOUNT_KEY_LINK:
-        msg.account_key_link = create_key_link(transaction)
-    elif transaction["type"] == SymbolEntityType.NODE_KEY_LINK:
-        msg.node_key_link = create_key_link(transaction)
-    elif transaction["type"] == SymbolEntityType.VRF_KEY_LINK:
-        msg.vrf_key_link = create_key_link(transaction)
-    elif transaction["type"] == SymbolEntityType.VOTING_KEY_LINK:
-        msg.voting_key_link = create_voting_key_link(transaction)
-    elif transaction["type"] == SymbolEntityType.HASH_LOCK:
-        msg.hash_lock = create_hash_lock(transaction)
-    elif transaction["type"] == SymbolEntityType.SECRET_LOCK:
-        msg.secret_lock = create_secret_lock(transaction)
-    elif transaction["type"] == SymbolEntityType.SECRET_PROOF:
-        msg.secret_proof = create_secret_proof(transaction)
-    elif transaction["type"] == SymbolEntityType.ACCOUNT_METADATA:
-        msg.account_metadata = create_account_metadata(transaction)
-    elif transaction["type"] == SymbolEntityType.MOSAIC_METADATA:
-        msg.mosaic_metadata = create_mosaic_metadata(transaction)
-    elif transaction["type"] == SymbolEntityType.NAMESPACE_METADATA:
-        msg.namespace_metadata = create_mosaic_metadata(transaction)
-    elif transaction["type"] == SymbolEntityType.MULTISIG_ACCOUNT_MODIFICATION:
-        msg.multisig_account_modification = create_multisig_account_modification(transaction)
-    elif transaction["type"] == SymbolEntityType.ACCOUNT_ADDRESS_RESTRICTION:
-        msg.account_address_restriction = create_account_address_restriction(transaction)
-    elif transaction["type"] == SymbolEntityType.ACCOUNT_MOSAIC_RESTRICTION:
-        msg.account_mosaic_restriction = create_account_mosaic_restriction(transaction)
-    elif transaction["type"] == SymbolEntityType.ACCOUNT_OPERATION_RESTRICTION:
-        msg.account_operation_restriction = create_account_operation_restriction(transaction)
-    elif transaction["type"] == SymbolEntityType.MOSAIC_ADDRESS_RESTRICTION:
-        msg.mosaic_address_restriction = create_mosaic_address_restriction(transaction)
-    elif transaction["type"] == SymbolEntityType.MOSAIC_GLOBAL_RESTRICTION:
-        msg.mosaic_global_restriction = create_mosaic_global_restriction(transaction)
-    else:
-        print("transaction type: %s" % transaction["type"])
-        raise ValueError("Unknown transaction type")
+
 
 def create_single_transaction( transaction ):
     msg = messages.SymbolSingleTransaction()
@@ -357,7 +316,7 @@ def create_sign_tx(transaction):
     msg = messages.SymbolSignTx()
     header = create_transaction_header(transaction)
 
-    if transaction["type"] == SymbolEntityType.AGGREGATE_TRANSACTION_COMPLETE:
+    if transaction["type"] == SymbolEntityType.AGGREGATE_TRANSACTION_COMPLETE or transaction["type"] == SymbolEntityType.AGGREGATE_TRANSACTION_BONDED:
         msg.aggregate = create_aggregate_transaction(transaction)
         msg.aggregate.header = header
     else:

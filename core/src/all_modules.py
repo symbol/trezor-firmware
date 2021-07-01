@@ -628,16 +628,14 @@ trezor.messages.SymbolAccountMosaicRestriction
 import trezor.messages.SymbolAccountMosaicRestriction
 trezor.messages.SymbolAccountOperationRestriction
 import trezor.messages.SymbolAccountOperationRestriction
-trezor.messages.SymbolAddress
-import trezor.messages.SymbolAddress
 trezor.messages.SymbolAddressAlias
 import trezor.messages.SymbolAddressAlias
 trezor.messages.SymbolAggregateTransaction
 import trezor.messages.SymbolAggregateTransaction
+trezor.messages.SymbolCosignature
+import trezor.messages.SymbolCosignature
 trezor.messages.SymbolEntityType
 import trezor.messages.SymbolEntityType
-trezor.messages.SymbolGetAddress
-import trezor.messages.SymbolGetAddress
 trezor.messages.SymbolGetPublicKey
 import trezor.messages.SymbolGetPublicKey
 trezor.messages.SymbolHashLock

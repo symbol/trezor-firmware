@@ -264,10 +264,9 @@ from .SymbolAccountAddressRestriction import SymbolAccountAddressRestriction
 from .SymbolAccountMetadata import SymbolAccountMetadata
 from .SymbolAccountMosaicRestriction import SymbolAccountMosaicRestriction
 from .SymbolAccountOperationRestriction import SymbolAccountOperationRestriction
-from .SymbolAddress import SymbolAddress
 from .SymbolAddressAlias import SymbolAddressAlias
 from .SymbolAggregateTransaction import SymbolAggregateTransaction
-from .SymbolGetAddress import SymbolGetAddress
+from .SymbolCosignature import SymbolCosignature
 from .SymbolGetPublicKey import SymbolGetPublicKey
 from .SymbolHashLock import SymbolHashLock
 from .SymbolHeader import SymbolHeader

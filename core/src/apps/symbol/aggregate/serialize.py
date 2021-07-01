@@ -20,7 +20,7 @@ from .. import sign_tx
 from .. import common_layout
 
 
-async def aggregate_complete(
+async def aggregate_complete_bonded(
     ctx,
     header: SymbolHeader, aggregate: SymbolAggregateTransaction
 ) -> bytearray:
@@ -48,6 +48,12 @@ async def aggregate_complete(
     write_uint32_le(ext_tx, sum_int_tx_size)  # payloadSize
     write_uint32_le(ext_tx, 0)                # padding
     write_bytes_unchecked(ext_tx, int_txs)    # add internal transactions
+
+    for cosignature in aggregate.cosignatures:
+        write_uint64_le(ext_tx, cosignature.version)
+        write_bytes_unchecked(ext_tx, base32.decode(cosignature.signer_public_key))
+        write_bytes_unchecked(ext_tx, binascii.unhexlify(cosignature.signature))
+
 
     #print( ext_tx )
     await common_layout.require_confirm_final(ctx, header)

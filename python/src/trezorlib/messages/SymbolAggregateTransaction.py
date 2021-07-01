@@ -3,6 +3,7 @@
 # isort:skip_file
 from .. import protobuf as p
 
+from .SymbolCosignature import SymbolCosignature
 from .SymbolHeader import SymbolHeader
 from .SymbolSingleTransaction import SymbolSingleTransaction
 
@@ -20,7 +21,7 @@ class SymbolAggregateTransaction(p.MessageType):
         self,
         *,
         transactions: Optional[List[SymbolSingleTransaction]] = None,
-        cosignatures: Optional[List[str]] = None,
+        cosignatures: Optional[List[SymbolCosignature]] = None,
         header: Optional[SymbolHeader] = None,
         transactions_hash: Optional[str] = None,
     ) -> None:
@@ -35,5 +36,5 @@ class SymbolAggregateTransaction(p.MessageType):
             1: ('header', SymbolHeader, None),
             2: ('transactions_hash', p.UnicodeType, None),
             3: ('transactions', SymbolSingleTransaction, p.FLAG_REPEATED),
-            4: ('cosignatures', p.UnicodeType, p.FLAG_REPEATED),
+            4: ('cosignatures', SymbolCosignature, p.FLAG_REPEATED),
         }
